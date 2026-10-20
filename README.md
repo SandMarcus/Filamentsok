@@ -85,7 +85,7 @@ cd dist && python -m http.server 8000   # se resultatet på http://localhost:800
 
 ## Kjente begrensninger
 
-- Produktbilder lastes direkte fra butikkenes servere med `loading="lazy"` og uten referer. Hvis en butikk blokkerer det, vises i stedet den tegnede spolen. Bruk og lagring av bildene krever avtale med butikkene.
+- Produktbildene lastes direkte fra butikkenes servere (godkjent av butikkene) med `loading="lazy"` og uten referer. Hvis en butikk blokkerer lasting fra andre nettsteder eller flytter bildene, vises den tegnede spolen i stedet. Bildelenkene kommer fra kolonnen `image` i malen.
 - Priser og lager er et øyeblikksbilde fra datoen i `snapshot`. Nettsiden sier det.
 - Stratum3D mangler produktlenke i filen. Legg til en lenkekolonne i scraperen, og sett `"url"` i malen.
 - Materiale, farge og merke leses fra navnet. Se rapporten for rader som ikke ble gjenkjent, og utvid listene i `src/enrich.py` ved behov.
