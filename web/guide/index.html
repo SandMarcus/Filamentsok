@@ -1,0 +1,242 @@
+<!doctype html>
+<html lang="nb">
+<head>
+<meta charset="utf-8">
+<title>Guide til filament</title>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="description" content="Datakort for 3D-printer-filament: PLA, PETG, ABS, nylon, TPU og over 40 andre materialer. Søk, les detaljer og sammenlign side om side.">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Instrument+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+:root{
+  --bg:#eef1f3; --surface:#ffffff; --fg:#13202b; --muted:#5b6b78; --line:#d5dce1;
+  --accent:#ff5a1f; --accent-fg:#ffffff; --ok:#1e8a52; --bad:#b3261e; --chip:#e1e7eb;
+  --font-d:'Bricolage Grotesque','Arial Narrow',system-ui,sans-serif;
+  --font-b:'Instrument Sans',system-ui,-apple-system,sans-serif;
+  --font-m:'IBM Plex Mono',ui-monospace,Menlo,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0e161d;--surface:#16212b;--fg:#e8eef2;--muted:#93a4b1;--line:#27353f;--accent:#ff6a35;--chip:#22303b;--ok:#46c07f;--bad:#ff8a80;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0e161d;--surface:#16212b;--fg:#e8eef2;--muted:#93a4b1;--line:#27353f;--accent:#ff6a35;--chip:#22303b;--ok:#46c07f;--bad:#ff8a80;color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--font-b);font-size:15px;line-height:1.5;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-bottom:90px}
+a{color:inherit}
+button,input{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.wrap{max-width:1200px;margin:0 auto}
+header.top{display:flex;align-items:center;gap:16px;padding-block:14px;flex-wrap:wrap}
+.logo{display:flex;align-items:center;gap:10px;font-family:var(--font-d);font-weight:800;font-size:22px;letter-spacing:-.02em;text-decoration:none}
+nav{display:flex;gap:4px;flex-wrap:wrap;margin-left:auto}
+nav a{padding:6px 10px;border-radius:6px;text-decoration:none;color:var(--muted);font-weight:500}
+nav a:hover,nav a.on{background:var(--chip);color:var(--fg)}
+h1{font-family:var(--font-d);font-weight:800;font-size:clamp(32px,6vw,52px);line-height:1.02;letter-spacing:-.035em;margin:28px 0 10px;text-wrap:balance}
+.lead{font-size:17px;color:var(--muted);max-width:62ch;margin:0 0 18px}
+.search{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:6px}
+.search input{flex:1 1 280px;max-width:560px;min-width:0;padding:13px 14px;border:1px solid var(--line);border-radius:8px;background:var(--surface)}
+.count{font-size:13px;color:var(--muted);font-family:var(--font-m)}
+.note{font-size:12.5px;color:var(--muted);border:1px dashed var(--line);border-radius:8px;padding:8px 12px;margin:14px 0 22px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,270px),1fr));gap:14px;align-items:start}
+.mc{background:var(--surface);border:1px solid var(--line);border-radius:10px;display:flex;flex-direction:column;min-width:0;overflow:hidden}
+.mc.sel{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent)}
+.mc .hd{padding:14px 14px 8px;display:grid;gap:2px;position:relative}
+.mc h3{margin:0;font-family:var(--font-d);font-weight:800;font-size:30px;line-height:1.05;letter-spacing:-.02em;padding-right:112px;overflow-wrap:anywhere}
+.mc .tn{color:var(--muted);font-size:14px;line-height:1.3;overflow-wrap:anywhere}
+.cmpl{position:absolute;right:12px;top:14px;display:flex;align-items:center;gap:6px;font-size:12.5px;font-weight:600;cursor:pointer;color:var(--muted)}
+.cmpl input{width:17px;height:17px;accent-color:var(--accent);cursor:pointer}
+.mc .fam{font-size:12px;color:var(--muted);padding:0 14px 6px}
+.mc .st{display:flex;gap:6px;flex-wrap:wrap;padding:0 14px 10px}
+.pill{font-size:12px;font-weight:600;background:var(--chip);border-radius:99px;padding:2px 10px;color:var(--muted)}
+.pill b{color:var(--fg);font-weight:600}
+.mc .pc{padding:0 14px 8px;font-size:13px}
+.mc .pc a{color:var(--accent);font-weight:600;text-decoration:none}.mc .pc a:hover{text-decoration:underline}
+.mc .pc span{color:var(--muted)}
+.btn{display:block;width:calc(100% - 28px);margin:0 14px 12px;background:var(--fg);color:var(--bg);border:0;border-radius:8px;padding:10px 12px;font-weight:600;cursor:pointer;text-align:center}
+.btn:hover{background:var(--accent);color:var(--accent-fg)}
+.btn.ghost{background:var(--chip);color:var(--fg)}
+.btn.ghost:hover{background:var(--accent);color:var(--accent-fg)}
+.panel{border-top:1px solid var(--line);padding:12px 14px}
+.panel[hidden]{display:none}
+.panel h4{margin:0 0 6px;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:600}
+dl{margin:0;display:grid;gap:0}
+dl div{display:flex;flex-wrap:wrap;justify-content:space-between;gap:0 12px;padding:6px 0;border-bottom:1px solid var(--line);font-size:14px}
+dl div:last-child{border-bottom:0}
+dt{color:var(--muted);flex:0 0 auto;max-width:100%}
+dd{margin:0;font-weight:500;overflow-wrap:anywhere;flex:1 1 auto;text-align:right;min-width:0}
+dd.long{flex-basis:100%;text-align:left;font-weight:400}
+.blk{margin-top:10px;font-size:14px}
+.blk b{display:block;font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:600;margin-bottom:2px}
+.refs{margin-top:12px;overflow-x:auto;border:1px solid var(--line);border-radius:8px}
+.refs table{border-collapse:collapse;font-size:12.5px;min-width:640px;width:100%}
+.refs th,.refs td{padding:6px 8px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+.refs th{color:var(--muted);font-weight:600;white-space:nowrap}
+.refs tr:last-child td{border-bottom:0}
+.empty{padding:40px;text-align:center;color:var(--muted);border:1px dashed var(--line);border-radius:10px}
+.src{margin-top:40px}
+.src h2{font-family:var(--font-d);font-size:22px;margin:0 0 8px}
+.src ul{margin:0;padding-left:18px;color:var(--muted);font-size:14px}
+footer{border-top:1px solid var(--line);padding-block:24px 40px;margin-top:40px;color:var(--muted);font-size:13px;display:flex;gap:16px;justify-content:space-between;flex-wrap:wrap}
+/* sammenligning */
+.bar{position:fixed;left:0;right:0;bottom:0;background:var(--fg);color:var(--bg);padding:10px max(16px,env(safe-area-inset-right,0px)) calc(10px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px));display:flex;gap:12px;align-items:center;justify-content:center;flex-wrap:wrap;z-index:20}
+.bar[hidden]{display:none}
+.bar .sel{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.bar .tag{background:rgba(255,255,255,.16);border-radius:99px;padding:2px 6px 2px 10px;font-size:13px;font-weight:600;display:inline-flex;gap:4px;align-items:center}
+.bar .tag button{background:none;border:0;cursor:pointer;color:inherit;font-size:16px;line-height:1;padding:0 4px}
+.bar .go{background:var(--accent);color:var(--accent-fg);border:0;border-radius:8px;padding:9px 16px;font-weight:600;cursor:pointer}
+.bar .go:disabled{opacity:.5;cursor:default}
+.bar .lnk{background:none;border:0;color:inherit;opacity:.8;text-decoration:underline;cursor:pointer}
+dialog#cmp{width:min(1200px,100vw);max-width:100vw;height:min(92vh,900px);max-height:100vh;padding:0;border:1px solid var(--line);border-radius:12px;background:var(--surface);color:var(--fg)}
+dialog#cmp::backdrop{background:rgba(0,0,0,.55)}
+dialog#cmp[open]{display:flex;flex-direction:column}
+.dh{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:12px 16px;border-bottom:1px solid var(--line)}
+.dh h2{margin:0;font-family:var(--font-d);font-size:22px}
+.dh button{background:var(--chip);border:0;border-radius:8px;padding:8px 14px;font-weight:600;cursor:pointer}
+.sc{flex:1;overflow:auto;position:relative}
+.ct{border-collapse:separate;border-spacing:0;font-size:14px}
+.ct th,.ct td{padding:8px 12px;border-bottom:1px solid var(--line);border-right:1px solid var(--line);vertical-align:top;background:var(--surface);text-align:left}
+.ct thead th{position:sticky;top:0;z-index:3;min-width:190px;max-width:260px;background:var(--surface);border-bottom:2px solid var(--line)}
+.ct thead th.corner{left:0;z-index:5;min-width:170px;max-width:170px}
+.ct tbody th{position:sticky;left:0;z-index:2;min-width:170px;max-width:170px;font-weight:600;color:var(--muted);font-size:13px}
+.ct .nm{font-family:var(--font-d);font-weight:800;font-size:22px;line-height:1.1;display:flex;justify-content:space-between;gap:8px}
+.ct .nm button{background:none;border:0;cursor:pointer;color:var(--muted);font-size:18px;line-height:1;padding:0}
+.ct .nm button:hover{color:var(--bad)}
+.ct .tn{font-weight:400;color:var(--muted);font-size:13px;margin-top:2px}
+.ct tr.g th,.ct tr.g td{background:var(--chip);color:var(--fg);font-family:var(--font-d);font-size:15px;font-weight:800;letter-spacing:0}
+.ct td{overflow-wrap:anywhere}
+@media (max-width:600px){dialog#cmp{height:100vh;border-radius:0;border:0}.ct thead th{min-width:150px}.ct thead th.corner,.ct tbody th{min-width:120px;max-width:120px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <a class="logo" href="../index.html" aria-label="Filamentsøk forside">
+      <svg width="30" height="30" viewBox="0 0 40 40" aria-hidden="true"><circle cx="20" cy="20" r="18" fill="none" stroke="currentColor" stroke-width="3"/><circle cx="20" cy="20" r="11" fill="var(--accent)"/><circle cx="20" cy="20" r="4" fill="var(--bg)"/></svg>
+      Filamentsøk.no
+    </a>
+    <nav aria-label="Hovedmeny">
+      <a href="../index.html">Hjem</a><a href="../index.html#butikk">Søk</a><a href="../index.html#kategorier">Kategorier</a><a href="../index.html#butikker">Butikker</a><a class="on" href="./" aria-current="page">Guide til filament</a><a href="../partner.html">Partner</a>
+    </nav>
+  </header>
+
+  <main>
+    <h1>Guide til filament</h1>
+    <p class="lead">Datakort for materialene i søket. Skriv inn forkortelsen eller det tekniske navnet, åpne detaljer for en enkel oversikt, og velg «Sammenlign» på flere kort for å se dem side om side.</p>
+    <div class="search">
+      <input id="q" type="search" placeholder="Skriv for eksempel P, PL, PETG eller Polyamide" aria-label="Søk etter materiale" autocomplete="off" spellcheck="false">
+      <span class="count" id="count" aria-live="polite"></span>
+    </div>
+    <p class="note">Verdiene er generelle referanser fra datablader og guider, ikke garantier. Produktspesifikke verdier og «+»-varianter varierer mellom produsenter. Følg alltid databladet for filamentet du skal bruke.</p>
+    <div class="grid" id="grid" aria-label="Materialer"></div>
+    <section class="src" id="kilder" hidden><h2>Kilder</h2><ul id="srcl"></ul></section>
+  </main>
+
+  <footer>
+    <span>© 2026 Filamentsøk.no</span>
+    <span><a href="../index.html">Hjem</a> · <a href="./">Guide</a> · <a href="../partner.html">Partner</a> · <a href="mailto:marcussandersen@gmail.com">Kontakt</a></span>
+  </footer>
+</div>
+
+<div class="bar" id="bar" hidden>
+  <div class="sel" id="barSel"></div>
+  <button class="go" id="goCmp" type="button">Sammenlign</button>
+  <button class="lnk" id="clrCmp" type="button">Fjern alle</button>
+</div>
+
+<dialog id="cmp" aria-labelledby="cmpT">
+  <div class="dh"><h2 id="cmpT">Sammenligning</h2><button type="button" id="cmpX">Lukk</button></div>
+  <div class="sc" id="cmpSc"></div>
+</dialog>
+
+<script>
+(function(){
+  var MAXC=8,M=[],SEL=[],OPEN={},TECH={};
+  var $=function(s){return document.querySelector(s)};
+  var esc=function(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})};
+  var GEN=[['diff','Vanskelighetsgrad'],['heat','Varmebestandighet'],['moist','Fuktfølsomhet'],['warp','Fare for krølling'],['tough','Seighet / slagfasthet'],['flex','Fleksibilitet'],['chem','Kjemikaliebestandighet'],['uv','UV-bestandighet'],['fat','Utmattingsbestandighet'],['encl','Lukket kammer'],['dry','Tørkeboks'],['hard','Herdet dyse']];
+  var SPEC=[['noz','Dysetemperatur'],['bed','Sengtemperatur'],['cool','Kjøling'],['hw','Typisk utstyr'],['drying','Tørking og lagring'],['str','Strekkstyrke'],['stiff','Stivhet'],['impact','Slagfasthet'],['layer','Lagvedheft'],['dim','Dimensjonsstabilitet'],['abr','Slitasjebestandighet'],['elast','Elastisitet'],['water','Vannbestandighet'],['uvw','UV og vær'],['heatr','Varmebestandighet (vurdering)'],['chemr','Kjemikaliebestandighet (vurdering)'],['fatr','Utmattingsbestandighet (vurdering)'],['flexr','Fleksibilitet (vurdering)'],['sol','Oppløselig'],['food','Matkontakt (FDA / EU 10/2011)'],['med','Medisinsk (ISO 10993 / USP Class VI)'],['flame','Flammehemming (UL94)'],['notes','Merknader'],['src','Kilder'],['conf','Datasikkerhet']];
+
+  function tokens(m){var s=m.abbr.toLowerCase();return [s].concat(s.split(/[\s\/()]+/).filter(Boolean))}
+  function match(m,q){if(!q)return true;if(tokens(m).some(function(t){return t.indexOf(q)===0}))return true;
+    return m.tech.toLowerCase().indexOf(q)===0}
+
+  function stat(l,v){return '<span class="pill">'+l+': <b>'+esc(v)+'</b></span>'}
+  function rows(list,o){return '<dl>'+list.map(function(r){var v=String(o[r[0]]);return '<div><dt>'+r[1]+'</dt><dd'+(v.length>26?' class="long"':'')+'>'+esc(v)+'</dd></div>'}).join('')+'</dl>'}
+  function refTable(m){if(!m.refs.length)return '';
+    return '<div class="blk"><b>Referansedata fra produsenter</b></div><div class="refs"><table><thead><tr><th>Kvalitet</th><th>Dyse °C</th><th>Seng °C</th><th>Kammer °C</th><th>HDT °C</th><th>Tg °C</th><th>Krymping</th><th>Strekk MPa</th><th>Bøyemodul GPa</th><th>Tørking</th></tr></thead><tbody>'+
+      m.refs.map(function(r){return '<tr><td>'+esc(r.s)+(r.n?'<br><span style="color:var(--muted)">'+esc(r.n)+'</span>':'')+'</td><td>'+esc(r.noz)+'</td><td>'+esc(r.bed)+'</td><td>'+esc(r.ch)+'</td><td>'+esc(r.hdt)+'</td><td>'+esc(r.tg)+'</td><td>'+esc(r.sh)+'</td><td>'+esc(r.ts)+'</td><td>'+esc(r.fm)+'</td><td>'+esc(r.dry)+'</td></tr>'}).join('')+'</tbody></table></div>'}
+  function card(m){
+    var on=SEL.indexOf(m.id)>=0,o=!!OPEN[m.id],t=!!TECH[m.id];
+    return '<article class="mc'+(on?' sel':'')+'" data-id="'+m.id+'">'+
+      '<div class="hd"><h3>'+esc(m.abbr)+'</h3><div class="tn">'+esc(m.tech)+'</div>'+
+      '<label class="cmpl"><input type="checkbox" data-c="'+m.id+'"'+(on?' checked':'')+'> Sammenlign</label></div>'+
+      '<div class="fam">'+esc(m.fam)+'</div>'+
+      '<div class="st">'+stat('Vanskelighet',m.gen.diff)+stat('Varme',m.gen.heat)+stat('Fukt',m.gen.moist)+'</div>'+
+      '<div class="pc" data-k="'+esc(m.key)+'"><span>…</span></div>'+
+      '<button class="btn" type="button" data-d="'+m.id+'" aria-expanded="'+o+'" aria-controls="d-'+m.id+'">'+(o?'Skjul detaljer':'Detaljer')+'</button>'+
+      '<div class="panel" id="d-'+m.id+'"'+(o?'':' hidden')+'>'+
+        '<h4>Generelt</h4>'+rows(GEN,m.gen)+
+        '<div class="blk"><b>Passer til</b>'+esc(m.gen.uses)+'</div>'+
+        '<div class="blk"><b>Unngå</b>'+esc(m.gen.avoid)+'</div>'+
+      '</div>'+
+      (o?'<button class="btn ghost" style="margin:0 14px 12px" type="button" data-t="'+m.id+'" aria-expanded="'+t+'" aria-controls="t-'+m.id+'">'+(t?'Skjul tekniske spesifikasjoner':'Tekniske spesifikasjoner')+'</button>':'')+
+      (o?'<div class="panel" id="t-'+m.id+'"'+(t?'':' hidden')+'><h4>Tekniske spesifikasjoner</h4>'+rows(SPEC,m.spec)+refTable(m)+'</div>':'')+
+      '</article>'}
+
+  var PRODS={};
+  function paintProducts(){document.querySelectorAll('.pc').forEach(function(el){var k=el.dataset.k,s=PRODS[k];
+    if(!PRODS.__ok){el.innerHTML='';return}
+    el.innerHTML=s&&s.n?'<a href="../index.html?'+(s.add?'add':'mat')+'='+encodeURIComponent(k)+'">'+s.n+(s.n===1?' produkt':' produkter')+' i butikkene →</a>':'<span>Ingen produkter i butikkene nå</span>'})}
+
+  function render(){
+    var q=$('#q').value.trim().toLowerCase();
+    var list=M.filter(function(m){return match(m,q)});
+    $('#count').textContent=list.length+(list.length===1?' materiale':' materialer');
+    $('#grid').innerHTML=list.length?list.map(card).join(''):'<div class="empty" style="grid-column:1/-1">Ingen materialer starter på «'+esc($('#q').value.trim())+'».</div>';
+    paintProducts();
+  }
+  function bar(){
+    var b=$('#bar');b.hidden=!SEL.length;
+    $('#barSel').innerHTML=SEL.map(function(id){var m=byId(id);return '<span class="tag">'+esc(m.abbr)+'<button type="button" data-r="'+id+'" aria-label="Fjern '+esc(m.abbr)+' fra sammenligning">×</button></span>'}).join('');
+    $('#goCmp').disabled=SEL.length<2;$('#goCmp').textContent=SEL.length<2?'Velg minst to':'Sammenlign '+SEL.length;
+  }
+  function byId(id){for(var i=0;i<M.length;i++)if(M[i].id===id)return M[i]}
+  function toggle(id,on){var i=SEL.indexOf(id);if(on&&i<0){if(SEL.length>=MAXC){alert('Du kan sammenligne opptil '+MAXC+' materialer om gangen.');return false}SEL.push(id)}else if(!on&&i>=0)SEL.splice(i,1);return true}
+  function cmpTable(){
+    var ms=SEL.map(byId);
+    function row(label,fn){return '<tr><th scope="row">'+label+'</th>'+ms.map(function(m){return '<td>'+esc(fn(m))+'</td>'}).join('')+'</tr>'}
+    function grp(t){return '<tr class="g"><th scope="row">'+t+'</th>'+ms.map(function(){return '<td></td>'}).join('')+'</tr>'}
+    var h='<table class="ct"><thead><tr><th class="corner" scope="col">Egenskap</th>'+ms.map(function(m){return '<th scope="col"><div class="nm"><span>'+esc(m.abbr)+'</span><button type="button" data-r="'+m.id+'" aria-label="Fjern '+esc(m.abbr)+'">×</button></div><div class="tn">'+esc(m.tech)+'</div></th>'}).join('')+'</tr></thead><tbody>';
+    h+=row('Familie',function(m){return m.fam});
+    h+=grp('Generelt');
+    GEN.forEach(function(r){h+=row(r[1],function(m){return m.gen[r[0]]})});
+    h+=row('Passer til',function(m){return m.gen.uses})+row('Unngå',function(m){return m.gen.avoid});
+    h+=grp('Tekniske spesifikasjoner');
+    SPEC.forEach(function(r){h+=row(r[1],function(m){return m.spec[r[0]]})});
+    return h+'</tbody></table>'}
+  function openCmp(){if(SEL.length<2)return;$('#cmpSc').innerHTML=cmpTable();var d=$('#cmp');if(!d.open)d.showModal()}
+  function afterChange(){bar();if($('#cmp').open){if(SEL.length<2){$('#cmp').close()}else $('#cmpSc').innerHTML=cmpTable()}}
+
+  $('#q').addEventListener('input',render);
+  $('#grid').addEventListener('click',function(e){
+    var d=e.target.closest('[data-d]');if(d){var id=d.dataset.d;OPEN[id]=!OPEN[id];if(!OPEN[id])TECH[id]=false;rerender(id);return}
+    var t=e.target.closest('[data-t]');if(t){var i2=t.dataset.t;TECH[i2]=!TECH[i2];rerender(i2)}});
+  $('#grid').addEventListener('change',function(e){var c=e.target.dataset.c;if(!c)return;
+    if(!toggle(c,e.target.checked)){e.target.checked=false;return}
+    e.target.closest('.mc').classList.toggle('sel',e.target.checked);afterChange()});
+  function rerender(id){var el=document.querySelector('.mc[data-id="'+id+'"]');if(!el)return;var m=byId(id);
+    var tmp=document.createElement('div');tmp.innerHTML=card(m);el.replaceWith(tmp.firstChild);paintProducts()}
+  $('#bar').addEventListener('click',function(e){var r=e.target.closest('[data-r]');if(r){toggle(r.dataset.r,false);syncChecks();afterChange()}});
+  $('#clrCmp').addEventListener('click',function(){SEL=[];syncChecks();afterChange()});
+  $('#goCmp').addEventListener('click',openCmp);
+  $('#cmpX').addEventListener('click',function(){$('#cmp').close()});
+  $('#cmpSc').addEventListener('click',function(e){var r=e.target.closest('[data-r]');if(r){toggle(r.dataset.r,false);syncChecks();afterChange()}});
+  $('#cmp').addEventListener('click',function(e){if(e.target===this)this.close()});
+  function syncChecks(){document.querySelectorAll('.cmpl input').forEach(function(c){var on=SEL.indexOf(c.dataset.c)>=0;c.checked=on;c.closest('.mc').classList.toggle('sel',on)})}
+
+  fetch('../guide.json?v=__BUILD__').then(function(r){if(!r.ok)throw new Error(r.status);return r.json()}).then(function(D){
+    M=D.materials;render();
+    if(D.sources&&D.sources.length){$('#kilder').hidden=false;$('#srcl').innerHTML=D.sources.map(function(s){return '<li>'+(/^https?:/.test(s.u)?'<a href="'+esc(s.u)+'" target="_blank" rel="noopener noreferrer">'+esc(s.n)+'</a>':esc(s.n))+' – '+esc(s.use)+'</li>'}).join('')}
+    return fetch('../products.json?v=__BUILD__').then(function(r){if(!r.ok)throw 0;return r.json()}).then(function(P){
+      P.products.forEach(function(p){[p.mat,p.add].forEach(function(k,i){if(!k)return;var o=PRODS[k]||(PRODS[k]={n:0,add:i===1});o.n++})});PRODS.__ok=true;paintProducts()}).catch(function(){paintProducts()})
+  }).catch(function(err){$('#grid').innerHTML='<div class="empty" style="grid-column:1/-1">Kunne ikke laste guiden. Prøv å laste siden på nytt.</div>';if(window.console)console.error(err)});
+})();
+</script>
+</body>
+</html>
