@@ -89,3 +89,19 @@ cd dist && python -m http.server 8000   # se resultatet på http://localhost:800
 - Priser og lager er et øyeblikksbilde fra datoen i `snapshot`. Nettsiden sier det.
 - Stratum3D mangler produktlenke i filen. Legg til en lenkekolonne i scraperen, og sett `"url"` i malen.
 - Materiale, farge og merke leses fra navnet. Se rapporten for rader som ikke ble gjenkjent, og utvid listene i `src/enrich.py` ved behov.
+
+## Guide til filament (`/guide/`)
+
+Guiden er én side med datakort, bygget fra masterdatabladet i Excel.
+
+- Arket ligger i `data/guide/master.xlsx`. Det er kilden for alle verdier i guiden.
+- Siden leser `data/guide.json`, som lages av arket. Når du har endret arket, kjører du på din egen maskin:
+  ```
+  pip install openpyxl
+  python tools/xlsx_to_guide.py
+  ```
+  og committer `master.xlsx` og `guide.json` sammen. GitHub bygger siden på nytt av seg selv.
+- Arket er på engelsk. Oversettelsene ligger i `tools/guide_no.py`. Hvis du legger til nye verdier eller materialer i arket, stopper skriptet og sier hva som mangler oversettelse for.
+- Søket i guiden filtrerer mens du skriver. Teksten må starte forkortelsen eller det tekniske navnet (P viser PLA og PETG, PL viser bare PLA og PLA+ / Pro).
+- Materialer på nettsiden som mangler i arket (nå: PSU) får ikke datakort. Skriptet skriver ut hvilke det gjelder.
+- De seks kolonnene Beginner Friendly, Outdoor, Mechanical Parts, High Temp, Support Material og Post-Process / Special vises ikke, fordi verdiene i arket ser feil ut (for eksempel Outdoor = Yes for PVA og Beginner Friendly = No for PLA).
