@@ -54,6 +54,7 @@ aside h3{margin:0 0 6px;font-size:12px;letter-spacing:.08em;text-transform:upper
 .fl label{display:flex;justify-content:space-between;gap:8px;padding:3px 0;cursor:pointer}
 .fl label span.n{font-family:var(--font-m);font-size:12px;color:var(--muted)}
 .fl input[type=checkbox]{accent-color:var(--accent)}
+.fl label.zero{opacity:.4;cursor:default}.fl label.zero input{cursor:default}
 .range{width:100%;accent-color:var(--accent)}
 .swatches{display:flex;flex-wrap:wrap;gap:8px}
 .sw{width:30px;height:30px;border-radius:50%;border:2px solid var(--surface);box-shadow:0 0 0 1px var(--line);cursor:pointer;padding:0;position:relative}
@@ -76,6 +77,10 @@ aside h3{margin:0 0 6px;font-size:12px;letter-spacing:.08em;text-transform:upper
 .of.best .ofp .price{color:var(--ok)}
 .nstores{font-size:12px;font-weight:600;color:var(--accent)}
 .fbtn{display:none}
+.active{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px}.active:empty{display:none}
+.active button{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);background:var(--surface);border-radius:99px;padding:5px 8px 5px 12px;cursor:pointer;font-size:13px;font-weight:500}
+.active button:hover{border-color:var(--accent)}.active button i{font-style:normal;font-size:15px;line-height:1;color:var(--muted)}
+.active button.clr{background:none;border-style:dashed;color:var(--accent);padding:5px 12px}
 .card .pic .ph{position:absolute;inset:0;width:100%;height:100%;max-height:none;object-fit:contain;background:#fff;padding:8px}
 .card .pic .tag{z-index:1}
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:14px}
@@ -125,7 +130,8 @@ footer{border-top:1px solid var(--line);padding-block:24px 40px;color:var(--mute
 }
 @media (max-width:400px){.grid{grid-template-columns:minmax(0,1fr)}}
 </style>
-
+</head>
+<body>
 <div class="wrap">
   <header class="top">
     <a class="logo" href="#" aria-label="Filamentsøk forside">
@@ -171,6 +177,7 @@ footer{border-top:1px solid var(--line);padding-block:24px 40px;color:var(--mute
         </select>
       </div>
     </div>
+    <div class="active" id="active" aria-label="Valgte filter"></div>
     <div class="shop">
       <aside class="filters" id="filters" aria-label="Filter"></aside>
       <div><div class="grid" id="grid"></div></div>
@@ -312,16 +319,19 @@ footer{border-top:1px solid var(--line);padding-block:24px 40px;color:var(--mute
   var ALLM=Object.keys(MATS).filter(function(k){return k!=='Annet'||MKEYS.indexOf(k)>=0}).sort(function(a,b){return R.filter(function(p){return p.mat===b}).length-R.filter(function(p){return p.mat===a}).length});
   var ADESC={Karbon:'Stiv og lett, med karbonfiber',Glassfiber:'Sterk og stiv, med glassfiber',ESD:'Antistatisk, for elektronikk',Flammehemmende:'Tåler brann bedre (UL94)',Lettvekt:'Skummende, lavere vekt',Antibakteriell:'Hemmer bakterievekst'};
   var ASORT=AKEYS.slice().sort(function(a,b){return R.filter(function(p){return p.add===b}).length-R.filter(function(p){return p.add===a}).length});
-  var CE={m:false,a:false},TOP=6;
+  var CE={c:false},TOP=5;
   function matCard(k){var n=R.filter(function(p){return p.mat===k}).length;
     return '<button class="cat'+(n?'':' zero')+'" data-m="'+esc(k)+'"'+(n?'':' disabled')+'><strong>'+MATS[k].n+'</strong><span>'+MATS[k].d+'</span><code>'+(n?n+(n===1?' produkt':' produkter'):'Ingen nå')+'</code></button>'}
   function addCard(k){var n=R.filter(function(p){return p.add===k}).length;
     return '<button class="cat" data-a="'+k+'"><strong>'+(k==='Flammehemmende'?'Flamme-<br>hemmende':ADD[k].split(' (')[0])+'</strong><span>'+ADESC[k]+'</span><code>'+n+(n===1?' produkt':' produkter')+'</code></button>'}
   function moreTile(g,total){if(total<=TOP)return '';
     return '<button class="cat more" data-more="'+g+'" aria-expanded="'+CE[g]+'"><strong>'+(CE[g]?'Vis færre':'Vis alle ('+total+')')+'</strong><span>'+(CE[g]?'Bare de '+TOP+' vanligste':(total-TOP)+' til')+'</span></button>'}
+  var ITEMS=ALLM.map(function(k){return{t:'m',k:k,n:R.filter(function(p){return p.mat===k}).length}})
+    .concat(ASORT.map(function(k){return{t:'a',k:k,n:R.filter(function(p){return p.add===k}).length}}));
+  ITEMS=ITEMS.map(function(x,i){x.i=i;return x}).sort(function(a,b){return (b.n-a.n)||(a.i-b.i)});
   function buildCats(){
-    var m=ALLM.filter(function(k,i){return CE.m||i<TOP}),a=ASORT.filter(function(k,i){return CE.a||i<TOP});
-    $('#cats').innerHTML=m.map(matCard).join('')+moreTile('m',ALLM.length)+a.map(addCard).join('')+moreTile('a',ASORT.length);
+    var vis=ITEMS.filter(function(x,i){return CE.c||i<TOP});
+    $('#cats').innerHTML=vis.map(function(x){return x.t==='m'?matCard(x.k):addCard(x.k)}).join('')+moreTile('c',ITEMS.length);
   }
   buildCats();
   $('#cats').addEventListener('click',function(e){var b=e.target.closest('.cat');if(!b)return;
@@ -338,19 +348,20 @@ footer{border-top:1px solid var(--line);padding-block:24px 40px;color:var(--mute
   function inKey(p,key,v){return key==='store'?!!p.stores[v]:p[key]===v}
 
   function checks(title,key,items){
-    var cn=items.map(function(v){return[v[0],v[1],cnt(function(p){return inKey(p,key,v[0])})]});
+    var cn=items.map(function(v){return[v[0],v[1],FC[key][v[0]]||0]});
     var vis=cn.filter(function(v,i){return EXP[key]||i<LIM||S[key][v[0]]});
     return '<div class="fl"><h3>'+title+'</h3>'+vis.map(function(v){
-      return '<label><span><input type="checkbox" data-k="'+key+'" data-v="'+esc(v[0])+'"'+(S[key][v[0]]?' checked':'')+'> '+esc(v[1])+'</span><span class="n">'+v[2]+'</span></label>'}).join('')+
+      return '<label'+(v[2]?'':' class="zero"')+'><span><input type="checkbox" data-k="'+key+'" data-v="'+esc(v[0])+'"'+(S[key][v[0]]?' checked':'')+(v[2]||S[key][v[0]]?'':' disabled')+'> '+esc(v[1])+'</span><span class="n">'+v[2]+'</span></label>'}).join('')+
       (cn.length>LIM?'<button type="button" class="more-btn" data-exp="'+key+'">'+(EXP[key]?'Vis færre':'Vis alle ('+cn.length+')')+'</button>':'')+'</div>';
   }
   function buildFilters(){
+    FC=facet();
     var cols=Object.keys(COL);
     $('#filters').innerHTML=
       '<div class="fl"><h3>Farge</h3><div class="swatches">'+cols.map(function(c){
-        var n=cnt(function(p){return p.col===c});
+        var n=FC.col[c]||0;
         var st=COL[c]==='multi'||COL[c]==='unk'?'':'background:'+COL[c];
-        return '<button class="sw'+(COL[c]==='multi'?' multi':'')+(COL[c]==='unk'?' unk':'')+(S.col[c]?' on':'')+'" style="'+st+'" data-c="'+c+'" title="'+c+' ('+n+')" aria-label="'+c+', '+n+' produkter" aria-pressed="'+!!S.col[c]+'"'+(n?'':' disabled')+'>'+(COL[c]==='unk'?'?':'')+'</button>'}).join('')+'</div></div>'+
+        return '<button class="sw'+(COL[c]==='multi'?' multi':'')+(COL[c]==='unk'?' unk':'')+(S.col[c]?' on':'')+'" style="'+st+'" data-c="'+c+'" title="'+c+' ('+n+')" aria-label="'+c+', '+n+' produkter" aria-pressed="'+!!S.col[c]+'"'+(n||S.col[c]?'':' disabled')+'>'+(COL[c]==='unk'?'?':'')+'</button>'}).join('')+'</div></div>'+
       checks('Type','fin',FIN.map(function(f){return[f,FINL[f]]}))+
       checks('Merke','brand',BRANDS.map(function(b){return[b,b]}))+
       checks('Materiale','mat',MKEYS.map(function(k){return[k,MATS[k].n]}))+
@@ -374,19 +385,56 @@ footer{border-top:1px solid var(--line);padding-block:24px 40px;color:var(--mute
   $('#searchForm').addEventListener('submit',function(e){e.preventDefault();S.q=$('#q').value.trim().toLowerCase();render(true);go('#butikk')});
   $('#sort').addEventListener('change',function(){render(true)});
 
-  function list(){
-    var r=R.filter(function(p){
+  function pass(p,skip){
       if(S.q&&(p.all+' '+p.name+' '+p.brand+' '+p.col+' '+p.fin+' '+p.mat+' '+(p.add||'')).toLowerCase().indexOf(S.q)<0)return false;
-      if(has(S.mat)&&!S.mat[p.mat])return false;
-      if(has(S.add)&&!S.add[p.add])return false;
-      if(has(S.fin)&&!S.fin[p.fin])return false;
-      if(has(S.brand)&&!S.brand[p.brand])return false;
-      if(has(S.col)&&!S.col[p.col])return false;
-      if(has(S.store)&&!Object.keys(S.store).some(function(k){return p.stores[k]}))return false;
+      if(skip!=='mat'&&has(S.mat)&&!S.mat[p.mat])return false;
+      if(skip!=='add'&&has(S.add)&&!S.add[p.add])return false;
+      if(skip!=='fin'&&has(S.fin)&&!S.fin[p.fin])return false;
+      if(skip!=='brand'&&has(S.brand)&&!S.brand[p.brand])return false;
+      if(skip!=='col'&&has(S.col)&&!S.col[p.col])return false;
+      if(skip!=='store'&&has(S.store)&&!Object.keys(S.store).some(function(k){return p.stores[k]}))return false;
       if(p.price!==null&&S.max<1500&&p.price>S.max)return false;
       if(S.hideOut&&!p.anyAvail)return false;
       if(S.sale&&!p.was)return false;
-      return true});
+      return true}
+  // Antall per valg: treff med alle ANDRE aktive filter, slik at man ser hva som gir treff.
+  var FC={};
+  function facet(){
+    var F={mat:{},add:{},fin:{},brand:{},col:{},store:{}};
+    R.forEach(function(p){['mat','add','fin','brand','col','store'].forEach(function(k){
+      if(!pass(p,k))return;
+      if(k==='store'){Object.keys(p.stores).forEach(function(s){F.store[s]=(F.store[s]||0)+1})}
+      else{var v=p[k];if(v!==null&&v!==undefined)F[k][v]=(F[k][v]||0)+1}})});
+    return F}
+  function updateCounts(){
+    FC=facet();
+    document.querySelectorAll('#filters input[data-k]').forEach(function(i){
+      var n=FC[i.dataset.k][i.dataset.v]||0,lab=i.closest('label');
+      lab.querySelector('.n').textContent=n;i.disabled=!n&&!i.checked;lab.classList.toggle('zero',!n)});
+    document.querySelectorAll('#filters .sw').forEach(function(b){
+      var c=b.dataset.c,n=FC.col[c]||0;
+      b.title=c+' ('+n+')';b.setAttribute('aria-label',c+', '+n+' produkter');b.disabled=!n&&!S.col[c]})}
+  function activeBar(){
+    var c=[],G={mat:'Materiale',add:'Tilsetning',fin:'Type',brand:'Merke',col:'Farge',store:'Butikk'};
+    var L={mat:function(k){return(MATS[k]||{n:k}).n},add:function(k){return ADD[k]||k},fin:function(k){return FINL[k]||k},brand:function(k){return k},col:function(k){return k},store:function(k){return STORES[k]?STORES[k].n:k}};
+    function chip(key,v,txt){c.push('<button type="button" data-rm="'+key+'" data-v="'+esc(v)+'" aria-label="Fjern filter: '+esc(txt)+'">'+esc(txt)+' <i aria-hidden="true">×</i></button>')}
+    if(S.q)chip('q','','Søk: '+S.q);
+    Object.keys(G).forEach(function(k){Object.keys(S[k]).forEach(function(v){chip(k,v,G[k]+': '+L[k](v))})});
+    if(S.max<1500)chip('max','','Maks '+kr(S.max));
+    if(S.hideOut)chip('hideOut','','Skjul utilgjengelige');
+    if(S.sale)chip('sale','','Bare tilbud');
+    if(c.length>1)c.push('<button type="button" class="clr" data-rm="all">Fjern alle</button>');
+    $('#active').innerHTML=c.join('')}
+  $('#active').addEventListener('click',function(e){var b=e.target.closest('button');if(!b)return;
+    var k=b.dataset.rm,v=b.dataset.v;
+    if(k==='all')reset();
+    else if(k==='q'){S.q='';$('#q').value=''}
+    else if(k==='max')S.max=1500;
+    else if(k==='hideOut'||k==='sale')S[k]=false;
+    else delete S[k][v];
+    render()});
+  function list(){
+    var r=R.filter(function(p){return pass(p,null)});
     var m=$('#sort').value;
     var big=1e9;
     var cmp={p:function(a,b){return (a.price===null?big:a.price)-(b.price===null?big:b.price)},
@@ -421,8 +469,8 @@ footer{border-top:1px solid var(--line);padding-block:24px 40px;color:var(--mute
   }
   var PAGE=60,limit=PAGE,lastKey='';
   function render(keep){
-    if(!keep)buildFilters();
-    var r=list();
+    if(!keep)buildFilters();else updateCounts();
+    var r=list();activeBar();
     var key=JSON.stringify([S,$('#sort').value]);
     if(key!==lastKey){limit=PAGE;lastKey=key}
     $('#countH').textContent=r.length+(r.length===1?' filament':' filamenter');
