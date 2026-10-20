@@ -139,7 +139,7 @@ footer{border-top:1px solid var(--line);padding-block:24px 40px;color:var(--mute
       Filamentsøk.no
     </a>
     <nav aria-label="Hovedmeny">
-      <a class="on" href="#">Hjem</a><a href="#butikk">Søk</a><a href="#kategorier">Kategorier</a><a href="#butikker">Butikker</a><a href="#om">Om oss</a>
+      <a class="on" href="#">Hjem</a><a href="#butikk">Søk</a><a href="#kategorier">Kategorier</a><a href="#butikker">Butikker</a><a href="#om">Om oss</a><a href="partner.html">Partner</a>
     </nav>
   </header>
 
@@ -194,7 +194,7 @@ footer{border-top:1px solid var(--line);padding-block:24px 40px;color:var(--mute
 
   <footer>
     <span>© 2026 Filamentsøk.no</span>
-    <span>Hjem · Søk · Kategorier · Butikker · Om oss</span>
+    <span>Hjem · Søk · Kategorier · Butikker · Om oss · <a href="partner.html">Partner</a> · <a href="mailto:marcussandersen@gmail.com">Kontakt</a></span>
   </footer>
 </div>
 
@@ -274,6 +274,7 @@ footer{border-top:1px solid var(--line);padding-block:24px 40px;color:var(--mute
       var x={store:o.s,price:o.p===undefined?null:o.p,url:o.u||null,avail:o.a||null,img:o.i||null,was:o.w||0,from:o.f||0,name:o.n||g.name};
       x.pk=(x.price&&kg)?Math.round(x.price/kg):null;O.push(x);return x});
     g.id=i;g.add=g.add||null;g.kg=kg;
+    g.ref=/refill|re-fill|påfyll|uten spole|spoleløs|without spool|no spool|spool-?less/i.test(g.name+' '+g.offers.map(function(o){return o.name}).join(' '))?'Refill':'Spole';
     return g;
   });
   var UNAV=function(a){return a==='out'||a==='order'||(a||'').indexOf('soon')===0};
@@ -295,7 +296,7 @@ footer{border-top:1px solid var(--line);padding-block:24px 40px;color:var(--mute
   var AKEYS=Object.keys(ADD).filter(function(k){return R.some(function(p){return p.add===k})});
   var EXP={},LIM=6;
   var BRANDS=Object.keys(bc).sort(function(a,b){return (bc[b]-bc[a])||a.localeCompare(b,'nb')});
-  var S={q:'',mat:{},add:{},fin:{},col:{},store:{},brand:{},max:1500,hideOut:false,sale:false};
+  var S={q:'',mat:{},add:{},fin:{},col:{},store:{},brand:{},ref:{},max:1500,hideOut:false,sale:false};
   var kr=function(n){return Math.round(n).toLocaleString('nb-NO')+' kr'};
   var esc=function(s){return String(s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})};
 
@@ -342,7 +343,7 @@ footer{border-top:1px solid var(--line);padding-block:24px 40px;color:var(--mute
     return '<a href="'+s.home+'" target="_blank" rel="noopener noreferrer"><strong>'+s.n+'</strong><span>'+n+' produkter her · Gå til butikken</span></a>'}).join('');
 
   function go(s){try{document.querySelector(s).scrollIntoView({behavior:'smooth'})}catch(e){}}
-  function reset(){S.q='';S.mat={};S.add={};S.fin={};S.col={};S.store={};S.brand={};S.max=1500;S.hideOut=false;S.sale=false;$('#q').value=''}
+  function reset(){S.q='';S.mat={};S.add={};S.ref={};S.fin={};S.col={};S.store={};S.brand={};S.max=1500;S.hideOut=false;S.sale=false;$('#q').value=''}
   function has(o){return Object.keys(o).length>0}
   function cnt(f){return R.filter(f).length}
   function inKey(p,key,v){return key==='store'?!!p.stores[v]:p[key]===v}
@@ -363,6 +364,7 @@ footer{border-top:1px solid var(--line);padding-block:24px 40px;color:var(--mute
         var st=COL[c]==='multi'||COL[c]==='unk'?'':'background:'+COL[c];
         return '<button class="sw'+(COL[c]==='multi'?' multi':'')+(COL[c]==='unk'?' unk':'')+(S.col[c]?' on':'')+'" style="'+st+'" data-c="'+c+'" title="'+c+' ('+n+')" aria-label="'+c+', '+n+' produkter" aria-pressed="'+!!S.col[c]+'"'+(n||S.col[c]?'':' disabled')+'>'+(COL[c]==='unk'?'?':'')+'</button>'}).join('')+'</div></div>'+
       checks('Type','fin',FIN.map(function(f){return[f,FINL[f]]}))+
+      checks('Utførelse','ref',[['Refill','Refill (uten spole)'],['Spole','Med spole']])+
       checks('Merke','brand',BRANDS.map(function(b){return[b,b]}))+
       checks('Materiale','mat',MKEYS.map(function(k){return[k,MATS[k].n]}))+
       (AKEYS.length?checks('Tilsetning','add',AKEYS.map(function(k){return[k,ADD[k]]})):'')+
@@ -387,6 +389,7 @@ footer{border-top:1px solid var(--line);padding-block:24px 40px;color:var(--mute
 
   function pass(p,skip){
       if(S.q&&(p.all+' '+p.name+' '+p.brand+' '+p.col+' '+p.fin+' '+p.mat+' '+(p.add||'')).toLowerCase().indexOf(S.q)<0)return false;
+      if(skip!=='ref'&&has(S.ref)&&!S.ref[p.ref])return false;
       if(skip!=='mat'&&has(S.mat)&&!S.mat[p.mat])return false;
       if(skip!=='add'&&has(S.add)&&!S.add[p.add])return false;
       if(skip!=='fin'&&has(S.fin)&&!S.fin[p.fin])return false;
@@ -400,8 +403,8 @@ footer{border-top:1px solid var(--line);padding-block:24px 40px;color:var(--mute
   // Antall per valg: treff med alle ANDRE aktive filter, slik at man ser hva som gir treff.
   var FC={};
   function facet(){
-    var F={mat:{},add:{},fin:{},brand:{},col:{},store:{}};
-    R.forEach(function(p){['mat','add','fin','brand','col','store'].forEach(function(k){
+    var F={mat:{},add:{},fin:{},brand:{},col:{},store:{},ref:{}};
+    R.forEach(function(p){['mat','add','fin','brand','col','store','ref'].forEach(function(k){
       if(!pass(p,k))return;
       if(k==='store'){Object.keys(p.stores).forEach(function(s){F.store[s]=(F.store[s]||0)+1})}
       else{var v=p[k];if(v!==null&&v!==undefined)F[k][v]=(F[k][v]||0)+1}})});
@@ -415,8 +418,8 @@ footer{border-top:1px solid var(--line);padding-block:24px 40px;color:var(--mute
       var c=b.dataset.c,n=FC.col[c]||0;
       b.title=c+' ('+n+')';b.setAttribute('aria-label',c+', '+n+' produkter');b.disabled=!n&&!S.col[c]})}
   function activeBar(){
-    var c=[],G={mat:'Materiale',add:'Tilsetning',fin:'Type',brand:'Merke',col:'Farge',store:'Butikk'};
-    var L={mat:function(k){return(MATS[k]||{n:k}).n},add:function(k){return ADD[k]||k},fin:function(k){return FINL[k]||k},brand:function(k){return k},col:function(k){return k},store:function(k){return STORES[k]?STORES[k].n:k}};
+    var c=[],G={ref:'Utførelse',mat:'Materiale',add:'Tilsetning',fin:'Type',brand:'Merke',col:'Farge',store:'Butikk'};
+    var L={ref:function(k){return k==='Refill'?'Refill (uten spole)':'Med spole'},mat:function(k){return(MATS[k]||{n:k}).n},add:function(k){return ADD[k]||k},fin:function(k){return FINL[k]||k},brand:function(k){return k},col:function(k){return k},store:function(k){return STORES[k]?STORES[k].n:k}};
     function chip(key,v,txt){c.push('<button type="button" data-rm="'+key+'" data-v="'+esc(v)+'" aria-label="Fjern filter: '+esc(txt)+'">'+esc(txt)+' <i aria-hidden="true">×</i></button>')}
     if(S.q)chip('q','','Søk: '+S.q);
     Object.keys(G).forEach(function(k){Object.keys(S[k]).forEach(function(v){chip(k,v,G[k]+': '+L[k](v))})});
