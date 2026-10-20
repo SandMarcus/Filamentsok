@@ -316,7 +316,7 @@ footer{border-top:1px solid var(--line);padding-block:24px 40px;color:var(--mute
   function matCard(k){var n=R.filter(function(p){return p.mat===k}).length;
     return '<button class="cat'+(n?'':' zero')+'" data-m="'+esc(k)+'"'+(n?'':' disabled')+'><strong>'+MATS[k].n+'</strong><span>'+MATS[k].d+'</span><code>'+(n?n+(n===1?' produkt':' produkter'):'Ingen nå')+'</code></button>'}
   function addCard(k){var n=R.filter(function(p){return p.add===k}).length;
-    return '<button class="cat" data-a="'+k+'"><strong>'+ADD[k].split(' (')[0]+'</strong><span>'+ADESC[k]+'</span><code>'+n+(n===1?' produkt':' produkter')+'</code></button>'}
+    return '<button class="cat" data-a="'+k+'"><strong>'+(k==='Flammehemmende'?'Flamme-<br>hemmende':ADD[k].split(' (')[0])+'</strong><span>'+ADESC[k]+'</span><code>'+n+(n===1?' produkt':' produkter')+'</code></button>'}
   function moreTile(g,total){if(total<=TOP)return '';
     return '<button class="cat more" data-more="'+g+'" aria-expanded="'+CE[g]+'"><strong>'+(CE[g]?'Vis færre':'Vis alle ('+total+')')+'</strong><span>'+(CE[g]?'Bare de '+TOP+' vanligste':(total-TOP)+' til')+'</span></button>'}
   function buildCats(){
