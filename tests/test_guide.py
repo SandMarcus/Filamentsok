@@ -56,3 +56,25 @@ def test_build_copies_guide(tmp_path):
     assert (out / "guide.json").exists()
     page = (out / "guide" / "index.html").read_text(encoding="utf-8")
     assert "__BUILD__" not in page
+
+
+def test_no_contradictions_between_detail_and_spec():
+    """Hver egenskap skal bare ha ett svar. PLA skal for eksempel ikke ha høy slagfasthet ett sted og lav et annet."""
+    pla = next(m for m in G["materials"] if m["abbr"] == "PLA")
+    assert pla["gen"]["tough"] in ("Lav", "Svært lav")
+    assert pla["gen"]["warp"] in ("Lav", "Svært lav")
+    keys = set(pla["spec"])
+    assert not keys & {"impact", "heatr", "chemr", "fatr", "flexr", "elast", "uvw"}
+
+
+def test_dimensional_stability_is_opposite_of_warping():
+    order = ["Svært lav", "Lav", "Middels", "Høy", "Svært høy"]
+    for m in G["materials"]:
+        w, d = m["gen"]["warp"], m["spec"]["dim"]
+        if w in order and d in order:
+            assert order.index(w) + order.index(d) == 4, m["abbr"]
+
+
+def test_card_front_data():
+    for m in G["materials"]:
+        assert m["gen"]["uses"] and m["gen"]["diff"]
