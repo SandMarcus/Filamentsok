@@ -105,3 +105,7 @@ Guiden er én side med datakort, bygget fra masterdatabladet i Excel.
 - Søket i guiden filtrerer mens du skriver. Teksten må starte forkortelsen eller det tekniske navnet (P viser PLA og PETG, PL viser bare PLA og PLA+ / Pro).
 - Materialer på nettsiden som mangler i arket (nå: PSU) får ikke datakort. Skriptet skriver ut hvilke det gjelder.
 - De seks kolonnene Beginner Friendly, Outdoor, Mechanical Parts, High Temp, Support Material og Post-Process / Special vises ikke, fordi verdiene i arket ser feil ut (for eksempel Outdoor = Yes for PVA og Beginner Friendly = No for PLA).
+
+### Filter og forslag i guiden
+
+Knappen «Finn riktig filament» åpner et filter med to temperatur-sliders (dyse og seng) og avkrysning for «skal ha» / «skal ikke ha». Listen oppdateres med en gang. Kriteriene er definert i `CG` i `web/guide/index.html` og leser direkte fra `guide.json`. Materialer med manglende eller varierende data skjules som standard (og kan vises med et valg). Forslag er materialer som bryter høyst to av valgene, med begrunnelse hentet fra de samme dataene. Temperaturer finnes bare for materialene som har et oppgitt område i masterarket.
