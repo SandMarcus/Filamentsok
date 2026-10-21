@@ -36,6 +36,10 @@ python tools/elefun_feed.py Feed_Pricespy_NO.CSV data/elefun.csv
 
 Feeden oppgir bare «på lager» eller «utsolgt», ikke antall. Datoen i `snapshot` i `config/stores.json` gjelder de andre butikkene og må fortsatt oppdateres for hånd.
 
+## Mørkt og lyst tema
+
+Alle sidene har en bryter (sol/måne) øverst til høyre. Siden følger først innstillingen i nettleseren eller systemet, og valget huskes i nettleseren (`localStorage`, nøkkelen `theme`). Fargene ligger som variabler øverst i hver HTML-fil.
+
 ## Skjule og vise priser
 
 Øverst i scriptet i `web/index.html` (ca. linje 223) står:
