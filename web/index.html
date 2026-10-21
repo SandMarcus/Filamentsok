@@ -221,7 +221,7 @@ footer{border-top:1px solid var(--line);padding-block:24px 40px;color:var(--mute
   // showPrices: false skjuler alle priser på hele siden (vises som «Se pris i butikken»).
   // hidePricesFor: butikk-id-er som ikke skal vise pris, for eksempel ['kjell','poly'].
   // Butikk-id-ene finner du i config/stores.json (feltet «id»).
-  var CONFIG={showPrices:false,hidePricesFor:[]};
+  var CONFIG={showPrices:true,hidePricesFor:[]};
   var PRICES=CONFIG.showPrices;
   var SHOWP=function(s){return PRICES&&CONFIG.hidePricesFor.indexOf(s)<0};
   // ===============================================
