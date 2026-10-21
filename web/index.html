@@ -6,6 +6,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="description" content="Sammenlign pris på 3D-printer-filament i norske nettbutikker. Filtrer på farge, type, merke og materiale.">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Instrument+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<script>(function(){try{var t=localStorage.getItem("theme");if(t==="dark"||t==="light")document.documentElement.setAttribute("data-theme",t)}catch(e){}})()</script>
 <style>
 /* Layout: søketjeneste med filtersøyle til venstre og produktrutenett. Hvert kort lenker ut til produktsiden i en norsk nettbutikk. */
 :root{
@@ -140,6 +141,10 @@ footer{border-top:1px solid var(--line);padding-block:24px 40px;color:var(--mute
 }
 @media (max-width:400px){.grid{grid-template-columns:minmax(0,1fr)}}
 .notice.off{display:flex;gap:10px;align-items:flex-start;background:#fff3b0;border:1px solid #e0b800;color:#3a2f00;font-size:14px;line-height:1.45}.notice.off svg{flex:none;width:22px;height:22px;margin-top:1px}.notice.off b{display:block}
+.tgl{display:inline-grid;place-items:center;width:36px;height:36px;border-radius:8px;border:1px solid var(--line);background:var(--surface);color:var(--fg);cursor:pointer;padding:0}
+.tgl:hover{background:var(--chip)}.tgl svg{width:18px;height:18px}.tgl .sun{display:none}
+:root[data-theme="dark"] .tgl .sun{display:block}:root[data-theme="dark"] .tgl .moon{display:none}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .tgl .sun{display:block}:root:not([data-theme="light"]) .tgl .moon{display:none}}
 </style>
 </head>
 <body>
@@ -152,6 +157,7 @@ footer{border-top:1px solid var(--line);padding-block:24px 40px;color:var(--mute
     <nav aria-label="Hovedmeny">
       <a class="on" href="#">Hjem</a><a href="#butikk">Søk</a><a href="#kategorier">Kategorier</a><a href="#butikker">Butikker</a><a href="#om">Om oss</a><a href="guide/">Guide til filament</a><a href="partner.html">Partner</a>
     </nav>
+    <button class="tgl" id="tgl" type="button" aria-label="Bytt mellom lyst og mørkt tema" title="Bytt tema"><svg class="moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg><svg class="sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg></button>
   </header>
 
   <section class="hero">
@@ -516,5 +522,7 @@ footer{border-top:1px solid var(--line);padding-block:24px 40px;color:var(--mute
   }
 })();
 </script>
+<script>(function(){var b=document.getElementById("tgl");if(!b)return;b.addEventListener("click",function(){var r=document.documentElement,cur=r.getAttribute("data-theme");
+if(!cur)cur=matchMedia("(prefers-color-scheme:dark)").matches?"dark":"light";var n=cur==="dark"?"light":"dark";r.setAttribute("data-theme",n);try{localStorage.setItem("theme",n)}catch(e){}})})()</script>
 </body>
 </html>
