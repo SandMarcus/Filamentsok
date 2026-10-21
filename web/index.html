@@ -149,6 +149,21 @@ footer{border-top:1px solid var(--line);padding-block:24px 40px;color:var(--mute
 #strand{position:absolute;left:0;top:0;pointer-events:none;z-index:0;overflow:visible}
 @media (max-width:800px){#strand{display:none}}
 @media (prefers-reduced-motion:reduce){#strand{display:none}}
+.support{display:flex;gap:16px;align-items:center;justify-content:space-between;flex-wrap:wrap;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:18px 20px;margin-top:28px}
+.support[hidden]{display:none}
+.support h4{margin:0 0 2px;font-family:var(--font-d);font-size:19px}.support p{margin:0;color:var(--muted);max-width:60ch;font-size:14px}
+.vbtn{background:#ff5b24;color:#fff;border:0;border-radius:10px;padding:12px 20px;font-weight:700;cursor:pointer;font-size:15px}.vbtn:hover{filter:brightness(.92)}
+dialog#vp{max-width:min(380px,calc(100vw - 32px));border:1px solid var(--line);border-radius:14px;background:var(--surface);color:var(--fg);padding:20px}
+dialog#vp [hidden]{display:none!important}
+dialog#vp::backdrop{background:rgba(0,0,0,.55)}
+dialog#vp h3{margin:0 0 6px;font-family:var(--font-d);font-size:22px}dialog#vp p{margin:0 0 12px;color:var(--muted);font-size:14px}
+.vnum{display:flex;gap:8px;align-items:center;margin-bottom:12px}.vnum output{flex:1;font-family:var(--font-m);font-size:20px;font-weight:600;background:var(--chip);border-radius:8px;padding:8px 12px}
+.vnum button,.vcl{background:var(--fg);color:var(--bg);border:0;border-radius:8px;padding:9px 14px;font-weight:600;cursor:pointer}
+.vcl{background:var(--chip);color:var(--fg);margin-top:8px;width:100%}
+dialog#vp img{display:block;width:180px;height:180px;margin:0 auto 12px;border-radius:8px;background:#fff;padding:6px}
+dialog#vp .vgo{display:block;text-align:center;text-decoration:none;margin-bottom:8px}
+.pinfo{margin:-8px 0 18px;font-size:12.5px;color:var(--muted)}.pinfo summary{cursor:pointer;display:inline-block;padding:2px 0;text-decoration:underline;text-decoration-style:dotted}.pinfo .notice{margin:6px 0 0}
+@media (max-width:700px){header.top .tgl{order:1;margin-left:auto}header.top nav{order:2;width:100%;margin-left:0}}
 </style>
 </head>
 <body>
@@ -179,11 +194,11 @@ footer{border-top:1px solid var(--line);padding-block:24px 40px;color:var(--mute
 
   <a class="promo" href="guide/" aria-label="Åpne Guide til filament">
     <span class="pi" aria-hidden="true"><svg viewBox="0 0 40 40"><circle cx="20" cy="20" r="17" fill="none" stroke="#fff" stroke-width="3"/><circle cx="20" cy="20" r="9" fill="#fff"/><circle cx="20" cy="20" r="3.5" fill="#d6420d"/></svg></span>
-    <span class="pt"><small>Ny</small><strong>Usikker på hvilket filament du trenger?</strong><span>Guide til filament: datakort for over 40 materialer med bruksområder, fordeler og tekniske data. Søk, og sammenlign side om side.</span></span>
+    <span class="pt"><small>Ny</small><strong>Usikker på hvilket filament du trenger?</strong><span>Se egenskaper og sammenlign materialer.</span></span>
     <span class="pb">Åpne guiden →</span>
   </a>
 
-  <p class="notice" id="notice"></p>
+  <details class="pinfo"><summary>Om priser og lager</summary><p class="notice" id="notice"></p></details>
 
   <section id="kategorier">
     <h2>Materiale og tilsetning</h2>
@@ -219,9 +234,22 @@ footer{border-top:1px solid var(--line);padding-block:24px 40px;color:var(--mute
     <div><h4>Rett til butikken</h4><p>Kjøpet skjer hos butikken. Filamentsøk selger ingenting selv.</p></div>
   </section>
 
+  <section class="support" id="stott" hidden>
+    <div><h4>Liker du Filamentsøk?</h4><p>Siden er gratis å bruke og drives på fritiden. Vil du støtte driften, kan du vippse et valgfritt beløp. Det er helt frivillig.</p></div>
+    <button class="vbtn" type="button" id="vopen">Støtt med Vipps</button>
+  </section>
+  <dialog id="vp" aria-labelledby="vpt">
+    <h3 id="vpt">Støtt Filamentsøk</h3>
+    <p>Takk for at du vil bidra! Støtten er frivillig og gir ingen motytelse. Skriv gjerne «Filamentsøk» i meldingen.</p>
+    <img id="vqr" alt="QR-kode for Vipps" hidden>
+    <a class="vbtn vgo" id="vgo" target="_blank" rel="noopener" hidden>Åpne i Vipps</a>
+    <div class="vnum" id="vnumw" hidden><output id="vnum"></output><button type="button" id="vcp">Kopier</button></div>
+    <button class="vcl" type="button" id="vx">Lukk</button>
+  </dialog>
+
   <footer>
     <span>© 2026 Filamentsøk.no</span>
-    <span>Hjem · Søk · Kategorier · Butikker · Om oss · <a href="guide/">Guide</a> · <a href="partner.html">Partner</a> · <a href="mailto:marcussandersen@gmail.com">Kontakt</a></span>
+    <span>Hjem · Søk · Kategorier · Butikker · Om oss · <a href="guide/">Guide</a> · <a href="partner.html">Partner</a> · <a href="mailto:marcussandersen@gmail.com">Kontakt</a><span id="vfoot" hidden> · <a href="#stott">Støtt siden</a></span></span>
   </footer>
 </div>
 
@@ -232,6 +260,25 @@ footer{border-top:1px solid var(--line);padding-block:24px 40px;color:var(--mute
   // hidePricesFor: butikk-id-er som ikke skal vise pris, for eksempel ['kjell','poly'].
   // Butikk-id-ene finner du i config/stores.json (feltet «id»).
   var CONFIG={showPrices:true,hidePricesFor:[]};
+  // SUPPORT: «Støtt siden»-boksen vises bare når minst ett felt er fylt ut.
+  //   vippsNumber: telefonnummer eller Vipps-nummer, for eksempel '123 45 678'
+  //   vippsLink:   lenke fra Vipps (for eksempel den du får ved å dele din Vipps-QR), vises som knappen «Åpne i Vipps»
+  //   qrImage:     filnavn på et bilde av Vipps-QR-koden, for eksempel 'vipps-qr.png' (legg filen ved siden av index.html)
+  var SUPPORT={vippsNumber:'',vippsLink:'',qrImage:''};
+  (function(){
+    var sec=document.getElementById('stott');if(!sec||!(SUPPORT.vippsNumber||SUPPORT.vippsLink||SUPPORT.qrImage))return;
+    sec.hidden=false;document.getElementById('vfoot').hidden=false;
+    var d=document.getElementById('vp'),$=function(i){return document.getElementById(i)};
+    if(SUPPORT.vippsNumber){$('vnumw').hidden=false;$('vnum').textContent=SUPPORT.vippsNumber}
+    if(SUPPORT.vippsLink&&/^https?:\/\//.test(SUPPORT.vippsLink)){$('vgo').hidden=false;$('vgo').href=SUPPORT.vippsLink}
+    if(SUPPORT.qrImage){$('vqr').hidden=false;$('vqr').src=SUPPORT.qrImage}
+    $('vopen').addEventListener('click',function(){d.showModal()});
+    $('vx').addEventListener('click',function(){d.close()});
+    d.addEventListener('click',function(e){if(e.target===d)d.close()});
+    $('vcp').addEventListener('click',function(){var t=SUPPORT.vippsNumber,b=this;
+      function ok(){b.textContent='Kopiert';setTimeout(function(){b.textContent='Kopier'},1500)}
+      if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(t).then(ok,function(){});else ok()});
+  })();
   var PRICES=CONFIG.showPrices;
   var SHOWP=function(s){return PRICES&&CONFIG.hidePricesFor.indexOf(s)<0};
   // ===============================================
@@ -348,9 +395,9 @@ footer{border-top:1px solid var(--line);padding-block:24px 40px;color:var(--mute
   }
   $('#heroart').innerHTML=spool('Oransje','Silk');
   if(PRICES){$('#notice').textContent='Priser og lager er hentet fra butikkenes nettsider og kan ha endret seg. Sjekk alltid endelig pris hos butikken. Der vekten ikke er oppgitt, kan pris per kg mangle.'+(CONFIG.hidePricesFor.length?' Enkelte butikker vises uten pris.':'')}
-  else{var nt=$('#notice');nt.classList.add('off');nt.setAttribute('role','status');nt.innerHTML='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 21V3" stroke="#c4271c" stroke-width="2.4" stroke-linecap="round" fill="none"/><path d="M6 4h12l-3 4.5 3 4.5H6z" fill="#d6251a"/></svg><div><b>Priser er skrudd av</b>Filamentsøk kan vise butikkenes priser, men de er slått av for øyeblikket. Trykk deg videre til butikken for å se gjeldende pris og lager.</div>'}
+  else{var nt=$('#notice');var dt=nt.closest('details');if(dt){dt.parentNode.insertBefore(nt,dt);dt.remove()}nt.classList.add('off');nt.setAttribute('role','status');nt.innerHTML='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 21V3" stroke="#c4271c" stroke-width="2.4" stroke-linecap="round" fill="none"/><path d="M6 4h12l-3 4.5 3 4.5H6z" fill="#d6251a"/></svg><div><b>Priser er skrudd av</b>Filamentsøk kan vise butikkenes priser, men de er slått av for øyeblikket. Trykk deg videre til butikken for å se gjeldende pris og lager.</div>'}
 
-  var quick=[['all','Alle filamenter']];
+  var quick=[['all','Bla gjennom alle filamenter ↓']];
   $('#quick').innerHTML=quick.map(function(x){return '<button class="chip" data-q="'+x[0]+'">'+x[1]+'</button>'}).join('');
   $('#quick').addEventListener('click',function(e){var k=e.target.dataset.q;if(!k)return;
     reset();if(k==='silk')S.fin.Silk=true;if(k==='matt')S.fin.Matt=true;render();go('#butikk')});
