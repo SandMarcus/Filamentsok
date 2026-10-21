@@ -145,6 +145,10 @@ footer{border-top:1px solid var(--line);padding-block:24px 40px;color:var(--mute
 .tgl:hover{background:var(--chip)}.tgl svg{width:18px;height:18px}.tgl .sun{display:none}
 :root[data-theme="dark"] .tgl .sun{display:block}:root[data-theme="dark"] .tgl .moon{display:none}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .tgl .sun{display:block}:root:not([data-theme="light"]) .tgl .moon{display:none}}
+.wrap{position:relative;z-index:1}
+#strand{position:absolute;left:0;top:0;pointer-events:none;z-index:0;overflow:visible}
+@media (max-width:800px){#strand{display:none}}
+@media (prefers-reduced-motion:reduce){#strand{display:none}}
 </style>
 </head>
 <body>
@@ -524,5 +528,42 @@ footer{border-top:1px solid var(--line);padding-block:24px 40px;color:var(--mute
 </script>
 <script>(function(){var b=document.getElementById("tgl");if(!b)return;b.addEventListener("click",function(){var r=document.documentElement,cur=r.getAttribute("data-theme");
 if(!cur)cur=matchMedia("(prefers-color-scheme:dark)").matches?"dark":"light";var n=cur==="dark"?"light":"dark";r.setAttribute("data-theme",n);try{localStorage.setItem("theme",n)}catch(e){}})})()</script>
+<svg id="strand" aria-hidden="true" focusable="false"><path id="stl" fill="none" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/><path id="stc" fill="none" stroke="none"/></svg>
+<script>
+/* Filamentet ruller seg ut fra spolen når man scroller ned, og inn igjen når man scroller opp. */
+(function(){
+  var svg=document.getElementById('strand'),L=document.getElementById('stl'),C=document.getElementById('stc'),art=document.getElementById('heroart'),wrap=document.querySelector('.wrap');
+  if(!svg||!art||!wrap||(window.matchMedia&&matchMedia('(prefers-reduced-motion:reduce)').matches))return;
+  var R0=46,RMIN=26,raf=0,els=null;
+  function find(){var sv=art.querySelector('svg');if(!sv)return null;var c=sv.querySelectorAll('circle'),p=sv.querySelectorAll('path');
+    return {sv:sv,disc:c[1],rings:[c[2],c[3],c[4]],hi:p}}
+  function frame(){raf=0;
+    if(!els)els=find();if(!els||getComputedStyle(art).display==='none'){L.setAttribute('d','');return}
+    var de=document.documentElement,vw=de.clientWidth,docH=Math.max(de.scrollHeight,document.body.scrollHeight),vh=window.innerHeight,y=window.pageYOffset||de.scrollTop;
+    svg.setAttribute('width',vw);svg.setAttribute('height',docH);svg.style.width=vw+'px';svg.style.height=docH+'px';
+    var r=els.sv.getBoundingClientRect(),k=r.width/120,cx=r.left+r.width/2,cy=r.top+y+r.height/2;
+    var wr=wrap.getBoundingClientRect(),xg=Math.min(vw-8,wr.right+Math.min(20,(vw-wr.right)/2));
+    /* hvor langt har filamentet rullet ut? */
+    var f=Math.min(1,y/160),tipY=Math.min(docH-24,y+vh*0.85);
+    var pre=function(R){var y0=cy+R*k;return {y0:y0,yE:y0+240,d:'M'+cx+' '+y0+' C'+(cx+(xg-cx)*0.7)+' '+y0+' '+xg+' '+(y0+70)+' '+xg+' '+(y0+240)}};
+    var g=pre(R0),rad=R0;
+    for(var i=0;i<2;i++){g=pre(rad);C.setAttribute('d',g.d);var cl=C.getTotalLength(),len=f*(cl+Math.max(0,tipY-g.yE)),tot=cl+Math.max(0,docH-24-g.yE);
+      rad=R0-(R0-RMIN)*Math.min(1,len/Math.max(1,tot*0.9))}
+    g=pre(rad);C.setAttribute('d',g.d);cl=C.getTotalLength();len=f*(cl+Math.max(0,tipY-g.yE));
+    var full=g.d+' L'+xg+' '+Math.max(g.yE,docH-24);
+    L.setAttribute('d',full);L.style.stroke=els.disc.getAttribute('fill')||'#ee8239';
+    var tl=L.getTotalLength();L.style.strokeDasharray=tl+' '+(tl+10);L.style.strokeDashoffset=(tl-len);
+    L.style.opacity=len>1?1:0;
+    /* spolen blir mindre etter hvert som filamentet går med */
+    els.disc.setAttribute('r',rad.toFixed(2));
+    els.rings.forEach(function(c){if(c)c.style.display=(+c.getAttribute('r')>=rad-2)?'none':''});
+    var o=Math.max(0,Math.min(1,(rad-30)/14));for(var j=0;j<els.hi.length;j++)els.hi[j].style.opacity=o;
+  }
+  function q(){if(!raf)raf=requestAnimationFrame(frame)}
+  addEventListener('scroll',q,{passive:true});addEventListener('resize',q);addEventListener('load',q);
+  if(window.ResizeObserver)new ResizeObserver(q).observe(document.body);
+  q();
+})();
+</script>
 </body>
 </html>
