@@ -103,6 +103,52 @@ dialog#cmp[open]{display:flex;flex-direction:column}
 .ct tr.g th,.ct tr.g td{background:var(--chip);color:var(--fg);font-family:var(--font-d);font-size:15px;font-weight:800;letter-spacing:0}
 .ct td{overflow-wrap:anywhere}
 @media (max-width:600px){dialog#cmp{height:100vh;border-radius:0;border:0}.ct thead th{min-width:150px}.ct thead th.corner,.ct tbody th{min-width:120px;max-width:120px}}
+
+/* filter */
+.fbtn{display:inline-flex;align-items:center;gap:8px;background:var(--fg);color:var(--bg);border:0;border-radius:8px;padding:12px 16px;font-weight:600;cursor:pointer}
+.fbtn:hover{background:var(--accent);color:var(--accent-fg)}
+.fbtn svg{width:18px;height:18px}
+.fbtn .bd{background:var(--accent);color:var(--accent-fg);border-radius:99px;font-size:12px;min-width:20px;height:20px;display:inline-grid;place-items:center;padding:0 6px}
+.fbtn .bd[hidden]{display:none}
+.fp{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:16px;margin:12px 0 4px}
+.fp[hidden]{display:none}
+.fp .fh{display:flex;justify-content:space-between;gap:12px;align-items:flex-start;flex-wrap:wrap;margin-bottom:10px}
+.fp .fh p{margin:0;color:var(--muted);font-size:13.5px;max-width:60ch}
+.fp .fh button,.fp .fx button{background:var(--chip);border:0;border-radius:8px;padding:7px 12px;font-weight:600;cursor:pointer}
+.fp .fh button:hover,.fp .fx button:hover{background:var(--accent);color:var(--accent-fg)}
+.fp h3{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:600;margin:16px 0 6px}
+.sl{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,280px),1fr));gap:8px 28px}
+.rs .rl{display:flex;justify-content:space-between;font-size:14px;margin-bottom:2px}
+.rs .rl output{font-family:var(--font-m);font-size:13px}
+.rs small{display:block;color:var(--muted);font-size:12px}
+.rt{position:relative;height:30px}
+.rt .tr{position:absolute;left:0;right:0;top:13px;height:4px;border-radius:2px;background:var(--chip)}
+.rt .rf{position:absolute;top:13px;height:4px;border-radius:2px;background:var(--accent)}
+.rt input{position:absolute;left:0;top:0;width:100%;height:30px;margin:0;background:none;pointer-events:none;-webkit-appearance:none;appearance:none}
+.rt input::-webkit-slider-runnable-track{background:none;height:30px}
+.rt input::-moz-range-track{background:none}
+.rt input::-webkit-slider-thumb{-webkit-appearance:none;pointer-events:auto;width:22px;height:22px;border-radius:50%;background:var(--surface);border:3px solid var(--accent);cursor:grab;margin-top:4px}
+.rt input::-moz-range-thumb{pointer-events:auto;width:16px;height:16px;border-radius:50%;background:var(--surface);border:3px solid var(--accent);cursor:grab}
+.cg{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,330px),1fr));gap:0 28px}
+.cr{display:grid;grid-template-columns:1fr auto auto;gap:4px 14px;align-items:center;padding:7px 0;border-bottom:1px solid var(--line);font-size:14px}
+.cr.ch{font-size:11.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:600;border-bottom:0;padding-bottom:0}
+.cr.ch span:not(:first-child){min-width:76px}
+.cr label{display:flex;align-items:center;gap:5px;cursor:pointer;font-size:12.5px;color:var(--muted);white-space:nowrap}.cr label:has(input:checked){color:var(--fg);font-weight:600}
+.cr input{width:17px;height:17px;accent-color:var(--accent);cursor:pointer}
+.cr label.no input{accent-color:var(--bad)}
+.fp .fx{display:flex;gap:14px;flex-wrap:wrap;align-items:center;margin-top:14px;font-size:14px}
+.fp .fx label{display:flex;gap:8px;align-items:center;cursor:pointer}
+.fp .fx input{width:17px;height:17px;accent-color:var(--accent)}
+.hid{font-size:13px;color:var(--muted);margin:8px 0 0}
+.hid button{background:none;border:0;color:var(--accent);font-weight:600;text-decoration:underline;cursor:pointer;padding:0}
+.sug{margin-top:34px}
+.sug h2{font-family:var(--font-d);font-size:24px;margin:0 0 4px;letter-spacing:-.02em}
+.sug>p{margin:0 0 14px;color:var(--muted);font-size:14px;max-width:70ch}
+.why{margin:0 14px 10px;padding:10px 12px;border-radius:8px;background:var(--chip);font-size:13.5px;line-height:1.4}
+.why b{display:block;font-size:11.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:600;margin-top:6px}
+.why b:first-child{margin-top:0}
+.why span{display:block}
+.mc.sg{border-style:dashed}
 </style>
 </head>
 <body>
@@ -119,13 +165,17 @@ dialog#cmp[open]{display:flex;flex-direction:column}
 
   <main>
     <h1>Guide til filament</h1>
-    <p class="lead">Datakort for materialene i søket. Skriv inn forkortelsen eller det tekniske navnet, åpne detaljer for en enkel oversikt, og velg «Sammenlign» på flere kort for å se dem side om side.</p>
+    <p class="lead">Datakort for materialene i søket. Skriv inn forkortelsen eller det tekniske navnet, eller trykk «Finn riktig filament» for å velge hva materialet skal kunne. Åpne detaljer for en enkel oversikt, og velg «Sammenlign» på flere kort for å se dem side om side.</p>
     <div class="search">
       <input id="q" type="search" placeholder="Skriv for eksempel P, PL, PETG eller Polyamide" aria-label="Søk etter materiale" autocomplete="off" spellcheck="false">
+      <button class="fbtn" id="fbtn" type="button" aria-expanded="false" aria-controls="fpanel"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 6h10M18 6h2M4 12h4M12 12h8M4 18h12M20 18h0"/><circle cx="16" cy="6" r="2"/><circle cx="10" cy="12" r="2"/><circle cx="18" cy="18" r="2"/></svg>Finn riktig filament <span class="bd" id="fbd" hidden>0</span></button>
       <span class="count" id="count" aria-live="polite"></span>
     </div>
+    <section class="fp" id="fpanel" hidden aria-label="Filtrer materialer"></section>
+    <p class="hid" id="hid" hidden></p>
     <p class="note">Verdiene er generelle referanser fra datablader og guider, ikke garantier. Produktspesifikke verdier og «+»-varianter varierer mellom produsenter. Følg alltid databladet for filamentet du skal bruke.</p>
     <div class="grid" id="grid" aria-label="Materialer"></div>
+    <section class="sug" id="sug" hidden></section>
     <section class="src" id="kilder" hidden><h2>Kilder</h2><ul id="srcl"></ul></section>
   </main>
 
@@ -163,13 +213,15 @@ dialog#cmp[open]{display:flex;flex-direction:column}
   function refTable(m){if(!m.refs.length)return '';
     return '<div class="blk"><b>Referansedata fra produsenter</b></div><div class="refs"><table><thead><tr><th>Kvalitet</th><th>Dyse °C</th><th>Seng °C</th><th>Kammer °C</th><th>HDT °C</th><th>Tg °C</th><th>Krymping</th><th>Strekk MPa</th><th>Bøyemodul GPa</th><th>Tørking</th></tr></thead><tbody>'+
       m.refs.map(function(r){return '<tr><td>'+esc(r.s)+(r.n?'<br><span style="color:var(--muted)">'+esc(r.n)+'</span>':'')+'</td><td>'+esc(r.noz)+'</td><td>'+esc(r.bed)+'</td><td>'+esc(r.ch)+'</td><td>'+esc(r.hdt)+'</td><td>'+esc(r.tg)+'</td><td>'+esc(r.sh)+'</td><td>'+esc(r.ts)+'</td><td>'+esc(r.fm)+'</td><td>'+esc(r.dry)+'</td></tr>'}).join('')+'</tbody></table></div>'}
+  var SUGX={};
   function card(m){
     var on=SEL.indexOf(m.id)>=0,o=!!OPEN[m.id],t=!!TECH[m.id];
-    return '<article class="mc'+(on?' sel':'')+'" data-id="'+m.id+'">'+
+    return '<article class="mc'+(on?' sel':'')+(SUGX[m.id]?' sg':'')+'" data-id="'+m.id+'">'+
       '<div class="hd"><h3>'+esc(m.abbr)+'</h3><div class="tn">'+esc(m.tech)+'</div>'+
       '<label class="cmpl"><input type="checkbox" data-c="'+m.id+'"'+(on?' checked':'')+'> Sammenlign</label></div>'+
       '<div class="fam">'+esc(m.fam)+'</div>'+
       '<div class="st">'+stat('Vanskelighet',m.gen.diff)+'</div>'+
+      (SUGX[m.id]||'')+
       '<p class="use"><b>Passer til</b>'+esc(m.gen.uses)+'</p>'+
       '<div class="pc" data-k="'+esc(m.key)+'"><span>…</span></div>'+
       '<button class="btn" type="button" data-d="'+m.id+'" aria-expanded="'+o+'" aria-controls="d-'+m.id+'">'+(o?'Skjul detaljer':'Detaljer')+'</button>'+
@@ -177,8 +229,8 @@ dialog#cmp[open]{display:flex;flex-direction:column}
         '<h4>Generelt</h4>'+rows(GEN,m.gen)+
         '<div class="blk"><b>Unngå</b>'+esc(m.gen.avoid)+'</div>'+
       '</div>'+
-      (o?'<button class="btn ghost" style="margin:0 14px 12px" type="button" data-t="'+m.id+'" aria-expanded="'+t+'" aria-controls="t-'+m.id+'">'+(t?'Skjul tekniske spesifikasjoner':'Tekniske spesifikasjoner')+'</button>':'')+
-      (o?'<div class="panel" id="t-'+m.id+'"'+(t?'':' hidden')+'><h4>Tekniske spesifikasjoner</h4>'+rows(SPEC,m.spec)+refTable(m)+'</div>':'')+
+      (o?'<button class="btn ghost" style="margin:0 14px 12px" type="button" data-t="'+m.id+'" aria-expanded="'+t+'" aria-controls="t-'+m.id+'">'+(t?'Skjul utvidet informasjon':'Utvidet informasjon')+'</button>':'')+
+      (o?'<div class="panel" id="t-'+m.id+'"'+(t?'':' hidden')+'><h4>Utvidet informasjon</h4>'+rows(SPEC,m.spec)+refTable(m)+'</div>':'')+
       '</article>'}
 
   var PRODS={};
@@ -186,12 +238,128 @@ dialog#cmp[open]{display:flex;flex-direction:column}
     if(!PRODS.__ok){el.innerHTML='';return}
     el.innerHTML=s&&s.n?'<a href="../index.html?'+(s.add?'add':'mat')+'='+encodeURIComponent(k)+'">'+s.n+(s.n===1?' produkt':' produkter')+' i butikkene →</a>':'<span>Ingen produkter i butikkene nå</span>'})}
 
+  /* ---------- filter ---------- */
+  var LV={'Svært lav':0,'Lav':1,'Middels':2,'Høy':3,'Svært høy':4};
+  function lvl(v){return Object.prototype.hasOwnProperty.call(LV,v)?LV[v]:-1}
+  function high(sec,k){return function(m){var l=lvl(m[sec][k]);return l<0?null:l>=3}}
+  function low(sec,k){return function(m){var l=lvl(m[sec][k]);return l<0?null:l<=1}}
+  function oneOf(sec,k,yes,no){return function(m){var v=m[sec][k];return yes.indexOf(v)>=0?true:no.indexOf(v)>=0?false:null}}
+  var CG=[
+   ['Printing og utstyr',[
+    {id:'easy',l:'Enkel å printe',fn:oneOf('gen','diff',['Enkel','Enkel–middels'],['Middels','Middels–vanskelig','Vanskelig','Svært vanskelig','Avansert','Ekstrem']),v:function(m){return 'Vanskelighetsgrad: '+m.gen.diff}},
+    {id:'warp',l:'Lav fare for krølling',fn:low('gen','warp'),v:function(m){return 'Fare for krølling: '+m.gen.warp}},
+    {id:'encl',l:'Trenger ikke lukket kammer',fn:oneOf('gen','encl',['Nei','Vanligvis ikke'],['Anbefalt','Påkrevd','Oppvarmet kammer kreves']),v:function(m){return 'Lukket kammer: '+m.gen.encl}},
+    {id:'dry',l:'Trenger ikke tørkeboks',fn:oneOf('gen','dry',['Nei'],['Ja','Anbefalt']),v:function(m){return 'Tørkeboks: '+m.gen.dry}},
+    {id:'std',l:'Går med standard dyse',fn:function(m){var h=m.spec.hw;return /^Standard/.test(h)?true:/herdet|høytemperatur|all-metall/i.test(h)?false:null},v:function(m){return 'Utstyr: '+m.spec.hw}},
+    {id:'moist',l:'Lav fuktfølsomhet',fn:low('gen','moist'),v:function(m){return 'Fuktfølsomhet: '+m.gen.moist}}]],
+   ['Egenskaper',[
+    {id:'heat',l:'Høy varmebestandighet',fn:high('gen','heat'),v:function(m){return 'Varmebestandighet: '+m.gen.heat}},
+    {id:'tough',l:'Høy slagfasthet',fn:high('gen','tough'),v:function(m){return 'Slagfasthet: '+m.gen.tough}},
+    {id:'flex',l:'Fleksibel',fn:high('gen','flex'),v:function(m){return 'Fleksibilitet: '+m.gen.flex}},
+    {id:'stiff',l:'Stiv',fn:high('spec','stiff'),v:function(m){return 'Stivhet: '+m.spec.stiff}},
+    {id:'chem',l:'Tåler kjemikalier',fn:high('gen','chem'),v:function(m){return 'Kjemikaliebestandighet: '+m.gen.chem}},
+    {id:'uv',l:'Tåler UV og utendørs bruk',fn:high('gen','uv'),v:function(m){return 'UV-bestandighet: '+m.gen.uv}},
+    {id:'abr',l:'Slitesterk',fn:high('spec','abr'),v:function(m){return 'Slitasjebestandighet: '+m.spec.abr}},
+    {id:'water',l:'Tåler vann',fn:high('spec','water'),v:function(m){return 'Vannbestandighet: '+m.spec.water}},
+    {id:'dim',l:'Dimensjonsstabil',fn:high('spec','dim'),v:function(m){return 'Dimensjonsstabilitet: '+m.spec.dim}},
+    {id:'sol',l:'Oppløselig (støttemateriale)',fn:function(m){var v=m.spec.sol;return /^Ja/.test(v)?true:v==='Nei'?false:null},v:function(m){return 'Oppløselig: '+m.spec.sol}},
+    {id:'flame',l:'Flammehemmende (UL94 V-0)',fn:function(m){var v=m.spec.flame;return /V-0 av seg selv/.test(v)?true:/^(Ikke sertifisert|UL94 HB)/.test(v)?false:null},v:function(m){return 'Flammehemming: '+m.spec.flame.split('.')[0]}}]]];
+  var CR={};CG.forEach(function(g){g[1].forEach(function(c){CR[c.id]=c})});
+  var TEMP={noz:{l:'Dysetemperatur',k:'noz',step:5},bed:{l:'Sengtemperatur',k:'bed',step:5}};
+  var F={want:{},not:{},noz:null,bed:null,unk:false};
+  function rng(str){if(!/°C/.test(str))return null;var n=String(str).match(/\d+(?:[.,]\d+)?/g);if(!n)return null;
+    n=n.slice(0,2).map(function(x){return parseFloat(x.replace(',','.'))});return [n[0],n.length>1?n[1]:n[0]]}
+  function tempActive(k){var t=TEMP[k];return !!F[k]&&(F[k][0]>t.min||F[k][1]<t.max)}
+  function activeCount(){return Object.keys(F.want).length+Object.keys(F.not).length+(tempActive('noz')?1:0)+(tempActive('bed')?1:0)}
+  function status(m){var fail=[],unk=[];
+    Object.keys(F.want).forEach(function(id){var v=CR[id].fn(m);if(v===null)unk.push(id);else if(!v)fail.push({t:'want',id:id})});
+    Object.keys(F.not).forEach(function(id){var v=CR[id].fn(m);if(v===null)unk.push(id);else if(v)fail.push({t:'not',id:id})});
+    ['noz','bed'].forEach(function(k){if(!tempActive(k))return;var r=rng(m.spec[k]);
+      if(!r)unk.push(k);else if(r[0]<F[k][0]||r[1]>F[k][1])fail.push({t:'temp',id:k,r:r})});
+    return {fail:fail,unk:unk}}
+  var STAT={};
+  function compute(){M.forEach(function(m){STAT[m.id]=status(m)})}
+  function passes(m){var s=STAT[m.id];return !s.fail.length&&(!s.unk.length||F.unk)}
+
+  var PROPS=[['heat','gen','Varmebestandighet',1],['tough','gen','Slagfasthet',1],['chem','gen','Kjemikaliebestandighet',1],['uv','gen','UV-bestandighet',1],['flex','gen','Fleksibilitet',1],['stiff','spec','Stivhet',1],['abr','spec','Slitasjebestandighet',1],['water','spec','Vannbestandighet',1],['dim','spec','Dimensjonsstabilitet',1],['warp','gen','Lav krølling',-1],['moist','gen','Lav fuktfølsomhet',-1]];
+  function score(m,p){var l=lvl(m[p[1]][p[0]]);return l<0?null:(p[3]>0?l:4-l)}
+  function why(m,list){
+    var s=STAT[m.id],out='',f=[];
+    s.fail.forEach(function(x){
+      if(x.t==='temp'){var t=TEMP[x.id],lo=F[x.id][0],hi=F[x.id][1],r=x.r;
+        f.push((r[1]>hi?'krever høyere ':'krever lavere ')+t.l.toLowerCase()+' ('+m.spec[x.id]+') enn valgt '+lo+'–'+hi+' °C')}
+      else if(x.t==='want')f.push('oppfyller ikke «'+CR[x.id].l+'» ('+CR[x.id].v(m)+')');
+      else f.push('har egenskapen du ville unngå: «'+CR[x.id].l+'» ('+CR[x.id].v(m)+')')});
+    out+='<b>Avviker fra filteret</b>'+f.map(function(t){return '<span>• '+esc(t)+'</span>'}).join('');
+    var st=[];
+    PROPS.forEach(function(p){var sc=score(m,p);if(sc===null)return;var base=null;
+      if(list.length){var a=list.map(function(x){return score(x,p)}).filter(function(v){return v!==null});
+        if(a.length)base=a.reduce(function(x,y){return x+y},0)/a.length}
+      if(sc>=3&&(base===null||sc>=base+1))st.push(p[2]+' ('+m[p[1]][p[0]]+')')});
+    if(st.length)out+='<b>'+(list.length?'Bedre enn resultatlisten på':'Sterk på')+'</b><span>'+esc(st.slice(0,3).join(', '))+'</span>';
+    var need=[],has=function(id){return s.fail.some(function(x){return x.id===id})};
+    if(!has('dry')&&/^(Ja|Anbefalt)$/.test(m.gen.dry))need.push('tørking '+(m.gen.dry==='Ja'?'er nødvendig':'anbefales')+(/°C/.test(m.spec.drying)?' – '+m.spec.drying:''));
+    if(!has('encl')&&/^(Anbefalt|Påkrevd|Oppvarmet kammer kreves)$/.test(m.gen.encl))need.push('lukket kammer: '+m.gen.encl.toLowerCase());
+    if(!has('std')&&CR.std.fn(m)===false)need.push('utstyr: '+m.spec.hw.toLowerCase());
+    if(need.length)out+='<b>Husk</b>'+need.map(function(t){return '<span>• '+esc(t)+'</span>'}).join('');
+    return '<div class="why">'+out+'</div>'}
+  function suggestions(list){
+    var c=M.filter(function(m){var s=STAT[m.id];return !passes(m)&&s.fail.length>=1&&s.fail.length<=2&&(!s.unk.length||F.unk)});
+    function pn(m){return PRODS[m.key]&&PRODS[m.key].n||0}
+    c.sort(function(a,b){return STAT[a.id].fail.length-STAT[b.id].fail.length||(pn(b)>0)-(pn(a)>0)||pn(b)-pn(a)||a.abbr.localeCompare(b.abbr)});
+    return c.slice(0,3).map(function(m){return {m:m,w:why(m,list)}})}
+
   function render(){
-    var q=$('#q').value.trim().toLowerCase();
-    var list=M.filter(function(m){return match(m,q)});
-    $('#count').textContent=list.length+(list.length===1?' materiale':' materialer');
-    $('#grid').innerHTML=list.length?list.map(card).join(''):'<div class="empty" style="grid-column:1/-1">Ingen materialer starter på «'+esc($('#q').value.trim())+'».</div>';
+    var q=$('#q').value.trim().toLowerCase(),act=activeCount();
+    compute();
+    var list=M.filter(function(m){return match(m,q)&&passes(m)});
+    $('#count').textContent=(act?list.length+' av '+M.length:list.length)+(list.length===1&&!act?' materiale':' materialer');
+    var bd=$('#fbd');bd.hidden=!act;bd.textContent=act;
+    var hidn=act?M.filter(function(m){return match(m,q)&&!STAT[m.id].fail.length&&STAT[m.id].unk.length&&!F.unk}).length:0;
+    var h=$('#hid');h.hidden=!hidn;
+    if(hidn)h.innerHTML=hidn+(hidn===1?' materiale er':' materialer er')+' skjult fordi dataene mangler eller varierer for det du har valgt. <button type="button" id="showUnk">Vis dem også</button>';
+    SUGX={};var sg=(act&&!q)?suggestions(list):[];
+    sg.forEach(function(x){SUGX[x.m.id]=x.w});
+    var empty=act?'Ingen materialer passer med alle valgene.'+(sg.length?' Se forslagene under.':' Prøv å fjerne ett av valgene.'):'Ingen materialer starter på «'+esc($('#q').value.trim())+'».';
+    $('#grid').innerHTML=list.length?list.map(card).join(''):'<div class="empty" style="grid-column:1/-1">'+empty+'</div>';
+    var se=$('#sug');se.hidden=!sg.length;
+    if(sg.length)se.innerHTML='<h2>'+(list.length?'Du kan også vurdere':'Nærmeste alternativer')+'</h2><p>Disse passer nesten. Forslagene bygger på dataene i masterarket og viser hva som avviker, hva materialet er bedre på, og hva du må tenke på.</p><div class="grid">'+sg.map(function(x){return card(x.m)}).join('')+'</div>';
+    else se.innerHTML='';
     paintProducts();
+  }
+  function buildPanel(){
+    var all=function(k){return M.map(function(m){return rng(m.spec[k])}).filter(Boolean)};
+    ['noz','bed'].forEach(function(k){var r=all(k);var t=TEMP[k];
+      t.min=Math.floor(Math.min.apply(null,r.map(function(x){return x[0]}))/5)*5;
+      t.max=Math.ceil(Math.max.apply(null,r.map(function(x){return x[1]}))/5)*5;F[k]=[t.min,t.max];t.n=r.length});
+    function sl(k){var t=TEMP[k];return '<div class="rs" data-k="'+k+'"><div class="rl"><b>'+t.l+'</b><output></output></div><div class="rt"><div class="tr"></div><div class="rf"></div><input type="range" class="a" min="'+t.min+'" max="'+t.max+'" step="'+t.step+'" value="'+t.min+'" aria-label="'+t.l+' fra"><input type="range" class="b" min="'+t.min+'" max="'+t.max+'" step="'+t.step+'" value="'+t.max+'" aria-label="'+t.l+' til"></div><small>Materialets anbefalte område må ligge innenfor valgt område. Oppgitt for '+t.n+' av '+M.length+' materialer.</small></div>'}
+    var h='<div class="fh"><p>Velg hva filamentet skal ha, og hva det ikke skal ha. Listen under oppdateres med en gang, og du får forslag til alternativer som nesten passer.</p><button type="button" id="fclr">Nullstill</button></div>';
+    h+='<h3>Temperatur</h3><div class="sl">'+sl('noz')+sl('bed')+'</div>';
+    CG.forEach(function(g){h+='<h3>'+g[0]+'</h3><div class="cg">'+
+      g[1].map(function(c){return '<div class="cr"><span>'+c.l+'</span><label><input type="checkbox" data-w="'+c.id+'" aria-label="Skal ha: '+c.l+'"> Skal ha</label><label class="no"><input type="checkbox" data-n="'+c.id+'" aria-label="Skal ikke ha: '+c.l+'"> Skal ikke</label></div>'}).join('')+'</div>'});
+    h+='<div class="fx"><label><input type="checkbox" id="funk"> Ta med materialer der dataene mangler eller varierer</label></div>';
+    $('#fpanel').innerHTML=h;
+    document.querySelectorAll('.rs').forEach(paintSl);
+  }
+  function paintSl(el){var k=el.dataset.k,t=TEMP[k],v=F[k],a=el.querySelector('.a'),b=el.querySelector('.b');a.value=v[0];b.value=v[1];
+    var span=t.max-t.min,f=el.querySelector('.rf');f.style.left=((v[0]-t.min)/span*100)+'%';f.style.right=((t.max-v[1])/span*100)+'%';
+    el.querySelector('output').textContent=tempActive(k)?v[0]+'–'+v[1]+' °C':'Alle ('+t.min+'–'+t.max+' °C)'}
+  function bindFilter(){
+    $('#fbtn').addEventListener('click',function(){var p=$('#fpanel');p.hidden=!p.hidden;this.setAttribute('aria-expanded',String(!p.hidden))});
+    $('#fpanel').addEventListener('input',function(e){var t=e.target;
+      if(t.type==='range'){var el=t.closest('.rs'),k=el.dataset.k,a=+el.querySelector('.a').value,b=+el.querySelector('.b').value;
+        if(t.classList.contains('a')&&a>b)a=b;if(t.classList.contains('b')&&b<a)b=a;F[k]=[a,b];paintSl(el);render()}});
+    $('#fpanel').addEventListener('change',function(e){var t=e.target;
+      if(t.id==='funk'){F.unk=t.checked;render();return}
+      var w=t.dataset.w,n=t.dataset.n,id=w||n;if(!id)return;
+      if(w){delete F.not[w];if(t.checked)F.want[w]=1;else delete F.want[w];var o=document.querySelector('[data-n="'+w+'"]');if(o)o.checked=false}
+      else{delete F.want[n];if(t.checked)F.not[n]=1;else delete F.not[n];var o2=document.querySelector('[data-w="'+n+'"]');if(o2)o2.checked=false}
+      render()});
+    $('#fpanel').addEventListener('click',function(e){if(e.target.id!=='fclr')return;
+      F.want={};F.not={};F.unk=false;['noz','bed'].forEach(function(k){F[k]=[TEMP[k].min,TEMP[k].max]});
+      document.querySelectorAll('#fpanel input[type=checkbox]').forEach(function(c){c.checked=false});
+      document.querySelectorAll('.rs').forEach(paintSl);render()});
+    $('#hid').addEventListener('click',function(e){if(e.target.id!=='showUnk')return;F.unk=true;$('#funk').checked=true;render()});
   }
   function bar(){
     var b=$('#bar');b.hidden=!SEL.length;
@@ -209,19 +377,20 @@ dialog#cmp[open]{display:flex;flex-direction:column}
     h+=grp('Generelt');
     GEN.forEach(function(r){h+=row(r[1],function(m){return m.gen[r[0]]})});
     h+=row('Passer til',function(m){return m.gen.uses})+row('Unngå',function(m){return m.gen.avoid});
-    h+=grp('Tekniske spesifikasjoner');
+    h+=grp('Utvidet informasjon');
     SPEC.forEach(function(r){h+=row(r[1],function(m){return m.spec[r[0]]})});
     return h+'</tbody></table>'}
   function openCmp(){if(SEL.length<2)return;$('#cmpSc').innerHTML=cmpTable();var d=$('#cmp');if(!d.open)d.showModal()}
   function afterChange(){bar();if($('#cmp').open){if(SEL.length<2){$('#cmp').close()}else $('#cmpSc').innerHTML=cmpTable()}}
 
   $('#q').addEventListener('input',render);
-  $('#grid').addEventListener('click',function(e){
+  ['#grid','#sug'].forEach(function(sel){$(sel).addEventListener('click',gridClick);$(sel).addEventListener('change',gridChange)});
+  function gridClick(e){
     var d=e.target.closest('[data-d]');if(d){var id=d.dataset.d;OPEN[id]=!OPEN[id];if(!OPEN[id])TECH[id]=false;rerender(id);return}
-    var t=e.target.closest('[data-t]');if(t){var i2=t.dataset.t;TECH[i2]=!TECH[i2];rerender(i2)}});
-  $('#grid').addEventListener('change',function(e){var c=e.target.dataset.c;if(!c)return;
+    var t=e.target.closest('[data-t]');if(t){var i2=t.dataset.t;TECH[i2]=!TECH[i2];rerender(i2)}}
+  function gridChange(e){var c=e.target.dataset.c;if(!c)return;
     if(!toggle(c,e.target.checked)){e.target.checked=false;return}
-    e.target.closest('.mc').classList.toggle('sel',e.target.checked);afterChange()});
+    e.target.closest('.mc').classList.toggle('sel',e.target.checked);afterChange()}
   function rerender(id){var el=document.querySelector('.mc[data-id="'+id+'"]');if(!el)return;var m=byId(id);
     var tmp=document.createElement('div');tmp.innerHTML=card(m);el.replaceWith(tmp.firstChild);paintProducts()}
   $('#bar').addEventListener('click',function(e){var r=e.target.closest('[data-r]');if(r){toggle(r.dataset.r,false);syncChecks();afterChange()}});
@@ -233,10 +402,10 @@ dialog#cmp[open]{display:flex;flex-direction:column}
   function syncChecks(){document.querySelectorAll('.cmpl input').forEach(function(c){var on=SEL.indexOf(c.dataset.c)>=0;c.checked=on;c.closest('.mc').classList.toggle('sel',on)})}
 
   fetch('../guide.json?v=__BUILD__').then(function(r){if(!r.ok)throw new Error(r.status);return r.json()}).then(function(D){
-    M=D.materials;render();
+    M=D.materials;buildPanel();bindFilter();render();
     if(D.sources&&D.sources.length){$('#kilder').hidden=false;$('#srcl').innerHTML=D.sources.map(function(s){return '<li>'+(/^https?:/.test(s.u)?'<a href="'+esc(s.u)+'" target="_blank" rel="noopener noreferrer">'+esc(s.n)+'</a>':esc(s.n))+' – '+esc(s.use)+'</li>'}).join('')}
     return fetch('../products.json?v=__BUILD__').then(function(r){if(!r.ok)throw 0;return r.json()}).then(function(P){
-      P.products.forEach(function(p){[p.mat,p.add].forEach(function(k,i){if(!k)return;var o=PRODS[k]||(PRODS[k]={n:0,add:i===1});o.n++})});PRODS.__ok=true;paintProducts()}).catch(function(){paintProducts()})
+      P.products.forEach(function(p){[p.mat,p.add].forEach(function(k,i){if(!k)return;var o=PRODS[k]||(PRODS[k]={n:0,add:i===1});o.n++})});PRODS.__ok=true;render()}).catch(function(){paintProducts()})
   }).catch(function(err){$('#grid').innerHTML='<div class="empty" style="grid-column:1/-1">Kunne ikke laste guiden. Prøv å laste siden på nytt.</div>';if(window.console)console.error(err)});
 })();
 </script>
