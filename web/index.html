@@ -149,7 +149,7 @@ footer{border-top:1px solid var(--line);padding-block:24px 40px;color:var(--mute
       Filamentsøk.no
     </a>
     <nav aria-label="Hovedmeny">
-      <a class="on" href="#">Hjem</a><a href="#butikk">Søk</a><a href="#kategorier">Kategorier</a><a href="#butikker">Butikker</a><a href="#om">Om oss</a><a href="guide.html">Guide til filament</a><a href="partner.html">Partner</a>
+      <a class="on" href="#">Hjem</a><a href="#butikk">Søk</a><a href="#kategorier">Kategorier</a><a href="#butikker">Butikker</a><a href="#om">Om oss</a><a href="guide/">Guide til filament</a><a href="partner.html">Partner</a>
     </nav>
   </header>
 
@@ -166,7 +166,7 @@ footer{border-top:1px solid var(--line);padding-block:24px 40px;color:var(--mute
     <div class="heroart" aria-hidden="true" id="heroart"></div>
   </section>
 
-  <a class="promo" href="guide.html" aria-label="Åpne Guide til filament">
+  <a class="promo" href="guide/" aria-label="Åpne Guide til filament">
     <span class="pi" aria-hidden="true"><svg viewBox="0 0 40 40"><circle cx="20" cy="20" r="17" fill="none" stroke="#fff" stroke-width="3"/><circle cx="20" cy="20" r="9" fill="#fff"/><circle cx="20" cy="20" r="3.5" fill="#d6420d"/></svg></span>
     <span class="pt"><small>Ny</small><strong>Usikker på hvilket filament du trenger?</strong><span>Guide til filament: datakort for over 40 materialer med bruksområder, fordeler og tekniske data. Søk, og sammenlign side om side.</span></span>
     <span class="pb">Åpne guiden →</span>
@@ -210,7 +210,7 @@ footer{border-top:1px solid var(--line);padding-block:24px 40px;color:var(--mute
 
   <footer>
     <span>© 2026 Filamentsøk.no</span>
-    <span>Hjem · Søk · Kategorier · Butikker · Om oss · <a href="guide.html">Guide</a> · <a href="partner.html">Partner</a> · <a href="mailto:marcussandersen@gmail.com">Kontakt</a></span>
+    <span>Hjem · Søk · Kategorier · Butikker · Om oss · <a href="guide/">Guide</a> · <a href="partner.html">Partner</a> · <a href="mailto:marcussandersen@gmail.com">Kontakt</a></span>
   </footer>
 </div>
 
@@ -220,7 +220,7 @@ footer{border-top:1px solid var(--line);padding-block:24px 40px;color:var(--mute
   // showPrices: false skjuler alle priser på hele siden (vises som «Se pris i butikken»).
   // hidePricesFor: butikk-id-er som ikke skal vise pris, for eksempel ['kjell','poly'].
   // Butikk-id-ene finner du i config/stores.json (feltet «id»).
-  var CONFIG={showPrices:false,hidePricesFor:[]};
+  var CONFIG={showPrices:true,hidePricesFor:[]};
   var PRICES=CONFIG.showPrices;
   var SHOWP=function(s){return PRICES&&CONFIG.hidePricesFor.indexOf(s)<0};
   // ===============================================
