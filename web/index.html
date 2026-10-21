@@ -28,6 +28,16 @@ header.top{display:flex;align-items:center;gap:16px;padding-block:14px;flex-wrap
 nav{display:flex;gap:4px;flex-wrap:wrap;margin-left:auto}
 nav a{padding:6px 10px;border-radius:6px;text-decoration:none;color:var(--muted);font-weight:500}
 nav a:hover,nav a.on{background:var(--chip);color:var(--fg)}
+nav a.hot{background:var(--accent);color:var(--accent-fg);font-weight:600}nav a.hot:hover{filter:brightness(.93);background:var(--accent);color:var(--accent-fg)}
+.promo{display:grid;grid-template-columns:auto 1fr auto;gap:18px;align-items:center;text-decoration:none;color:#fff;background:linear-gradient(135deg,#ff5a1f 0%,#d6420d 100%);border-radius:14px;padding:20px 24px;margin-bottom:24px;box-shadow:0 6px 18px rgba(214,66,13,.25);transition:transform .15s,box-shadow .15s}
+.promo:hover{transform:translateY(-2px);box-shadow:0 10px 24px rgba(214,66,13,.35)}
+.promo .pi{width:64px;height:64px;border-radius:50%;background:rgba(255,255,255,.18);display:grid;place-items:center}
+.promo .pi svg{width:40px;height:40px}
+.promo .pt small{display:inline-block;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;background:#fff;color:#d6420d;border-radius:99px;padding:1px 9px;margin-bottom:4px}
+.promo .pt strong{display:block;font-family:var(--font-d);font-weight:800;font-size:clamp(20px,3.2vw,26px);line-height:1.1;letter-spacing:-.02em}
+.promo .pt span{display:block;margin-top:4px;opacity:.92;max-width:60ch}
+.promo .pb{background:#fff;color:#d6420d;font-weight:700;border-radius:10px;padding:12px 18px;white-space:nowrap}
+@media (max-width:700px){.promo{grid-template-columns:auto 1fr;padding:16px}.promo .pb{grid-column:1/-1;text-align:center}.promo .pi{width:48px;height:48px}.promo .pi svg{width:30px;height:30px}}
 .hero{padding-block:30px 20px;display:grid;grid-template-columns:1fr minmax(0,260px);gap:24px;align-items:center}
 .hero h1{font-family:var(--font-d);font-weight:800;font-size:clamp(34px,6vw,58px);line-height:1;letter-spacing:-.035em;margin:0 0 10px;text-wrap:balance}
 .hero p{color:var(--muted);margin:0 0 20px;max-width:48ch}
@@ -139,7 +149,7 @@ footer{border-top:1px solid var(--line);padding-block:24px 40px;color:var(--mute
       Filamentsøk.no
     </a>
     <nav aria-label="Hovedmeny">
-      <a class="on" href="#">Hjem</a><a href="#butikk">Søk</a><a href="#kategorier">Kategorier</a><a href="#butikker">Butikker</a><a href="#om">Om oss</a><a href="guide/">Guide til filament</a><a href="partner.html">Partner</a>
+      <a class="on" href="#">Hjem</a><a href="#butikk">Søk</a><a href="#kategorier">Kategorier</a><a href="#butikker">Butikker</a><a href="#om">Om oss</a><a class="hot" href="guide/">Guide til filament</a><a href="partner.html">Partner</a>
     </nav>
   </header>
 
@@ -155,6 +165,12 @@ footer{border-top:1px solid var(--line);padding-block:24px 40px;color:var(--mute
     </div>
     <div class="heroart" aria-hidden="true" id="heroart"></div>
   </section>
+
+  <a class="promo" href="guide/" aria-label="Åpne Guide til filament">
+    <span class="pi" aria-hidden="true"><svg viewBox="0 0 40 40"><circle cx="20" cy="20" r="17" fill="none" stroke="#fff" stroke-width="3"/><circle cx="20" cy="20" r="9" fill="#fff"/><circle cx="20" cy="20" r="3.5" fill="#d6420d"/></svg></span>
+    <span class="pt"><small>Ny</small><strong>Usikker på hvilket filament du trenger?</strong><span>Guide til filament: datakort for over 40 materialer med bruksområder, fordeler og tekniske data. Søk, og sammenlign side om side.</span></span>
+    <span class="pb">Åpne guiden →</span>
+  </a>
 
   <p class="notice" id="notice"></p>
 
@@ -200,6 +216,14 @@ footer{border-top:1px solid var(--line);padding-block:24px 40px;color:var(--mute
 
 <script>
 (function(){
+  // ===== INNSTILLINGER: skru priser av og på =====
+  // showPrices: false skjuler alle priser på hele siden (vises som «Se pris i butikken»).
+  // hidePricesFor: butikk-id-er som ikke skal vise pris, for eksempel ['kjell','poly'].
+  // Butikk-id-ene finner du i config/stores.json (feltet «id»).
+  var CONFIG={showPrices:true,hidePricesFor:[]};
+  var PRICES=CONFIG.showPrices;
+  var SHOWP=function(s){return PRICES&&CONFIG.hidePricesFor.indexOf(s)<0};
+  // ===============================================
   var COL={Svart:'#1d1f22',Hvit:'#f1f1ee',Grå:'#8b949b',Rød:'#d1322b',Blå:'#2f6fd0',Grønn:'#2f9e5b',Gul:'#f2c230',Oransje:'#ff7a1a',Lilla:'#8a4fc7',Rosa:'#e66fa4',Gull:'#d6a53a',Sølv:'#c3c8cc',Brun:'#7a4a2b',Beige:'#d8c8a4',Turkis:'#1fb5ad',Naturell:'#e6dcc3',Gjennomsiktig:'#dbe8ee',Flerfarget:'multi','Ikke oppgitt':'unk'};
   var MATS={
     'PLA':{n:'PLA',d:'Enkel og pen'},
@@ -272,6 +296,7 @@ footer{border-top:1px solid var(--line);padding-block:24px 40px;color:var(--mute
     var kg=g.kg||null;
     g.offers=g.offers.map(function(o){
       var x={store:o.s,price:o.p===undefined?null:o.p,url:o.u||null,avail:o.a||null,img:o.i||null,was:o.w||0,from:o.f||0,name:o.n||g.name};
+      if(!SHOWP(o.s)){x.price=null;x.was=0;x.from=0}
       x.pk=(x.price&&kg)?Math.round(x.price/kg):null;O.push(x);return x});
     g.id=i;g.add=g.add||null;g.kg=kg;
     g.ref=/refill|re-fill|påfyll|uten spole|spoleløs|without spool|no spool|spool-?less/i.test(g.name+' '+g.offers.map(function(o){return o.name}).join(' '))?'Refill':'Spole';
@@ -290,6 +315,7 @@ footer{border-top:1px solid var(--line);padding-block:24px 40px;color:var(--mute
   });
 
   var $=function(s){return document.querySelector(s)};
+  if(!PRICES){['p','pk','ph'].forEach(function(v){var op=document.querySelector('#sort option[value="'+v+'"]');if(op)op.remove()})}
   var bc={};R.forEach(function(p){bc[p.brand]=(bc[p.brand]||0)+1});
   var HASSALE=R.some(function(p){return p.was});
   var MKEYS=Object.keys(MATS).filter(function(k){return R.some(function(p){return p.mat===k})}).sort(function(a,b){return (R.filter(function(p){return p.mat===b}).length)-(R.filter(function(p){return p.mat===a}).length)});
@@ -370,7 +396,7 @@ footer{border-top:1px solid var(--line);padding-block:24px 40px;color:var(--mute
       (AKEYS.length?checks('Tilsetning','add',AKEYS.map(function(k){return[k,ADD[k]]})):'')+
       checks('Butikk','store',Object.keys(STORES).map(function(k){return[k,STORES[k].n]}))+
       '<div class="fl"><h3>Lager</h3><label><span><input type="checkbox" data-f="hideOut"'+(S.hideOut?' checked':'')+'> Skjul utilgjengelige</span></label>'+(HASSALE?'<label><span><input type="checkbox" data-f="sale"'+(S.sale?' checked':'')+'> Bare tilbud</span></label>':'')+'</div>'+
-      '<div class="fl"><h3>Maks pris</h3><input class="range" id="max" type="range" min="100" max="1500" step="10" value="'+S.max+'" aria-label="Maks pris"><div class="spec"><b id="maxv">'+kr(S.max)+'</b></div></div>'+
+      (PRICES?'<div class="fl"><h3>Maks pris</h3><input class="range" id="max" type="range" min="100" max="1500" step="10" value="'+S.max+'" aria-label="Maks pris"><div class="spec"><b id="maxv">'+kr(S.max)+'</b></div></div>':'')+
       '<button class="btn ghost" id="clear">Nullstill filter</button>';
   }
   $('#filters').addEventListener('change',function(e){var t=e.target;
