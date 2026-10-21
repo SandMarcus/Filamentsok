@@ -139,6 +139,7 @@ footer{border-top:1px solid var(--line);padding-block:24px 40px;color:var(--mute
   .grid{grid-template-columns:repeat(2,minmax(0,1fr))}
 }
 @media (max-width:400px){.grid{grid-template-columns:minmax(0,1fr)}}
+.notice.off{display:flex;gap:10px;align-items:flex-start;background:#fff3b0;border:1px solid #e0b800;color:#3a2f00;font-size:14px;line-height:1.45}.notice.off svg{flex:none;width:22px;height:22px;margin-top:1px}.notice.off b{display:block}
 </style>
 </head>
 <body>
@@ -220,7 +221,7 @@ footer{border-top:1px solid var(--line);padding-block:24px 40px;color:var(--mute
   // showPrices: false skjuler alle priser på hele siden (vises som «Se pris i butikken»).
   // hidePricesFor: butikk-id-er som ikke skal vise pris, for eksempel ['kjell','poly'].
   // Butikk-id-ene finner du i config/stores.json (feltet «id»).
-  var CONFIG={showPrices:false,hidePricesFor:[]};
+  var CONFIG={showPrices:true,hidePricesFor:[]};
   var PRICES=CONFIG.showPrices;
   var SHOWP=function(s){return PRICES&&CONFIG.hidePricesFor.indexOf(s)<0};
   // ===============================================
@@ -336,7 +337,8 @@ footer{border-top:1px solid var(--line);padding-block:24px 40px;color:var(--mute
     '<circle cx="60" cy="60" r="17" fill="#2b3640"/><circle cx="60" cy="60" r="8" fill="#eef1f3"/></svg>';
   }
   $('#heroart').innerHTML=spool('Oransje','Silk');
-  $('#notice').textContent=PRICES?'Priser og lager er hentet fra butikkenes nettsider og kan ha endret seg. Sjekk alltid endelig pris hos butikken. Der vekten ikke er oppgitt, kan pris per kg mangle.'+(CONFIG.hidePricesFor.length?' Enkelte butikker vises uten pris.':''):'Priser vises ikke for øyeblikket. Trykk deg videre til butikken for å se gjeldende pris og lager.';
+  if(PRICES){$('#notice').textContent='Priser og lager er hentet fra butikkenes nettsider og kan ha endret seg. Sjekk alltid endelig pris hos butikken. Der vekten ikke er oppgitt, kan pris per kg mangle.'+(CONFIG.hidePricesFor.length?' Enkelte butikker vises uten pris.':'')}
+  else{var nt=$('#notice');nt.classList.add('off');nt.setAttribute('role','status');nt.innerHTML='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 21V3" stroke="#c4271c" stroke-width="2.4" stroke-linecap="round" fill="none"/><path d="M6 4h12l-3 4.5 3 4.5H6z" fill="#d6251a"/></svg><div><b>Priser er skrudd av</b>Filamentsøk kan vise butikkenes priser, men de er slått av for øyeblikket. Trykk deg videre til butikken for å se gjeldende pris og lager.</div>'}
 
   var quick=[['all','Alle filamenter']];
   $('#quick').innerHTML=quick.map(function(x){return '<button class="chip" data-q="'+x[0]+'">'+x[1]+'</button>'}).join('');
