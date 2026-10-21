@@ -1,11 +1,13 @@
+> Dette er den flate versjonen: alle filer ligger i roten av repoet. Bare `.github/workflows/pages.yml` ligger i en mappe, fordi GitHub krever det.
+
 # Filamentsøk.no på GitHub Pages
 
-Prisoversikt for 3D-printer-filament i norske nettbutikker. Hele siden er statisk: en nettside (`web/index.html`) som leser `products.json`. `products.json` bygges av CSV-filene fra din egen scraper og malen `config/stores.json`.
+Prisoversikt for 3D-printer-filament i norske nettbutikker. Hele siden er statisk: en nettside (`index.html`) som leser `products.json`. `products.json` bygges av CSV-filene fra din egen scraper og malen `stores.json`.
 
 ```
- din scraper ─► data/*.csv ─┐
-                            ├─► python -m src.build ─► dist/products.json + dist/index.html ─► GitHub Pages
- config/stores.json (malen) ┘        berik · samle på tvers av butikker
+ din scraper ─► *.csv ─┐
+                            ├─► python build.py ─► dist/products.json + dist/index.html ─► GitHub Pages
+ stores.json (malen) ┘        berik · samle på tvers av butikker
 ```
 
 Ingen server, ingen database og ingen avhengigheter: byggingen bruker bare Python 3.9+ sin standardbibliotek.
@@ -16,17 +18,31 @@ Ingen server, ingen database og ingen avhengigheter: byggingen bruker bare Pytho
 2. Repo › Settings › Pages › Source: **GitHub Actions**.
 3. Push. Jobben i `.github/workflows/pages.yml` kjører testene, bygger og publiserer. Adressen står i jobben og under Settings › Pages. Eget domene (filamentsøk.no) legger du til samme sted.
 
-Jobben kjører når `data/`, `config/`, `src/` eller `web/` endres, og kan startes for hånd (Actions › Bygg og publiser › Run workflow).
+Jobben kjører når ``, `config/`, `src/` eller `` endres, og kan startes for hånd (Actions › Bygg og publiser › Run workflow).
 
 ## Slik oppdaterer du prisene
 
-Alternativ A, du gjør det selv: bytt ut CSV-filene i `data/` med nye (samme filnavn og kolonner), oppdater `snapshot` i `config/stores.json` til datoen, og push.
+Alternativ A, du gjør det selv: bytt ut CSV-filene i `` med nye (samme filnavn og kolonner), oppdater `snapshot` i `stores.json` til datoen, og push.
 
 Alternativ B, jeg gjør det: send CSV-filene til Claude. Claude fyller ut malen for filene (kolonner, standardvekt og så videre), kjører byggingen og leverer ferdig `products.json` og et repo klart til å pushe.
 
-## Malen: `config/stores.json`
+## Skjule og vise priser
 
-`config/stores.template.json` er den tomme malen med forklaring til hvert felt. `stores.json` er den utfylte versjonen for filene i `data/`. Én blokk per butikk:
+Øverst i scriptet i `index.html` (ca. linje 223) står:
+
+```js
+var CONFIG={showPrices:true,hidePricesFor:[]};
+```
+
+- **Skjule alle priser:** sett `showPrices:false`. Prisene vises som «Se pris i butikken», og forsiden viser et notat om at priser ikke vises.
+- **Skjule priser for noen butikker:** la `showPrices:true` stå og list butikk-id-ene (fra `stores.json`), for eksempel `hidePricesFor:['kjell','poly']`. Notatet får tillegget «Enkelte butikker vises uten pris.»
+- **Vise priser igjen:** sett `showPrices:true` og tøm `hidePricesFor:[]`.
+
+Trykk «Commit changes» i GitHub, så oppdateres siden etter et minutt eller to. Last siden på nytt med Ctrl+Shift+R hvis du ikke ser endringen.
+
+## Malen: `stores.json`
+
+`stores.template.json` er den tomme malen med forklaring til hvert felt. `stores.json` er den utfylte versjonen for filene i ``. Én blokk per butikk:
 
 | Felt | Betydning |
 |---|---|
@@ -39,7 +55,7 @@ Alternativ B, jeg gjør det: send CSV-filene til Claude. Claude fyller ut malen 
 | `rolls_as_kg` | `true`: «(10 ruller)» betyr 10 kg |
 | `brand_strip`, `default_brand`, `url_base` | Rydding av merkekolonne, reservemerke og relative lenker |
 
-Feil i malen gir en tydelig melding med kolonnene filen faktisk har. Hjelpeverktøy: `python tools/suggest_mapping.py data/*.csv` viser kolonnene og foreslår hva de er.
+Feil i malen gir en tydelig melding med kolonnene filen faktisk har. Hjelpeverktøy: `python suggest_mapping.py *.csv` viser kolonnene og foreslår hva de er.
 
 ### Nåværende utfylling
 
@@ -79,7 +95,7 @@ Feil i malen gir en tydelig melding med kolonnene filen faktisk har. Hjelpeverkt
 
 ```bash
 python -m pytest            # tester (pip install pytest)
-python -m src.build         # bygger dist/
+python build.py         # bygger dist/
 cd dist && python -m http.server 8000   # se resultatet på http://localhost:8000
 ```
 
@@ -94,18 +110,18 @@ cd dist && python -m http.server 8000   # se resultatet på http://localhost:800
 
 Guiden er én side med datakort, bygget fra masterdatabladet i Excel.
 
-- Arket ligger i `data/guide/master.xlsx`. Det er kilden for alle verdier i guiden.
-- Siden leser `data/guide.json`, som lages av arket. Når du har endret arket, kjører du på din egen maskin:
+- Arket ligger i `guide/master.xlsx`. Det er kilden for alle verdier i guiden.
+- Siden leser `guide.json`, som lages av arket. Når du har endret arket, kjører du på din egen maskin:
   ```
   pip install openpyxl
-  python tools/xlsx_to_guide.py
+  python xlsx_to_guide.py
   ```
   og committer `master.xlsx` og `guide.json` sammen. GitHub bygger siden på nytt av seg selv.
-- Arket er på engelsk. Oversettelsene ligger i `tools/guide_no.py`. Hvis du legger til nye verdier eller materialer i arket, stopper skriptet og sier hva som mangler oversettelse for.
+- Arket er på engelsk. Oversettelsene ligger i `guide_no.py`. Hvis du legger til nye verdier eller materialer i arket, stopper skriptet og sier hva som mangler oversettelse for.
 - Søket i guiden filtrerer mens du skriver. Teksten må starte forkortelsen eller det tekniske navnet (P viser PLA og PETG, PL viser bare PLA og PLA+ / Pro).
 - Materialer på nettsiden som mangler i arket (nå: PSU) får ikke datakort. Skriptet skriver ut hvilke det gjelder.
 - De seks kolonnene Beginner Friendly, Outdoor, Mechanical Parts, High Temp, Support Material og Post-Process / Special vises ikke, fordi verdiene i arket ser feil ut (for eksempel Outdoor = Yes for PVA og Beginner Friendly = No for PLA).
 
 ### Filter og forslag i guiden
 
-Knappen «Finn riktig filament» åpner et filter med to temperatur-sliders (dyse og seng) og avkrysning for «skal ha» / «skal ikke ha». Listen oppdateres med en gang. Kriteriene er definert i `CG` i `web/guide/index.html` og leser direkte fra `guide.json`. Materialer med manglende eller varierende data skjules som standard (og kan vises med et valg). Forslag er materialer som bryter høyst to av valgene, med begrunnelse hentet fra de samme dataene. Temperaturer finnes bare for materialene som har et oppgitt område i masterarket.
+Knappen «Finn riktig filament» åpner et filter med to temperatur-sliders (dyse og seng) og avkrysning for «skal ha» / «skal ikke ha». Listen oppdateres med en gang. Kriteriene er definert i `CG` i `index.html` og leser direkte fra `guide.json`. Materialer med manglende eller varierende data skjules som standard (og kan vises med et valg). Forslag er materialer som bryter høyst to av valgene, med begrunnelse hentet fra de samme dataene. Temperaturer finnes bare for materialene som har et oppgitt område i masterarket.
