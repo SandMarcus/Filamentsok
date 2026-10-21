@@ -40,6 +40,24 @@ Feeden oppgir bare «på lager» eller «utsolgt», ikke antall. Datoen i `snaps
 
 Alle sidene har en bryter (sol/måne) øverst til høyre. Siden følger først innstillingen i nettleseren eller systemet, og valget huskes i nettleseren (`localStorage`, nøkkelen `theme`). Fargene ligger som variabler øverst i hver HTML-fil.
 
+## Filamentet som ruller ut
+
+På forsiden ruller filamentet seg ut fra spolen øverst til høyre når man scroller ned, og inn igjen når man scroller opp. Spolen blir stående mens filamentet følger siden nedover. Spolen blir litt mindre etter hvert. Dette er et script nederst i `web/index.html` (kommentaren «Filamentet ruller seg ut»). Det er skjult på smale skjermer og hvis brukeren har bedt om redusert bevegelse.
+
+## Støtt siden (Vipps)
+
+Nederst på forsiden finnes en «Støtt med Vipps»-boks som er skjult til du fyller ut `SUPPORT` i `web/index.html` (rett under `CONFIG`):
+
+```js
+var SUPPORT={vippsNumber:'123 45 678',vippsLink:'',qrImage:''};
+```
+
+- `vippsNumber`: telefonnummer eller Vipps-nummer. Vises med en «Kopier»-knapp.
+- `vippsLink`: lenke fra Vipps (for eksempel fra å dele din Vipps-QR). Gir knappen «Åpne i Vipps».
+- `qrImage`: filnavn på et bilde av Vipps-QR-koden, for eksempel `vipps-qr.png`. Legg bildet i `web/` ved siden av `index.html`.
+
+Fyll ut ett eller flere felt. Er alle tomme, vises ingenting.
+
 ## Skjule og vise priser
 
 Øverst i scriptet i `web/index.html` (ca. linje 223) står:
