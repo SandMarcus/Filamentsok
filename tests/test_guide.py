@@ -78,3 +78,11 @@ def test_dimensional_stability_is_opposite_of_warping():
 def test_card_front_data():
     for m in G["materials"]:
         assert m["gen"]["uses"] and m["gen"]["diff"]
+
+
+def test_filter_and_menu_wiring():
+    html = (ROOT / "web" / "guide" / "index.html").read_text(encoding="utf-8")
+    assert "Utvidet informasjon" in html and "Tekniske spesifikasjoner" not in html
+    assert 'id="fbtn"' in html and 'id="sug"' in html and 'type="range"' in html
+    for f in ("index.html", "partner.html"):
+        assert 'class="hot"' not in (ROOT / "web" / f).read_text(encoding="utf-8")
