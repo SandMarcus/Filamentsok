@@ -61,6 +61,15 @@ def sources(v):
     return v[0].upper() + v[1:] if v else v
 
 
+def general(v):
+    """Behold bare den generelle verdien: produsentavvik hører hjemme i referansetabellen."""
+    if not isinstance(v, str):
+        return v
+    v = re.sub(r"\s*\((?:stort avvik|Polymaker:)[^)]*\)", "", v)
+    v = re.sub(r"\s*Stort avvik:[^.]*\.?", "", v)
+    return v.strip()
+
+
 def main():
     src = Path(sys.argv[1]) if len(sys.argv) > 1 else ROOT / "data/guide/master.xlsx"
     out = Path(sys.argv[2]) if len(sys.argv) > 2 else ROOT / "data/guide.json"
@@ -99,20 +108,18 @@ def main():
             "tech": N.NAME.get(d["Chemical / Full Name"], d["Chemical / Full Name"]),
             "fam": mp(N.FAMILY, d["Family"], f"{w} / Family"),
             "gen": {
-                "diff": L("Print Difficulty"), "heat": L("Heat Resistance"), "moist": L("Moisture Sensitivity"),
-                "warp": L("Warping Risk"), "tough": L("Impact/Toughness"), "flex": L("Flexibility"),
-                "chem": L("Chemical Resistance"), "uv": L("UV Resistance"), "fat": L("Fatigue Resistance"),
-                "encl": L("Enclosure"), "dry": L("Drybox"), "hard": L("Hardened Nozzle"),
+                "diff": L("Print Difficulty"), "warp": L("Warping Risk"), "heat": L("Heat Resistance"),
+                "moist": L("Moisture Sensitivity"), "tough": L("Impact/Toughness"), "flex": L("Flexibility"),
+                "chem": L("Chemical Resistance"), "uv": L("UV Resistance"),
+                "encl": L("Enclosure"), "dry": L("Drybox"),
                 "uses": t["uses"], "avoid": t["avoid"],
             },
             "spec": {
                 "noz": temp(d["Nozzle Temp °C"], t.get("noz")), "bed": temp(d["Bed Temp °C"], t.get("bed")),
                 "cool": L("Cooling"), "hw": mp(N.HARDWARE, d["Typical Hardware"], f"{w} / Typical Hardware"),
-                "drying": t["dry"], "str": t["str"], "stiff": L("Stiffness"), "impact": L("Impact Resistance"),
+                "drying": t["dry"], "str": t["str"], "stiff": L("Stiffness"),
                 "layer": L("Layer Adhesion"), "dim": L("Dimensional Stability"), "abr": L("Abrasion Resistance"),
-                "elast": L("Elasticity"), "water": L("Water Resistance"), "uvw": L("UV / Weather"),
-                "heatr": L("Heat Resistance Rating"), "chemr": L("Chemical Resistance Rating"),
-                "fatr": L("Fatigue Resistance Rating"), "flexr": L("Flexibility Rating"), "sol": L("Soluble"),
+                "fat": L("Fatigue Resistance"), "water": L("Water Resistance"), "sol": L("Soluble"),
                 "food": mp(N.FOOD, d["Food Contact (FDA / EU 10/2011)"], f"{w} / Food"),
                 "med": mp(N.MED, d["Medical / Biocompatibility (ISO 10993 / USP Class VI)"], f"{w} / Medical"),
                 "flame": mp(N.FLAME, d["Flame Retardancy (UL94 Rating)"], f"{w} / UL94"),
@@ -121,6 +128,8 @@ def main():
             },
             "refs": refs.get(name, []),
         })
+    for m in mats:
+        m["spec"] = {k: (v if k in ("src", "conf") else (general(v) or "Ingen merknader")) for k, v in m["spec"].items()}
     missing = [k for k in SITE_KEYS if k not in seen]
     src_rows = [{"n": r[0], "u": r[1], "use": r[2]} for r in wb["Sources"].iter_rows(min_row=2, values_only=True) if r[0]]
     body = {"v": 1, "materials": mats, "sources": src_rows, "missing": missing}

@@ -8,7 +8,7 @@ LEVEL = {
     "Extreme": "Ekstrem", "Variable": "Varierer", "Unknown": "Ukjent", "Good": "God", "Excellent": "Utmerket",
     "Poor": "Dårlig", "Verify": "Må verifiseres", "Product-specific": "Produktspesifikt",
     "Manufacturer-specific": "Produsentspesifikt", "Yes": "Ja", "No": "Nei", "Recommended": "Anbefalt",
-    "Usually no": "Vanligvis ikke", "Heated chamber required": "Oppvarmet kammer kreves",
+    "Usually no": "Vanligvis ikke", "Required": "Påkrevd", "Heated chamber required": "Oppvarmet kammer kreves",
     "Yes (d-limonene)": "Ja (løses i d-limonen)", "Easy": "Enkel", "Easy–Medium": "Enkel–middels",
     "Medium–Hard": "Middels–vanskelig", "Hard": "Vanskelig", "Very Hard": "Svært vanskelig",
     "Advanced": "Avansert", "Low–Medium": "Lav–middels",
