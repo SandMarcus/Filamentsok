@@ -30,15 +30,6 @@ nav{display:flex;gap:4px;flex-wrap:wrap;margin-left:auto}
 nav a{padding:6px 10px;border-radius:6px;text-decoration:none;color:var(--muted);font-weight:500}
 nav a:hover,nav a.on{background:var(--chip);color:var(--fg)}
 
-.promo{display:grid;grid-template-columns:auto 1fr auto;gap:18px;align-items:center;text-decoration:none;color:#fff;background:linear-gradient(135deg,#ff5a1f 0%,#d6420d 100%);border-radius:14px;padding:20px 24px;margin-bottom:24px;box-shadow:0 6px 18px rgba(214,66,13,.25);transition:transform .15s,box-shadow .15s}
-.promo:hover{transform:translateY(-2px);box-shadow:0 10px 24px rgba(214,66,13,.35)}
-.promo .pi{width:64px;height:64px;border-radius:50%;background:rgba(255,255,255,.18);display:grid;place-items:center}
-.promo .pi svg{width:40px;height:40px}
-.promo .pt small{display:inline-block;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;background:#fff;color:#d6420d;border-radius:99px;padding:1px 9px;margin-bottom:4px}
-.promo .pt strong{display:block;font-family:var(--font-d);font-weight:800;font-size:clamp(20px,3.2vw,26px);line-height:1.1;letter-spacing:-.02em}
-.promo .pt span{display:block;margin-top:4px;opacity:.92;max-width:60ch}
-.promo .pb{background:#fff;color:#d6420d;font-weight:700;border-radius:10px;padding:12px 18px;white-space:nowrap}
-@media (max-width:700px){.promo{grid-template-columns:auto 1fr;padding:16px}.promo .pb{grid-column:1/-1;text-align:center}.promo .pi{width:48px;height:48px}.promo .pi svg{width:30px;height:30px}}
 .hero{padding-block:30px 20px;display:grid;grid-template-columns:1fr minmax(0,260px);gap:24px;align-items:center}
 .hero h1{font-family:var(--font-d);font-weight:800;font-size:clamp(34px,6vw,58px);line-height:1;letter-spacing:-.035em;margin:0 0 10px;text-wrap:balance}
 .hero p{color:var(--muted);margin:0 0 20px;max-width:48ch}
@@ -169,6 +160,11 @@ dialog#vp .vgo{display:block;text-align:center;text-decoration:none;margin-botto
 @media (max-width:460px){.vtop{padding:0;width:36px;justify-content:center}.vtop span{display:none}header.top{gap:10px}}
 .vlogo{height:20px;width:auto;display:block;margin:0 auto}.vtop.lg{padding:0 12px;width:auto}.vtop.lg .vlogo{height:18px}.vbtn:has(.vlogo){padding:10px 24px}
 .vbtn.official{background:none;padding:0;border-radius:0}.vbtn.official:hover{filter:none}.vbtn.official vipps-mobilepay-button{pointer-events:none}
+.promo{display:flex;align-items:center;gap:12px;text-decoration:none;color:#fff;background:#e0501a;border-radius:10px;padding:8px 8px 8px 14px;margin-bottom:18px;transition:background .15s}
+.promo:hover{background:#c94515}
+.promo .pi{display:grid;place-items:center;flex:none}.promo .pi svg{width:22px;height:22px}
+.promo .pt{flex:1;min-width:0}.promo .pt strong{font-family:var(--font-d);font-weight:700;font-size:15px;line-height:1.25}
+.promo .pb{flex:none;background:#fff;color:#c94515;font-weight:700;font-size:13.5px;border-radius:8px;padding:7px 12px;white-space:nowrap}
 </style>
 </head>
 <body>
@@ -200,7 +196,7 @@ dialog#vp .vgo{display:block;text-align:center;text-decoration:none;margin-botto
 
   <a class="promo" href="guide/" aria-label="Åpne Guide til filament">
     <span class="pi" aria-hidden="true"><svg viewBox="0 0 40 40"><circle cx="20" cy="20" r="17" fill="none" stroke="#fff" stroke-width="3"/><circle cx="20" cy="20" r="9" fill="#fff"/><circle cx="20" cy="20" r="3.5" fill="#d6420d"/></svg></span>
-    <span class="pt"><small>Ny</small><strong>Usikker på hvilket filament du trenger?</strong><span>Se egenskaper og sammenlign materialer.</span></span>
+    <span class="pt"><strong>Usikker på hvilket filament du trenger?</strong></span>
     <span class="pb">Åpne guiden →</span>
   </a>
 
