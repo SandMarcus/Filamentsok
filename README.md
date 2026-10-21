@@ -24,6 +24,18 @@ Alternativ A, du gjør det selv: bytt ut CSV-filene i `data/` med nye (samme fil
 
 Alternativ B, jeg gjør det: send CSV-filene til Claude. Claude fyller ut malen for filene (kolonner, standardvekt og så videre), kjører byggingen og leverer ferdig `products.json` og et repo klart til å pushe.
 
+## Elefun: automatisk henting fra feed
+
+Elefun har en åpen prisfeed (Google Shopping-format): `https://www.elefun.no/dokumenter/pricefeed/Feed_Pricespy_NO.CSV`. Den har hele nettbutikken, så `tools/elefun_feed.py` plukker ut radene under «3dprint > Filament > Filament 1.75mm» og skriver `data/elefun.csv` i samme format som før. Filament med 2,85 mm (for eksempel Ultimaker) tas ikke med.
+
+`pages.yml` laster ned feeden og kjører skriptet hver natt (kl. 04:00 UTC) og ved hver push. Feiler nedlastingen, brukes `data/elefun.csv` som ligger i repoet. Du kan kjøre det for hånd også:
+
+```
+python tools/elefun_feed.py Feed_Pricespy_NO.CSV data/elefun.csv
+```
+
+Feeden oppgir bare «på lager» eller «utsolgt», ikke antall. Datoen i `snapshot` i `config/stores.json` gjelder de andre butikkene og må fortsatt oppdateres for hånd.
+
 ## Skjule og vise priser
 
 Øverst i scriptet i `web/index.html` (ca. linje 223) står:
@@ -122,4 +134,4 @@ Guiden er én side med datakort, bygget fra masterdatabladet i Excel.
 
 ### Filter og forslag i guiden
 
-Knappen «Finn riktig filament» åpner et filter med to temperatur-sliders (dyse og seng) og avkrysning for «skal ha» / «skal ikke ha». Listen oppdateres med en gang. Kriteriene er definert i `CG` i `web/guide/index.html` og leser direkte fra `guide.json`. Materialer med manglende eller varierende data skjules som standard (og kan vises med et valg). Forslag er materialer som bryter høyst to av valgene, med begrunnelse hentet fra de samme dataene. Temperaturer finnes bare for materialene som har et oppgitt område i masterarket.
+Knappen «Finn riktig filament» åpner et filter med to temperatur-sliders (dyse og seng) og avkrysning for «Ønsker» / «Unngå». Listen oppdateres med en gang. Kriteriene er definert i `CG` i `web/guide/index.html` og leser direkte fra `guide.json`. Materialer med manglende eller varierende data skjules som standard (og kan vises med et valg). Forslag er materialer som bryter høyst to av valgene, med begrunnelse hentet fra de samme dataene. Temperaturer finnes bare for materialene som har et oppgitt område i masterarket.
