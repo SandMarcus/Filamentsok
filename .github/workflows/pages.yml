@@ -6,6 +6,8 @@ on:
     branches: [main]
     paths: ["data/**", "config/**", "src/**", "web/**", "tests/**", ".github/workflows/pages.yml"]
   workflow_dispatch:
+  schedule:
+    - cron: "0 4 * * *"   # hver natt, så Elefun-prisene oppdateres av seg selv
 
 permissions:
   contents: read
@@ -24,6 +26,12 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
+      - name: Hent Elefun-feed
+        # Feiler henting eller konvertering, beholdes data/elefun.csv fra repoet.
+        continue-on-error: true
+        run: |
+          curl -fsSL --retry 3 -o "$RUNNER_TEMP/elefun.csv" "https://www.elefun.no/dokumenter/pricefeed/Feed_Pricespy_NO.CSV"
+          python tools/elefun_feed.py "$RUNNER_TEMP/elefun.csv" data/elefun.csv
       - name: Tester
         run: |
           pip install pytest
