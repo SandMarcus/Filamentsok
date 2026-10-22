@@ -419,7 +419,7 @@ dialog#vp .vgo{display:block;text-align:center;text-decoration:none;margin-botto
     (fin==='Glitter'?'<g fill="#fff" opacity=".85"><circle cx="40" cy="38" r="1.8"/><circle cx="82" cy="46" r="1.4"/><circle cx="74" cy="82" r="1.8"/><circle cx="36" cy="74" r="1.3"/><circle cx="58" cy="26" r="1.4"/></g>':'')+
     '<circle cx="60" cy="60" r="17" fill="#2b3640"/><circle cx="60" cy="60" r="8" fill="#eef1f3"/></svg>';
   }
-  $('#heroart').innerHTML=spool('Oransje','Silk');
+  window.SPOOL_SVG=spool('Oransje','Silk');if(!$('#heroart').querySelector('canvas'))$('#heroart').innerHTML=window.SPOOL_SVG;
   if(PRICES){$('#notice').textContent='Priser og lager er hentet fra butikkenes nettsider og kan ha endret seg. Sjekk alltid endelig pris hos butikken. Der vekten ikke er oppgitt, kan pris per kg mangle.'+(CONFIG.hidePricesFor.length?' Enkelte butikker vises uten pris.':'')}
   else{var nt=$('#notice');var dt=nt.closest('details');if(dt){dt.parentNode.insertBefore(nt,dt);dt.remove()}nt.classList.add('off');nt.setAttribute('role','status');nt.innerHTML='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 21V3" stroke="#c4271c" stroke-width="2.4" stroke-linecap="round" fill="none"/><path d="M6 4h12l-3 4.5 3 4.5H6z" fill="#d6251a"/></svg><div><b>Priser er skrudd av</b>Filamentsøk kan vise butikkenes priser, men de er slått av for øyeblikket. Trykk deg videre til butikken for å se gjeldende pris og lager.</div>'}
 
@@ -604,11 +604,164 @@ if(!cur)cur=matchMedia("(prefers-color-scheme:dark)").matches?"dark":"light";var
 <svg id="strand2" aria-hidden="true" focusable="false"><defs><clipPath id="stclip"><rect id="stcr" x="0" y="0" width="1" height="1"/></clipPath></defs><g clip-path="url(#stclip)"><path id="stl2" fill="none" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></g></svg>
 <svg id="strand" aria-hidden="true" focusable="false"><path id="stl" fill="none" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/><path id="stc" fill="none" stroke="none"/></svg>
 <script>
-/* Filamentet ruller seg ut fra spolen når man scroller ned, og inn igjen når man scroller opp. */
+/* Filamentet ruller seg ut fra spolen når man scroller ned, og inn igjen når man scroller opp.
+   Spolen tegnes i 3D med WebGL (egen skygger). Støttes ikke WebGL2, brukes den flate SVG-spolen. */
 (function(){
-  var svg=document.getElementById('strand'),svg2=document.getElementById('strand2'),L2=document.getElementById('stl2'),CR=document.getElementById('stcr'),L=document.getElementById('stl'),C=document.getElementById('stc'),art=document.getElementById('heroart'),wrap=document.querySelector('.wrap');
+  var FS=`#version 300 es
+precision highp float;
+uniform vec2 uRes; uniform float uRf,uAng,uL,uFov;
+uniform vec3 uEye,uTgt; uniform mat3 uM; // uM: verden -> lokal
+out vec4 oc;
+const float W=0.66,TF=0.05,HUB=0.32,WF=0.31,RS=0.0175;
+const vec3 L1=vec3(-0.45,0.78,0.55);
+float hash(float n){return fract(sin(n*91.345)*47453.5453);}
+float sdSlab(vec3 p){
+  float r=length(p.xy); vec2 d=vec2(r-1.0,abs(abs(p.z)-(W*0.5+TF*0.5))-TF*0.5);
+  float rr=0.014; float s=length(max(d+rr,0.))+min(max(d.x,d.y)+rr,0.)-rr;
+  float a=atan(p.y,p.x); float sct=mod(a+0.5235988,1.0471976)-0.5235988; // seks segmenter
+  vec2 q=r*vec2(cos(sct),sin(sct))-vec2(0.70,0.0);
+  vec2 b=abs(q)-vec2(0.17,0.15); float h=length(max(b,0.))+min(max(b.x,b.y),0.)-0.07;
+  return max(s,-h);
+}
+float sdGlass(vec3 p){return sdSlab(p);}
+float sdBody(vec3 p){float r=length(p.xy);return max(max(r-uRf,HUB-r),abs(p.z)-WF);}
+float sdHub(vec3 p){float r=length(p.xy);return max(max(r-HUB,0.2-r),abs(p.z)-(W*0.5+TF));}
+float sdStr(vec3 p,out float id){
+  vec3 a=vec3(uRf,0.,0.), dir=vec3(0.,-1.,0.); // lokal -y = ned (bare rotasjon om y)
+  float t=clamp(dot(p-a,dir),0.,uL); return length(p-a-dir*t)-0.0145;
+}
+float sdOpq(vec3 p){float id;return min(min(sdBody(p),sdHub(p)),sdStr(p,id));}
+vec3 gradG(vec3 p){vec2 e=vec2(0.0015,-0.0015);return normalize(e.xyy*sdGlass(p+e.xyy)+e.yyx*sdGlass(p+e.yyx)+e.yxy*sdGlass(p+e.yxy)+e.xxx*sdGlass(p+e.xxx));}
+vec3 gradO(vec3 p){vec2 e=vec2(0.0012,-0.0012);return normalize(e.xyy*sdOpq(p+e.xyy)+e.yyx*sdOpq(p+e.yyx)+e.yxy*sdOpq(p+e.yxy)+e.xxx*sdOpq(p+e.xxx));}
+vec3 env(vec3 d){
+  vec3 sky=mix(vec3(.50,.55,.60),vec3(.93,.96,1.0),smoothstep(-.3,.9,d.y));
+  float k1=pow(max(dot(d,normalize(L1)),0.),14.)*4.0;
+  float k2=pow(max(dot(d,normalize(vec3(.75,.25,-.55))),0.),30.)*2.2;
+  float k3=smoothstep(.15,.5,abs(d.x*0.9+d.z*0.15-0.2))*0.0;
+  return sky*0.7+vec3(1.,.98,.95)*k1+vec3(.8,.9,1.)*k2;
+}
+float softShadow(vec3 ro,vec3 rd){float res=1.,t=0.03;for(int i=0;i<22;i++){float h=sdOpq(ro+rd*t);res=min(res,10.*h/t);t+=clamp(h,.02,.15);if(res<.01||t>2.5)break;}return clamp(res,0.,1.);}
+float ao(vec3 p,vec3 n){float o=0.,s=1.;for(int i=1;i<=4;i++){float h=0.03*float(i);float d=min(sdOpq(p+n*h),sdGlass(p+n*h)+0.0);o+=(h-d)*s;s*=.6;}return clamp(1.-1.8*o,0.,1.);}
+vec3 shadeOpq(vec3 p,vec3 rd,out float rough){
+  vec3 n=gradO(p); float id=0.; float dB=sdBody(p),dH=sdHub(p),dS=sdStr(p,id);
+  vec3 alb; rough=.5;
+  vec3 org=vec3(0.92,0.145,0.004);
+  if(dB<=dH&&dB<=dS){
+    float r=length(p.xy),a=atan(p.y,p.x)+uAng; vec3 nn=n;
+    if(abs(n.z)>0.6){ // endeflate: ringer av viklet filament
+      float rr=(r-HUB)/RS; float sec=floor(a/0.6283185); float ph=rr+hash(sec)*0.6+0.12*sin(a*3.);
+      float f=fract(ph); float h=sqrt(max(1.-pow(2.*f-1.,2.),0.)); float lod=clamp(1.-fwidth(ph)*1.4,0.,1.); h=mix(0.72,h,lod); alb=org*mix(0.45,1.05,h)*(0.9+0.2*mix(0.5,hash(floor(ph)+sec*7.),lod));
+      nn=normalize(n+vec3(normalize(p.xy)*(2.*f-1.)*0.5*(1.-h*0.4),0.)*sign(0.5));
+    } else {
+      float s=(p.z+WF)/RS; float ph=s+0.35*a/6.2831853+0.06*sin(a*5.+s);
+      float f=fract(ph); float h=sqrt(max(1.-pow(2.*f-1.,2.),0.)); float lod=clamp(1.-fwidth(ph)*1.4,0.,1.); h=mix(0.72,h,lod); alb=org*mix(0.42,1.05,h)*(0.88+0.24*mix(0.5,hash(floor(ph)),lod));
+      nn=normalize(n+vec3(0.,0.,(2.*f-1.)*0.55*lod));
+    }
+    n=nn; rough=.45;
+  } else if(dH<dS){alb=vec3(.07,.075,.08);rough=.6;}
+  else {alb=org*1.05;rough=.25;}
+  float sh=softShadow(p+n*.02,normalize(L1)); float oc2=ao(p,n);
+  vec3 l=normalize(L1); float dif=max(dot(n,l),0.)*sh;
+  vec3 amb=mix(vec3(.30,.31,.33),vec3(.55,.60,.66),.5+.5*n.y)*oc2;
+  vec3 h=normalize(l-rd); float spec=pow(max(dot(n,h),0.),mix(90.,18.,rough))*(1.-rough)*sh*1.4;
+  vec3 R=reflect(rd,n); float fr=0.04+0.96*pow(1.-max(dot(n,-rd),0.),5.);
+  vec3 col=alb*(amb*0.9+dif*2.2*vec3(1.,.96,.9))+vec3(spec)+env(R)*(fr*0.6+0.10*(1.-rough))*oc2;
+  return col;
+}
+void main(){
+  vec2 uv=(gl_FragCoord.xy-0.5*uRes)/uRes.y;
+  vec3 f=normalize(uTgt-uEye),r=normalize(cross(f,vec3(0,1,0))),u=cross(r,f);
+  float fovk=uFov;
+  vec3 rdw=normalize(f+(uv.x*r+uv.y*u)*fovk*2.0), row=uEye;
+  vec3 ro=uM*row, rd=uM*rdw;
+  vec3 col=vec3(0.); float T=1.; float t=0.; float prev=sdGlass(ro); bool hit=false;
+  // begrens til kule rundt spolen + streng
+  for(int i=0;i<200;i++){
+    vec3 p=ro+rd*t; float dg=sdGlass(p),dO=sdOpq(p);
+    if(dO<0.0008){ float rg; vec3 c=shadeOpq(p,rd,rg); col+=T*c; T=0.; hit=true; break; }
+    if(sign(dg)!=sign(prev)&&i>0){
+      vec3 n=gradG(p); if(abs(n.z)>0.9) n=normalize(n+vec3(p.xy*0.07,0.)*sign(n.z)); float c0=abs(dot(n,rd)); float F=0.04+0.96*pow(1.-c0,5.);
+      vec3 rn=n*sign(-dot(n,rd)); // vend mot øyet
+      col+=T*F*env(reflect(rd,rn))*0.7; T*=(1.-F);
+    }
+    prev=dg;
+    float ad=abs(dg);
+    if(dg<0.){ float st=max(ad,0.002); col+=T*vec3(.80,.90,.97)*0.02*st*6.; T*=exp(-0.25*st); t+=st; }
+    else t+=max(min(ad,dO),0.0012);
+    if(t>40.) break;
+  }
+  float a=1.-T; vec3 c=col/max(a,0.004);
+  c=c/(1.+0.09*c); c=pow(max(c,0.),vec3(1./2.2));
+  oc=vec4(c*a,a);
+}`;
+  var svg=document.getElementById('strand'),svg2=document.getElementById('strand2'),L=document.getElementById('stl'),L2=document.getElementById('stl2'),C=document.getElementById('stc'),CR=document.getElementById('stcr'),art=document.getElementById('heroart'),wrap=document.querySelector('.wrap');
   if(!svg||!art||!wrap||(window.matchMedia&&matchMedia('(prefers-reduced-motion:reduce)').matches))return;
-  var NS='http://www.w3.org/2000/svg',R0=46,RMIN=22,TAIL=70,raf=0,els=null,tip=null,tip2=null;
+  var NS='http://www.w3.org/2000/svg',raf=0,mode='',gl=null,cv=null,prog=null,U={},tip=null,tip2=null;
+  var FOV=0.0625,YAW=34*Math.PI/180,EYE=[0,1.0,20],R0=0.84,RMIN=0.40,FILL=2600;
+
+  /* ---------- WebGL ---------- */
+  function initGL(){
+    try{
+      cv=document.createElement('canvas');cv.style.cssText='width:100%;aspect-ratio:1;display:block';
+      gl=cv.getContext('webgl2',{alpha:true,premultipliedAlpha:true,antialias:false});if(!gl)return false;
+      function sh(t,s){var o=gl.createShader(t);gl.shaderSource(o,s);gl.compileShader(o);if(!gl.getShaderParameter(o,gl.COMPILE_STATUS))throw new Error(gl.getShaderInfoLog(o));return o}
+      prog=gl.createProgram();gl.attachShader(prog,sh(gl.VERTEX_SHADER,'#version 300 es\nin vec2 p;void main(){gl_Position=vec4(p,0,1);}'));gl.attachShader(prog,sh(gl.FRAGMENT_SHADER,FS));gl.linkProgram(prog);
+      if(!gl.getProgramParameter(prog,gl.LINK_STATUS))throw new Error('link');
+      gl.useProgram(prog);var b=gl.createBuffer();gl.bindBuffer(gl.ARRAY_BUFFER,b);gl.bufferData(gl.ARRAY_BUFFER,new Float32Array([-1,-1,3,-1,-1,3]),gl.STATIC_DRAW);
+      var loc=gl.getAttribLocation(prog,'p');gl.enableVertexAttribArray(loc);gl.vertexAttribPointer(loc,2,gl.FLOAT,false,0,0);
+      ['uRes','uRf','uAng','uL','uFov','uEye','uTgt','uM'].forEach(function(n){U[n]=gl.getUniformLocation(prog,n)});
+      cv.addEventListener('webglcontextlost',function(e){e.preventDefault();useSvg()});
+      art.innerHTML='';art.appendChild(cv);return true}
+    catch(e){if(window.console)console.warn('WebGL-spole av:',e);gl=null;return false}
+  }
+  function project(P){ // verdenspunkt -> pikselkoordinat i kvadratisk lerret (0..1)
+    var f=[-EYE[0],-EYE[1],-EYE[2]],n=Math.hypot(f[0],f[1],f[2]);f=f.map(function(v){return v/n});
+    var r=[f[2],0,-f[0]];n=Math.hypot(r[0],r[1],r[2]);r=r.map(function(v){return v/n});
+    var u=[f[1]*r[2]-f[2]*r[1],f[2]*r[0]-f[0]*r[2],f[0]*r[1]-f[1]*r[0]];
+    var v=[P[0]-EYE[0],P[1]-EYE[1],P[2]-EYE[2]],z=v[0]*f[0]+v[1]*f[1]+v[2]*f[2];
+    var x=(v[0]*r[0]+v[1]*r[1]+v[2]*r[2])/z/(2*FOV),y=(v[0]*u[0]+v[1]*u[1]+v[2]*u[2])/z/(2*FOV);
+    return [x+0.5,0.5-y]}
+  function drawGL(rf,ang,Lw,vis){
+    var dpr=Math.min(window.devicePixelRatio||1,1.5),w=Math.max(64,Math.round(cv.clientWidth*dpr));
+    if(cv.width!==w){cv.width=w;cv.height=w}
+    gl.viewport(0,0,w,w);gl.uniform2f(U.uRes,w,w);gl.uniform1f(U.uRf,rf);gl.uniform1f(U.uAng,ang);gl.uniform1f(U.uL,Lw);gl.uniform1f(U.uFov,FOV);
+    gl.uniform3f(U.uEye,EYE[0],EYE[1],EYE[2]);gl.uniform3f(U.uTgt,0,0,0);
+    var c=Math.cos(YAW),s=Math.sin(YAW);gl.uniformMatrix3fv(U.uM,false,[c,0,-s,0,1,0,s,0,c]);
+    gl.clearColor(0,0,0,0);gl.clear(gl.COLOR_BUFFER_BIT);gl.drawArrays(gl.TRIANGLES,0,3)}
+
+  function ensureTips(){if(tip)return;tip=document.createElementNS(NS,'circle');tip.setAttribute('r','2.6');svg.appendChild(tip);tip2=document.createElementNS(NS,'circle');tip2.setAttribute('r','2.6');svg2.querySelector('g').appendChild(tip2)}
+  function frameGL(){raf=0;
+    if(!cv||!cv.isConnected||!cv.clientWidth){if(getComputedStyle(art).display!=='none'&&mode==='gl'&&window.SPOOL_SVG)useSvg();return}
+    if(getComputedStyle(art).display==='none'){L.setAttribute('d','');L2.setAttribute('d','');if(tip){tip.style.opacity=0;tip2.style.opacity=0}return}
+    ensureTips();
+    var de=document.documentElement,vw=de.clientWidth,docH=Math.max(de.scrollHeight,document.body.scrollHeight),vh=window.innerHeight,y=window.pageYOffset||de.scrollTop;
+    [svg,svg2].forEach(function(e){e.setAttribute('width',vw);e.setAttribute('height',docH);e.style.width=vw+'px';e.style.height=docH+'px'});
+    var r=cv.getBoundingClientRect(),SIDE=r.width,ppu=SIDE/(2*FOV*20),top=r.top+y,left=r.left;
+    var P0=[R0*Math.cos(YAW),0,R0*Math.sin(YAW)];
+    /* utgangspunktet på filamentet endrer seg med radius: bruk dagens rf under */
+    var wr=wrap.getBoundingClientRect(),xg=Math.min(vw-8,wr.right+Math.min(20,(vw-wr.right)/2));
+    var f=Math.min(1,y/140),tipY=Math.min(docH-24,y+vh*0.85);
+    var rf=R0,len=0,sbx=0,sby=top+SIDE,inC=SIDE/2,g,o;
+    for(var i=0;i<3;i++){
+      var Px=[rf*Math.cos(YAW),0,rf*Math.sin(YAW)],a=project(Px),b=project([Px[0],-1,Px[2]]);
+      var dy=(b[1]-a[1])*SIDE,t=(SIDE-a[1]*SIDE)/dy;   /* t = verdens-lengde til lerretets bunn */
+      inC=SIDE-a[1]*SIDE;sbx=left+(a[0]+(b[0]-a[0])*t)*SIDE;
+      var yS=sby+6,yE=yS+240,d='M'+sbx+' '+sby+' L'+sbx+' '+yS+' C'+sbx+' '+(yS+110)+' '+xg+' '+(yS+60)+' '+xg+' '+yE;
+      C.setAttribute('d',d);var cl=C.getTotalLength(),tot=cl+Math.max(0,docH-24-yE),svgLen=Math.min(cl+Math.max(0,tipY-yE),tot);
+      g={d:d,yE:yE,tot:tot};o=svgLen;
+      var T0=inC*0.95; len=T0+(inC+o-T0)*f; len=Math.min(len,inC+tot);
+      rf=R0-(R0-RMIN)*Math.min(1,Math.max(0,len-T0)/FILL)}
+    var T1=inC*0.95,ul=Math.max(0,len-T1),ang=ul<FILL?(FILL/((R0-RMIN)*ppu))*Math.log(R0/rf):(FILL/((R0-RMIN)*ppu))*Math.log(R0/RMIN)+(ul-FILL)/(RMIN*ppu);
+    var full=g.d+' L'+xg+' '+Math.max(g.yE,docH-24);
+    var col='#ff6a1a';L.setAttribute('d',full);L2.setAttribute('d',full);L.style.stroke=col;L2.style.stroke=col;
+    CR.setAttribute('width',vw);CR.setAttribute('height',Math.max(1,sby+4));
+    var tl=L.getTotalLength(),vis=Math.max(0,len-inC);
+    [L,L2].forEach(function(e){e.style.strokeDasharray=tl+' '+(tl+10);e.style.strokeDashoffset=(tl-vis);e.style.strokeWidth=3.4;e.style.opacity=vis>0.5?1:0});
+    if(vis>0.5){var pt=L.getPointAtLength(Math.min(vis,tl));[tip,tip2].forEach(function(e){e.setAttribute('cx',pt.x);e.setAttribute('cy',pt.y);e.setAttribute('fill',col);e.style.opacity=1})}else{tip.style.opacity=0;tip2.style.opacity=0}
+    var inView=r.bottom>-20&&r.top<vh+20;
+    if(inView)drawGL(rf,ang,Math.min(len,inC+30)/ppu,vis)}
+
+  var SR0=46,SRMIN=22,TAIL=70,els=null;
   function find(){var sv=art.querySelector('svg');if(!sv)return null;var c=sv.querySelectorAll('circle'),p=sv.querySelectorAll('path');
     var rings=[c[2],c[3],c[4]],dash=['34 9 12 9','22 8 30 8','14 6 18 6 9 6'];
     rings.forEach(function(r,i){if(!r)return;r.style.stroke='rgba(0,0,0,.30)';r.setAttribute('stroke-dasharray',dash[i])});
@@ -629,10 +782,10 @@ if(!cur)cur=matchMedia("(prefers-color-scheme:dark)").matches?"dark":"light";var
       var d='M'+x0+' '+y0+' L'+x0+' '+yS+' C'+x0+' '+(yS+110)+' '+xg+' '+(yS+60)+' '+xg+' '+yE;
       return {d:d,yE:yE,x0:x0,y0:y0}}
     function lenFor(g,tipY){C.setAttribute('d',g.d);var cl=C.getTotalLength();return {cl:cl,len:Math.min(cl+Math.max(0,tipY-g.yE),cl+Math.max(0,docH-24-g.yE)),tot:cl+Math.max(0,docH-24-g.yE)}}
-    var f=Math.min(1,y/140),rad=R0,g,o,len;
+    var f=Math.min(1,y/140),rad=SR0,g,o,len;
     for(var i=0;i<3;i++){g=geo(rad);o=lenFor(g,tipY);
       len=TAIL+(o.len-TAIL)*f;                                  /* en kort hale vises hele tiden */
-      rad=R0-(R0-RMIN)*Math.min(1,Math.max(0,len-TAIL)/2600)}   /* spolen tømmes raskere */
+      rad=SR0-(SR0-SRMIN)*Math.min(1,Math.max(0,len-TAIL)/2600)}   /* spolen tømmes raskere */
     g=geo(rad);o=lenFor(g,tipY);len=Math.min(o.tot,TAIL+(o.len-TAIL)*f);
     var full=g.d+' L'+g.d.split(' ').slice(-2)[0]+' '+Math.max(g.yE,docH-24);
     L.setAttribute('d',full);L2.setAttribute('d',full);var col=els.disc.getAttribute('fill')||'#ee8239';L.style.stroke=col;L2.style.stroke=col;tip.setAttribute('fill',col);tip2.setAttribute('fill',col);CR.setAttribute('width',vw);CR.setAttribute('height',Math.max(1,bottom+4));
@@ -646,7 +799,9 @@ if(!cur)cur=matchMedia("(prefers-color-scheme:dark)").matches?"dark":"light";var
       t.setAttribute('x1',60+r1*Math.cos(a));t.setAttribute('y1',60+r1*Math.sin(a));t.setAttribute('x2',60+r2*Math.cos(a));t.setAttribute('y2',60+r2*Math.sin(a))});
     var op=Math.max(0,Math.min(1,(rad-26)/14));for(var j=0;j<els.hi.length;j++)els.hi[j].style.opacity=op;
   }
-  function q(){if(!raf)raf=requestAnimationFrame(frame)}
+  function useSvg(){mode='svg';els=null;art.innerHTML=window.SPOOL_SVG||'';q()}
+  mode=initGL()?'gl':'svg';
+  var frameSvg=frame;function q(){if(!raf)raf=requestAnimationFrame(mode==='gl'?frameGL:frameSvg)}
   addEventListener('scroll',q,{passive:true});addEventListener('resize',q);addEventListener('load',q);
   if(window.ResizeObserver)new ResizeObserver(q).observe(document.body);
   q();

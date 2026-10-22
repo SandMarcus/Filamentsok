@@ -1,0 +1,656 @@
+<!doctype html>
+<html lang="nb">
+<head>
+<meta charset="utf-8">
+<link rel="icon" href="favicon.ico" sizes="48x48">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="manifest" href="site.webmanifest">
+<meta name="theme-color" content="#eef1f3" media="(prefers-color-scheme:light)">
+<meta name="theme-color" content="#0e161d" media="(prefers-color-scheme:dark)">
+<meta name="apple-mobile-web-app-title" content="Filamentsøk">
+<title>Filamentsøk</title>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="description" content="Sammenlign pris på 3D-printer-filament i norske nettbutikker. Filtrer på farge, type, merke og materiale.">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Instrument+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<script>(function(){try{var t=localStorage.getItem("theme");if(t==="dark"||t==="light")document.documentElement.setAttribute("data-theme",t)}catch(e){}})()</script>
+<style>
+/* Layout: søketjeneste med filtersøyle til venstre og produktrutenett. Hvert kort lenker ut til produktsiden i en norsk nettbutikk. */
+:root{
+  --bg:#eef1f3; --surface:#ffffff; --fg:#13202b; --muted:#5b6b78; --line:#d5dce1;
+  --accent:#ff5a1f; --accent-fg:#ffffff; --ok:#1e8a52; --bad:#b3261e; --chip:#e1e7eb;
+  --font-d:'Bricolage Grotesque','Arial Narrow',system-ui,sans-serif;
+  --font-b:'Instrument Sans',system-ui,-apple-system,sans-serif;
+  --font-m:'IBM Plex Mono',ui-monospace,Menlo,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0e161d;--surface:#16212b;--fg:#e8eef2;--muted:#93a4b1;--line:#27353f;--accent:#ff6a35;--chip:#22303b;--ok:#46c07f;--bad:#ff8a80;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0e161d;--surface:#16212b;--fg:#e8eef2;--muted:#93a4b1;--line:#27353f;--accent:#ff6a35;--chip:#22303b;--ok:#46c07f;--bad:#ff8a80;color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font-family:var(--font-b);font-size:15px;line-height:1.5;padding-block:0;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+a{color:inherit}
+button,input,select{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.wrap{max-width:1200px;margin:0 auto}
+header.top{display:flex;align-items:center;gap:16px;padding-block:14px;flex-wrap:wrap}
+.logo{display:flex;align-items:center;gap:10px;font-family:var(--font-d);font-weight:800;font-size:22px;letter-spacing:-.02em;text-decoration:none}
+nav{display:flex;gap:4px;flex-wrap:wrap;margin-left:auto}
+nav a{padding:6px 10px;border-radius:6px;text-decoration:none;color:var(--muted);font-weight:500}
+nav a:hover,nav a.on{background:var(--chip);color:var(--fg)}
+
+.hero{padding-block:30px 20px;display:grid;grid-template-columns:1fr minmax(0,260px);gap:24px;align-items:center}
+.hero h1{font-family:var(--font-d);font-weight:800;font-size:clamp(34px,6vw,58px);line-height:1;letter-spacing:-.035em;margin:0 0 10px;text-wrap:balance}
+.hero p{color:var(--muted);margin:0 0 20px;max-width:48ch}
+.search{display:flex;gap:8px;max-width:560px}
+.search input{flex:1;min-width:0;padding:13px 14px;border:1px solid var(--line);border-radius:8px;background:var(--surface)}
+.btn{background:var(--accent);color:var(--accent-fg);border:0;border-radius:8px;padding:11px 16px;font-weight:600;cursor:pointer}
+.btn.ghost{background:var(--chip);color:var(--fg)}
+.quick{display:none;gap:8px;flex-wrap:wrap;margin-top:14px}
+@media (max-width:800px){.quick{display:flex}}
+.chip{border:1px solid var(--line);background:var(--surface);border-radius:99px;padding:6px 12px;cursor:pointer;font-size:13px;font-weight:500}
+.chip.on{background:var(--fg);color:var(--bg);border-color:var(--fg)}
+.heroart svg{width:100%;height:auto;display:block}
+.notice{font-size:12.5px;color:var(--muted);border:1px dashed var(--line);border-radius:8px;padding:8px 12px;margin-bottom:20px}
+h2{font-family:var(--font-d);font-weight:800;letter-spacing:-.02em;font-size:24px;margin:0 0 14px}
+.cats{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;margin-bottom:36px}
+.cat{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:14px;text-align:left;cursor:pointer;display:grid;gap:2px}
+.cat:hover{border-color:var(--accent)}
+.cat.more{align-content:center;border-style:dashed;color:var(--accent)}.cat.more strong{font-size:16px}.cat.zero{opacity:.45;cursor:default}.cat.zero:hover{border-color:var(--line)}.cat.zero code{color:var(--muted)}
+.cat strong{font-family:var(--font-d);font-size:20px}
+.cat span{color:var(--muted);font-size:13px}
+.cat code{font-family:var(--font-m);font-size:12px;color:var(--accent)}
+.shop{display:grid;grid-template-columns:240px minmax(0,1fr);gap:24px;align-items:start}
+aside.filters{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:14px;display:grid;gap:14px}
+aside h3{margin:0 0 6px;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:600}
+.fl label{display:flex;justify-content:space-between;gap:8px;padding:3px 0;cursor:pointer}
+.fl label span.n{font-family:var(--font-m);font-size:12px;color:var(--muted)}
+.fl input[type=checkbox]{accent-color:var(--accent)}
+.fl label.zero{opacity:.4;cursor:default}.fl label.zero input{cursor:default}
+.range{width:100%;accent-color:var(--accent)}
+.swatches{display:flex;flex-wrap:wrap;gap:8px}
+.sw{width:30px;height:30px;border-radius:50%;border:2px solid var(--surface);box-shadow:0 0 0 1px var(--line);cursor:pointer;padding:0;position:relative}
+.sw.on{box-shadow:0 0 0 2px var(--accent)}
+.sw.multi{background:conic-gradient(#d1322b,#f2c230,#2f9e5b,#2f6fd0,#8a4fc7,#d1322b)}
+.sw.unk{background:var(--chip);font-size:13px;color:var(--muted)}
+.sw[disabled]{opacity:.3;cursor:default}
+.toolbar{display:flex;justify-content:space-between;gap:12px;align-items:center;margin-bottom:14px;flex-wrap:wrap}
+.toolbar select{padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:var(--surface)}
+.more-btn{margin-top:4px;padding:2px 0;border:0;background:none;color:var(--accent);font-weight:600;cursor:pointer;font-size:13px}
+.offers{display:grid;gap:8px;margin-top:auto}
+.of{display:grid;grid-template-columns:1fr auto;gap:2px 10px;align-items:center;padding-top:8px;border-top:1px solid var(--line)}
+.of .ofl{display:flex;flex-direction:column;gap:0;min-width:0}.of .ofl b{font-size:13px}.of .ofl em{font-style:normal;font-size:11px;font-weight:600;color:var(--ok)}
+.of .ofp{display:flex;flex-direction:column;align-items:flex-end;text-align:right}
+.of .ofp .price{font-family:var(--font-d);font-weight:800;font-size:18px}.of .ofp .price.na{font-size:13px;font-weight:600;color:var(--muted);font-family:var(--font-b)}
+.of .ofp .price s{font-size:11px;font-weight:400;color:var(--muted)}
+.of .ofp .perkg{font-family:var(--font-m);font-size:11px;color:var(--muted)}
+.of .go{grid-column:1/-1;text-align:center}
+.of.un .ofp{opacity:.6}
+.of.best .ofp .price{color:var(--ok)}
+.nstores{font-size:12px;font-weight:600;color:var(--accent)}
+.fbtn{display:none}
+.active{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px}.active:empty{display:none}
+.active button{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);background:var(--surface);border-radius:99px;padding:5px 8px 5px 12px;cursor:pointer;font-size:13px;font-weight:500}
+.active button:hover{border-color:var(--accent)}.active button i{font-style:normal;font-size:15px;line-height:1;color:var(--muted)}
+.active button.clr{background:none;border-style:dashed;color:var(--accent);padding:5px 12px}
+.card .pic .ph{position:absolute;inset:0;width:100%;height:100%;max-height:none;object-fit:contain;background:#fff;padding:8px}
+.card .pic .tag{z-index:1}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:14px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:10px;overflow:hidden;display:flex;flex-direction:column;min-width:0}
+.card .pic{background:var(--chip);padding:14px;position:relative}
+.card .pic svg{width:100%;height:auto;max-height:140px;display:block}
+.tag.sale{background:var(--accent);color:var(--accent-fg)}
+.tag.r{left:auto;right:10px}
+.price s{display:block;font-family:var(--font-b);font-weight:400;font-size:12px;color:var(--muted)}
+.tag{position:absolute;top:10px;left:10px;font-size:11px;font-weight:600;background:var(--fg);color:var(--bg);padding:2px 8px;border-radius:99px}
+.card .body{padding:12px;display:flex;flex-direction:column;gap:6px;flex:1}
+.brand{font-size:12px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.06em}
+.card h4{margin:0;font-size:15px;line-height:1.3;font-weight:600;text-wrap:balance;overflow-wrap:anywhere}
+.spec{font-family:var(--font-m);font-size:12px;color:var(--muted);display:flex;gap:6px 10px;flex-wrap:wrap}
+.spec b{color:var(--fg);font-weight:500}
+.store{font-size:12px;color:var(--muted)}
+.buy{display:flex;justify-content:space-between;align-items:end;margin-top:auto;padding-top:8px;gap:8px}
+.price{font-family:var(--font-d);font-weight:800;font-size:22px;line-height:1;font-variant-numeric:tabular-nums}
+.price small{font-size:12px;font-weight:600}
+.price.na{font-family:var(--font-b);font-size:13px;font-weight:600;color:var(--muted)}
+.perkg{font-size:11px;color:var(--muted);font-family:var(--font-m);font-weight:400}
+.go{background:var(--fg);color:var(--bg);border-radius:8px;padding:8px 12px;font-weight:600;font-size:13px;text-decoration:none;white-space:nowrap}
+.go:hover{background:var(--accent);color:var(--accent-fg)}
+.go.off,.go.off:hover{background:var(--chip);color:var(--muted);cursor:default}
+.stock{font-size:12px;font-weight:600;color:var(--muted)}
+.stock.in{color:var(--ok)}
+.stock.out{color:var(--bad)}
+.card.out .pic{opacity:.55}
+.stores{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-block:40px 0}
+.stores a{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:14px;text-decoration:none;display:grid;gap:2px}
+.stores a:hover{border-color:var(--accent)}
+.stores strong{font-family:var(--font-d);font-size:18px}
+.stores span{font-size:13px;color:var(--muted)}
+.why{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;margin-block:40px}
+.why div{border-top:2px solid var(--fg);padding-top:10px}
+.why h4{margin:0 0 4px;font-family:var(--font-d);font-size:18px}
+.why p{margin:0;color:var(--muted)}
+footer{border-top:1px solid var(--line);padding-block:24px 40px;color:var(--muted);font-size:13px;display:flex;gap:16px;justify-content:space-between;flex-wrap:wrap}
+.empty{padding:40px;text-align:center;color:var(--muted);border:1px dashed var(--line);border-radius:10px}
+@media (max-width:800px){
+  .hero{grid-template-columns:1fr}.heroart{display:none}
+  .shop{grid-template-columns:1fr}
+  .fbtn{display:inline-block}
+  aside.filters{display:none}aside.filters.show{display:grid}
+  nav{margin-left:0;width:100%}
+  .grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media (max-width:400px){.grid{grid-template-columns:minmax(0,1fr)}}
+.notice.off{display:flex;gap:10px;align-items:flex-start;background:#fff3b0;border:1px solid #e0b800;color:#3a2f00;font-size:14px;line-height:1.45}.notice.off svg{flex:none;width:22px;height:22px;margin-top:1px}.notice.off b{display:block}
+.tgl{display:inline-grid;place-items:center;width:36px;height:36px;border-radius:8px;border:1px solid var(--line);background:var(--surface);color:var(--fg);cursor:pointer;padding:0}
+.tgl:hover{background:var(--chip)}.tgl svg{width:18px;height:18px}.tgl .sun{display:none}
+:root[data-theme="dark"] .tgl .sun{display:block}:root[data-theme="dark"] .tgl .moon{display:none}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .tgl .sun{display:block}:root:not([data-theme="light"]) .tgl .moon{display:none}}
+.wrap{position:relative;z-index:1}
+#strand2{position:absolute;left:0;top:0;pointer-events:none;z-index:2;overflow:visible}
+#strand{position:absolute;left:0;top:0;pointer-events:none;z-index:0;overflow:visible}
+@media (max-width:800px){#strand,#strand2{display:none}}
+@media (prefers-reduced-motion:reduce){#strand,#strand2{display:none}}
+.support{display:flex;gap:16px;align-items:center;justify-content:space-between;flex-wrap:wrap;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:18px 20px;margin-top:28px}
+.support[hidden]{display:none}
+.support h4{margin:0 0 2px;font-family:var(--font-d);font-size:19px}.support p{margin:0;color:var(--muted);max-width:60ch;font-size:14px}
+.vbtn{background:#ff5b24;color:#fff;border:0;border-radius:10px;padding:12px 20px;font-weight:700;cursor:pointer;font-size:15px}.vbtn:hover{filter:brightness(.92)}
+dialog#vp{max-width:min(380px,calc(100vw - 32px));border:1px solid var(--line);border-radius:14px;background:var(--surface);color:var(--fg);padding:20px}
+dialog#vp [hidden]{display:none!important}
+dialog#vp::backdrop{background:rgba(0,0,0,.55)}
+dialog#vp h3{margin:0 0 6px;font-family:var(--font-d);font-size:22px}dialog#vp p{margin:0 0 12px;color:var(--muted);font-size:14px}
+.vnum{display:flex;gap:8px;align-items:center;margin-bottom:12px}.vnum output{flex:1;font-family:var(--font-m);font-size:20px;font-weight:600;background:var(--chip);border-radius:8px;padding:8px 12px}
+.vnum button,.vcl{background:var(--fg);color:var(--bg);border:0;border-radius:8px;padding:9px 14px;font-weight:600;cursor:pointer}
+.vcl{background:var(--chip);color:var(--fg);margin-top:8px;width:100%}
+dialog#vp img{display:block;width:min(260px,100%);height:auto;margin:0 auto 12px;border-radius:10px;background:#fff}
+.vhint{font-size:13px;color:var(--muted);text-align:center;margin:-4px 0 12px}
+dialog#vp .vgo{display:block;text-align:center;text-decoration:none;margin-bottom:8px}
+.pinfo{margin:-8px 0 18px;font-size:12.5px;color:var(--muted)}.pinfo summary{cursor:pointer;display:inline-block;padding:2px 0;text-decoration:underline;text-decoration-style:dotted}.pinfo .notice{margin:6px 0 0}
+@media (max-width:700px){header.top .tgl{order:1;margin-left:auto}header.top nav{order:2;width:100%;margin-left:0}}
+.vtop{display:inline-flex;align-items:center;gap:6px;height:36px;border-radius:8px;border:1px solid var(--line);background:var(--surface);color:var(--fg);padding:0 12px;font-weight:600;font-size:14px;cursor:pointer}.vtop[hidden]{display:none}.vtop svg{width:16px;height:16px;color:#ff5b24}.vtop:hover{background:var(--chip)}
+@media (max-width:700px){header.top .vtop{order:1}header.top .tgl{margin-left:0}header.top .vtop{margin-left:auto}}
+@media (max-width:460px){.vtop{padding:0;width:36px;justify-content:center}.vtop span{display:none}header.top{gap:10px}}
+.vlogo{height:20px;width:auto;display:block;margin:0 auto}.vtop.lg{padding:0 12px;width:auto}.vtop.lg .vlogo{height:18px}.vbtn:has(.vlogo){padding:10px 24px}
+.vbtn.official{background:none;padding:0;border-radius:0}.vbtn.official:hover{filter:none}.vbtn.official vipps-mobilepay-button{pointer-events:none}
+.promo{display:flex;align-items:center;gap:12px;text-decoration:none;color:#fff;background:#e0501a;border-radius:10px;padding:8px 8px 8px 14px;margin-bottom:18px;transition:background .15s}
+.promo:hover{background:#c94515}
+.promo .pi{display:grid;place-items:center;flex:none}.promo .pi svg{width:22px;height:22px}
+.promo .pt{flex:1;min-width:0}.promo .pt strong{font-family:var(--font-d);font-weight:700;font-size:15px;line-height:1.25}
+.promo .pb{flex:none;background:#fff;color:#c94515;font-weight:700;font-size:13.5px;border-radius:8px;padding:7px 12px;white-space:nowrap}
+@media (min-width:701px){header.top nav{flex:1 1 0;min-width:0;justify-content:flex-end}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <a class="logo" href="#" aria-label="Filamentsøk forside">
+      <svg width="30" height="30" viewBox="0 0 40 40" aria-hidden="true"><circle cx="20" cy="20" r="18" fill="none" stroke="currentColor" stroke-width="3"/><circle cx="20" cy="20" r="11" fill="var(--accent)"/><circle cx="20" cy="20" r="4" fill="var(--bg)"/></svg>
+      Filamentsøk.no
+    </a>
+    <nav aria-label="Hovedmeny">
+      <a class="on" href="#">Hjem</a><a href="#butikk">Søk</a><a href="#kategorier">Kategorier</a><a href="#butikker">Butikker</a><a href="#om">Om oss</a><a href="guide/">Guide til filament</a><a href="partner.html">Partner</a>
+    </nav>
+    <button class="vtop" id="vtop" type="button" hidden aria-label="Støtt Filamentsøk med Vipps"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7.5-4.6-9.5-9.2C1.2 8.6 3 5.5 6.2 5.5c2 0 3.2 1.1 3.8 2.2h4c.6-1.1 1.8-2.2 3.8-2.2 3.2 0 5 3.1 3.7 6.3C19.5 16.4 12 21 12 21z" fill="currentColor" transform="translate(0 -1) scale(1)"/></svg><span>Støtt</span></button>
+    <button class="tgl" id="tgl" type="button" aria-label="Bytt mellom lyst og mørkt tema" title="Bytt tema"><svg class="moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg><svg class="sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg></button>
+  </header>
+
+  <section class="hero">
+    <div>
+      <h1>Finn riktig filament i norske butikker</h1>
+      <p>Søk og filtrer på farge, type og materiale. Hvert treff lenker rett til produktet i nettbutikken.</p>
+      <form class="search" id="searchForm" role="search">
+        <input id="q" type="search" placeholder="Søk etter PLA, silk, svart, Bambu…" aria-label="Søk">
+        <button class="btn" type="submit">Søk</button>
+      </form>
+      <div class="quick" id="quick"></div>
+    </div>
+    <div class="heroart" aria-hidden="true" id="heroart"></div>
+  </section>
+
+  <a class="promo" href="guide/" aria-label="Åpne Guide til filament">
+    <span class="pi" aria-hidden="true"><svg viewBox="0 0 40 40"><circle cx="20" cy="20" r="17" fill="none" stroke="#fff" stroke-width="3"/><circle cx="20" cy="20" r="9" fill="#fff"/><circle cx="20" cy="20" r="3.5" fill="#d6420d"/></svg></span>
+    <span class="pt"><strong>Usikker på hvilket filament du trenger?</strong></span>
+    <span class="pb">Åpne guiden →</span>
+  </a>
+
+  <details class="pinfo"><summary>Om priser og lager</summary><p class="notice" id="notice"></p></details>
+
+  <section id="kategorier">
+    <h2>Materiale og tilsetning</h2>
+    <div class="cats" id="cats"></div>
+  </section>
+
+  <section id="butikk">
+    <div class="toolbar">
+      <h2 style="margin:0" id="countH">Alle filamenter</h2>
+      <div style="display:flex;gap:8px;align-items:center">
+        <button class="chip fbtn" id="fbtn" aria-expanded="false">Filter</button>
+        <label for="sort" class="store">Sorter</label>
+        <select id="sort">
+          <option value="p">Lavest pris</option>
+          <option value="pk">Lavest pris per kg</option>
+          <option value="ph">Høyest pris</option>
+          <option value="s">Butikk</option>
+        </select>
+      </div>
+    </div>
+    <div class="active" id="active" aria-label="Valgte filter"></div>
+    <div class="shop">
+      <aside class="filters" id="filters" aria-label="Filter"></aside>
+      <div><div class="grid" id="grid"></div></div>
+    </div>
+  </section>
+
+  <section class="stores" id="butikker"></section>
+
+  <section class="why" id="om">
+    <div><h4>Bare norske butikker</h4><p>Alle treff kommer fra nettbutikker som selger til Norge i kroner, med norsk nettside.</p></div>
+    <div><h4>Farge og type</h4><p>Velg farge og finish, for eksempel silk, matt, glitter, marmor eller selvlysende.</p></div>
+    <div><h4>Rett til butikken</h4><p>Kjøpet skjer hos butikken. Filamentsøk selger ingenting selv.</p></div>
+  </section>
+
+  <section class="support" id="stott" hidden>
+    <div><h4>Liker du Filamentsøk?</h4><p>Siden er gratis å bruke og drives på fritiden. Vil du støtte driften, kan du vippse et valgfritt beløp. Det er helt frivillig.</p></div>
+    <button class="vbtn" type="button" id="vopen">Støtt med Vipps</button>
+  </section>
+  <dialog id="vp" aria-labelledby="vpt">
+    <h3 id="vpt">Støtt Filamentsøk</h3>
+    <p>Takk for at du vil bidra! Støtten er frivillig og gir ingen motytelse. Skriv gjerne «Filamentsøk» i meldingen.</p>
+    <a class="vbtn vgo" id="vgo" target="_blank" rel="noopener" hidden>Åpne i Vipps</a>
+    <img id="vqr" alt="QR-kode for Vipps" hidden>
+    <p class="vhint" id="vhint" hidden>Skann koden med Vipps-appen på mobilen.</p>
+    <div class="vnum" id="vnumw" hidden><output id="vnum"></output><button type="button" id="vcp">Kopier</button></div>
+    <button class="vcl" type="button" id="vx">Lukk</button>
+  </dialog>
+
+  <footer>
+    <span>© 2026 Filamentsøk.no</span>
+    <span>Hjem · Søk · Kategorier · Butikker · Om oss · <a href="guide/">Guide</a> · <a href="partner.html">Partner</a> · <a href="mailto:marcussandersen@gmail.com">Kontakt</a><span id="vfoot" hidden> · <a href="#stott">Støtt siden</a></span></span>
+  </footer>
+</div>
+
+<script>
+(function(){
+  // ===== INNSTILLINGER: skru priser av og på =====
+  // showPrices: false skjuler alle priser på hele siden (vises som «Se pris i butikken»).
+  // hidePricesFor: butikk-id-er som ikke skal vise pris, for eksempel ['kjell','poly'].
+  // Butikk-id-ene finner du i config/stores.json (feltet «id»).
+  var CONFIG={showPrices:true,hidePricesFor:[]};
+  // SUPPORT: «Støtt siden»-boksen vises bare når minst ett felt er fylt ut.
+  //   vippsNumber: telefonnummer eller Vipps-nummer, for eksempel '123 45 678'
+  //   vippsLink:   lenke fra Vipps (for eksempel den du får ved å dele din Vipps-QR), vises som knappen «Åpne i Vipps»
+  //   logo:        filnavn på den offisielle Vipps-logoen, for eksempel 'vipps-logo.svg'. Vises i knappene i stedet for hjertet og teksten.
+  //   officialButton: true bruker Vipps' egen knapp («Bidra med Vipps») i boksen nederst, lastet fra Vipps. Settes til false for en vanlig knapp.
+  //   qrImage:     filnavn på et bilde av Vipps-QR-koden, for eksempel 'vipps-qr.png' (legg filen ved siden av index.html)
+  var SUPPORT={vippsNumber:'',vippsLink:'https://qr.vipps.no/28/2/01/031/4798439828?v=1',qrImage:'vipps-qr.jpg',logo:'',officialButton:true};
+  (function(){
+    var sec=document.getElementById('stott');if(!sec||!(SUPPORT.vippsNumber||SUPPORT.vippsLink||SUPPORT.qrImage))return;
+    sec.hidden=false;document.getElementById('vfoot').hidden=false;
+    var d=document.getElementById('vp'),$=function(i){return document.getElementById(i)};
+    if(SUPPORT.vippsNumber){$('vnumw').hidden=false;$('vnum').textContent=SUPPORT.vippsNumber}
+    if(SUPPORT.vippsLink&&/^https?:\/\//.test(SUPPORT.vippsLink)){$('vgo').hidden=false;$('vgo').href=SUPPORT.vippsLink}
+    var phone=(window.matchMedia&&matchMedia('(pointer:coarse)').matches&&Math.min(screen.width,screen.height)<820)||/Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+    if(SUPPORT.qrImage){$('vqr').hidden=false;$('vqr').src=SUPPORT.qrImage;$('vhint').hidden=phone;$('vhint').textContent=phone?'':'Skann koden med Vipps-appen på mobilen.'}
+    if(!phone)$('vgo').hidden=true;
+    $('vopen').addEventListener('click',function(){d.showModal()});
+    if(SUPPORT.logo){var im='<img src="'+SUPPORT.logo.replace(/"/g,'')+'" alt="Vipps" class="vlogo">';
+      $('vopen').innerHTML=im;$('vopen').setAttribute('aria-label','Støtt med Vipps');$('vtop').innerHTML=im;$('vtop').classList.add('lg');$('vgo').innerHTML=im;$('vgo').setAttribute('aria-label','Åpne i Vipps')}
+    if(SUPPORT.officialButton){
+      var sc=document.createElement('script');sc.async=true;sc.src='https://cdn.vippsmobilepay.com/button/v1/vipps-mobilepay-button.js';
+      sc.onload=function(){var vo=$('vopen');vo.classList.add('official');vo.setAttribute('aria-label','Bidra med Vipps');
+        vo.innerHTML='<vipps-mobilepay-button brand="vipps" language="no" variant="primary" rounded="true" verb="donate"></vipps-mobilepay-button>'};
+      document.head.appendChild(sc)}
+    var vt=$('vtop');vt.hidden=false;vt.addEventListener('click',function(){d.showModal()});
+    $('vx').addEventListener('click',function(){d.close()});
+    d.addEventListener('click',function(e){if(e.target===d)d.close()});
+    $('vcp').addEventListener('click',function(){var t=SUPPORT.vippsNumber,b=this;
+      function ok(){b.textContent='Kopiert';setTimeout(function(){b.textContent='Kopier'},1500)}
+      if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(t).then(ok,function(){});else ok()});
+  })();
+  var PRICES=CONFIG.showPrices;
+  var SHOWP=function(s){return PRICES&&CONFIG.hidePricesFor.indexOf(s)<0};
+  // ===============================================
+  var COL={Svart:'#1d1f22',Hvit:'#f1f1ee',Grå:'#8b949b',Rød:'#d1322b',Blå:'#2f6fd0',Grønn:'#2f9e5b',Gul:'#f2c230',Oransje:'#ff7a1a',Lilla:'#8a4fc7',Rosa:'#e66fa4',Gull:'#d6a53a',Sølv:'#c3c8cc',Brun:'#7a4a2b',Beige:'#d8c8a4',Turkis:'#1fb5ad',Naturell:'#e6dcc3',Gjennomsiktig:'#dbe8ee',Flerfarget:'multi','Ikke oppgitt':'unk'};
+  var MATS={
+    'PLA':{n:'PLA',d:'Enkel og pen'},
+    'PLA+':{n:'PLA+ / Pro',d:'Sterkere PLA'},
+    'HT-PLA':{n:'HT-PLA',d:'PLA som tåler varme'},
+    'APLA':{n:'APLA',d:'Glødet PLA'},
+    'PETG':{n:'PETG',d:'Sterk og holdbar'},
+    'PETG+':{n:'PETG+',d:'Sterkere PETG'},
+    'ABS':{n:'ABS',d:'Varme og slagfasthet'},
+    'ABS+':{n:'ABS+',d:'Forbedret ABS'},
+    'MABS':{n:'MABS',d:'Lite lukt, klar'},
+    'ASA':{n:'ASA',d:'Utendørs og UV-bestandig'},
+    'ASA+':{n:'ASA+',d:'Forbedret ASA'},
+    'PC':{n:'PC',d:'Polykarbonat: sterk og varm'},
+    'PC-ABS':{n:'PC-ABS',d:'Slagfast blanding'},
+    'PC-PBT':{n:'PC-PBT',d:'Blanding, kjemikaliebestandig'},
+    'PCTG':{n:'PCTG',d:'Slagfast, nesten som PETG'},
+    'PIPG':{n:'PIPG',d:'Seig PETG-variant'},
+    'PET':{n:'PET',d:'Lavt fuktopptak'},
+    'PBT':{n:'PBT',d:'Teknisk polyester'},
+    'CPE':{n:'CPE / CoPE',d:'Kopolyester, seig'},
+    'PA':{n:'PA (nylon)',d:'Slitesterk nylon'},
+    'PA6':{n:'PA6',d:'Nylon, stiv og sterk'},
+    'PA12':{n:'PA12',d:'Nylon, lite fukt'},
+    'PA612':{n:'PA612',d:'Nylon, lite fukt'},
+    'PAHT':{n:'PAHT',d:'Høytemperatur nylon'},
+    'CoPA':{n:'CoPA',d:'Nylon-kopolymer'},
+    'TPU':{n:'TPU',d:'Fleksibel, gummilignende'},
+    'TPE':{n:'TPE',d:'Myk og elastisk'},
+    'TPR':{n:'TPR',d:'Myk gummi'},
+    'PEBA':{n:'PEBA',d:'Elastisk og spenstig'},
+    'PP':{n:'PP',d:'Lett, kjemikaliebestandig'},
+    'PE':{n:'PE',d:'Polyetylen'},
+    'PPA':{n:'PPA',d:'Høytemperatur nylon'},
+    'PPS':{n:'PPS',d:'Høytemperatur, kjemikalier'},
+    'PPSU':{n:'PPSU',d:'Høytemperatur, teknisk'},
+    'PSU':{n:'PSU',d:'Høytemperatur, teknisk'},
+    'PEEK':{n:'PEEK',d:'Høytemperatur, teknisk'},
+    'PEI':{n:'PEI / Ultem',d:'Høytemperatur, flammehemmende'},
+    'PEKK':{n:'PEKK',d:'Høytemperatur, teknisk'},
+    'PVDF':{n:'PVDF',d:'Kjemikalier og UV'},
+    'PMMA':{n:'PMMA',d:'Akryl, klar'},
+    'SAN':{n:'SAN',d:'Klar og stiv'},
+    'SBS':{n:'SBS',d:'Slagfast, myk'},
+    'SMP':{n:'SMP',d:'Formminne'},
+    'PCL':{n:'PCL',d:'Lavt smeltepunkt'},
+    'PHA':{n:'PHA',d:'Biobasert, komposterbar'},
+    'HIPS':{n:'HIPS',d:'Støtte for ABS'},
+    'PVA':{n:'PVA',d:'Vannløselig støtte'},
+    'BVOH':{n:'BVOH',d:'Vannløselig støtte'},
+    'PVB':{n:'PVB',d:'Kan glattes med alkohol'},
+    'Support':{n:'Støttemateriale',d:'Støtte for andre materialer'},
+    'Annet':{n:'Annet',d:'Uklassifisert'}
+  };
+  var ADD={Karbon:'Karbonfiber',Glassfiber:'Glassfiber',ESD:'ESD (antistatisk)',Flammehemmende:'Flammehemmende',Lettvekt:'Lettvekt (skum)',Antibakteriell:'Antibakteriell'};
+  var FIN=['Silk','Matt','Glitter','Metall','Marmor','Stein','Tre','Gjennomsiktig','Fargeskift','Selvlysende','Glossy','Standard'];
+  var FINL={Silk:'Silke (silk)',Matt:'Matt',Glitter:'Glitter',Marmor:'Marmor',Selvlysende:'Selvlysende',Glossy:'Blank (glossy)',Metall:'Metall',Stein:'Stein',Tre:'Tre',Gjennomsiktig:'Gjennomsiktig (translucent)',Fargeskift:'Fargeskift (chameleon)',Standard:'Standard'};
+
+
+  fetch('products.json?v=__BUILD__').then(function(r){if(!r.ok)throw new Error(r.status);return r.json()}).then(start).catch(function(err){
+    var g=document.getElementById('grid');if(g)g.innerHTML='<div class="empty" style="grid-column:1/-1">Kunne ikke laste produktlisten. Prøv å laste siden på nytt.</div>';
+    var c=document.getElementById('countH');if(c)c.textContent='';
+    if(window.console)console.error(err)});
+
+  function start(D){
+  var STORES={};Object.keys(D.stores).forEach(function(k){STORES[k]={n:D.stores[k].n,home:D.stores[k].home}});
+  // Ett kort per produkt. Tilbud fra flere butikker ligger i offers, billigste først.
+  var O=[];
+  var R=D.products.map(function(g,i){
+    var kg=g.kg||null;
+    g.offers=g.offers.map(function(o){
+      var x={store:o.s,price:o.p===undefined?null:o.p,url:o.u||null,avail:o.a||null,img:o.i||null,was:o.w||0,from:o.f||0,name:o.n||g.name};
+      if(!SHOWP(o.s)){x.price=null;x.was=0;x.from=0}
+      x.pk=(x.price&&kg)?Math.round(x.price/kg):null;O.push(x);return x});
+    g.id=i;g.add=g.add||null;g.kg=kg;
+    g.ref=/refill|re-fill|påfyll|uten spole|spoleløs|without spool|no spool|spool-?less/i.test(g.name+' '+g.offers.map(function(o){return o.name}).join(' '))?'Refill':'Spole';
+    return g;
+  });
+  var UNAV=function(a){return a==='out'||a==='order'||(a||'').indexOf('soon')===0};
+  R.forEach(function(g){
+    g.offers.sort(function(a,b){return (a.price===null?1e9:a.price)-(b.price===null?1e9:b.price)});
+    var f=g.offers[0];
+    g.price=f.price;g.pk=f.pk;g.from=f.from;
+    g.img=null;g.offers.some(function(o){if(o.img){g.img=o.img;return true}});
+    g.stores={};g.offers.forEach(function(o){g.stores[o.store]=true});
+    g.was=g.offers.some(function(o){return o.was})?1:0;
+    g.anyAvail=g.offers.some(function(o){return !UNAV(o.avail)});
+    g.all=g.offers.map(function(o){return o.name+' '+STORES[o.store].n}).join(' ');
+  });
+
+  var $=function(s){return document.querySelector(s)};
+  if(!PRICES){['p','pk','ph'].forEach(function(v){var op=document.querySelector('#sort option[value="'+v+'"]');if(op)op.remove()})}
+  var bc={};R.forEach(function(p){bc[p.brand]=(bc[p.brand]||0)+1});
+  var HASSALE=R.some(function(p){return p.was});
+  var MKEYS=Object.keys(MATS).filter(function(k){return R.some(function(p){return p.mat===k})}).sort(function(a,b){return (R.filter(function(p){return p.mat===b}).length)-(R.filter(function(p){return p.mat===a}).length)});
+  var AKEYS=Object.keys(ADD).filter(function(k){return R.some(function(p){return p.add===k})});
+  var EXP={},LIM=6;
+  var BRANDS=Object.keys(bc).sort(function(a,b){return (bc[b]-bc[a])||a.localeCompare(b,'nb')});
+  var S={q:'',mat:{},add:{},fin:{},col:{},store:{},brand:{},ref:{},max:1500,hideOut:false,sale:false};
+  var kr=function(n){return Math.round(n).toLocaleString('nb-NO')+' kr'};
+  var esc=function(s){return String(s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})};
+
+  function spool(c,fin){
+    var fill=COL[c]==='multi'?'url(#mg)':COL[c]==='unk'?'#9aa6af':COL[c];
+    return '<svg viewBox="0 0 120 120" role="img" aria-label="Filamentspole '+esc(c.toLowerCase())+'"><defs><linearGradient id="mg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#d1322b"/><stop offset=".35" stop-color="#f2c230"/><stop offset=".65" stop-color="#2f9e5b"/><stop offset="1" stop-color="#2f6fd0"/></linearGradient></defs>'+
+    '<circle cx="60" cy="60" r="54" fill="#2b3640"/><circle cx="60" cy="60" r="46" fill="'+fill+'" stroke="rgba(0,0,0,.25)"/>'+
+    '<circle cx="60" cy="60" r="38" fill="none" stroke="rgba(0,0,0,.18)"/><circle cx="60" cy="60" r="31" fill="none" stroke="rgba(0,0,0,.18)"/><circle cx="60" cy="60" r="24" fill="none" stroke="rgba(0,0,0,.18)"/>'+
+    (fin==='Silk'?'<path d="M30 32 A40 40 0 0 1 62 18" stroke="rgba(255,255,255,.7)" stroke-width="6" fill="none" stroke-linecap="round"/><path d="M92 84 A40 40 0 0 1 70 100" stroke="rgba(255,255,255,.45)" stroke-width="4" fill="none" stroke-linecap="round"/>':'')+
+    (fin==='Glitter'?'<g fill="#fff" opacity=".85"><circle cx="40" cy="38" r="1.8"/><circle cx="82" cy="46" r="1.4"/><circle cx="74" cy="82" r="1.8"/><circle cx="36" cy="74" r="1.3"/><circle cx="58" cy="26" r="1.4"/></g>':'')+
+    '<circle cx="60" cy="60" r="17" fill="#2b3640"/><circle cx="60" cy="60" r="8" fill="#eef1f3"/></svg>';
+  }
+  $('#heroart').innerHTML=spool('Oransje','Silk');
+  if(PRICES){$('#notice').textContent='Priser og lager er hentet fra butikkenes nettsider og kan ha endret seg. Sjekk alltid endelig pris hos butikken. Der vekten ikke er oppgitt, kan pris per kg mangle.'+(CONFIG.hidePricesFor.length?' Enkelte butikker vises uten pris.':'')}
+  else{var nt=$('#notice');var dt=nt.closest('details');if(dt){dt.parentNode.insertBefore(nt,dt);dt.remove()}nt.classList.add('off');nt.setAttribute('role','status');nt.innerHTML='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 21V3" stroke="#c4271c" stroke-width="2.4" stroke-linecap="round" fill="none"/><path d="M6 4h12l-3 4.5 3 4.5H6z" fill="#d6251a"/></svg><div><b>Priser er skrudd av</b>Filamentsøk kan vise butikkenes priser, men de er slått av for øyeblikket. Trykk deg videre til butikken for å se gjeldende pris og lager.</div>'}
+
+  var quick=[['all','Bla gjennom alle filamenter ↓']];
+  $('#quick').innerHTML=quick.map(function(x){return '<button class="chip" data-q="'+x[0]+'">'+x[1]+'</button>'}).join('');
+  $('#quick').addEventListener('click',function(e){var k=e.target.dataset.q;if(!k)return;
+    reset();if(k==='silk')S.fin.Silk=true;if(k==='matt')S.fin.Matt=true;render();go('#butikk')});
+
+  var ALLM=Object.keys(MATS).filter(function(k){return k!=='Annet'||MKEYS.indexOf(k)>=0}).sort(function(a,b){return R.filter(function(p){return p.mat===b}).length-R.filter(function(p){return p.mat===a}).length});
+  var ADESC={Karbon:'Stiv og lett, med karbonfiber',Glassfiber:'Sterk og stiv, med glassfiber',ESD:'Antistatisk, for elektronikk',Flammehemmende:'Tåler brann bedre (UL94)',Lettvekt:'Skummende, lavere vekt',Antibakteriell:'Hemmer bakterievekst'};
+  var ASORT=AKEYS.slice().sort(function(a,b){return R.filter(function(p){return p.add===b}).length-R.filter(function(p){return p.add===a}).length});
+  var CE={c:false},TOP=5;
+  function matCard(k){var n=R.filter(function(p){return p.mat===k}).length;
+    return '<button class="cat'+(n?'':' zero')+'" data-m="'+esc(k)+'"'+(n?'':' disabled')+'><strong>'+MATS[k].n+'</strong><span>'+MATS[k].d+'</span><code>'+(n?n+(n===1?' produkt':' produkter'):'Ingen nå')+'</code></button>'}
+  function addCard(k){var n=R.filter(function(p){return p.add===k}).length;
+    return '<button class="cat" data-a="'+k+'"><strong>'+(k==='Flammehemmende'?'Flamme-<br>hemmende':ADD[k].split(' (')[0])+'</strong><span>'+ADESC[k]+'</span><code>'+n+(n===1?' produkt':' produkter')+'</code></button>'}
+  function moreTile(g,total){if(total<=TOP)return '';
+    return '<button class="cat more" data-more="'+g+'" aria-expanded="'+CE[g]+'"><strong>'+(CE[g]?'Vis færre':'Vis alle ('+total+')')+'</strong><span>'+(CE[g]?'Bare de '+TOP+' vanligste':(total-TOP)+' til')+'</span></button>'}
+  var ITEMS=ALLM.map(function(k){return{t:'m',k:k,n:R.filter(function(p){return p.mat===k}).length}})
+    .concat(ASORT.map(function(k){return{t:'a',k:k,n:R.filter(function(p){return p.add===k}).length}}));
+  ITEMS=ITEMS.map(function(x,i){x.i=i;return x}).sort(function(a,b){return (b.n-a.n)||(a.i-b.i)});
+  function buildCats(){
+    var vis=ITEMS.filter(function(x,i){return CE.c||i<TOP});
+    $('#cats').innerHTML=vis.map(function(x){return x.t==='m'?matCard(x.k):addCard(x.k)}).join('')+moreTile('c',ITEMS.length);
+  }
+  buildCats();
+  $('#cats').addEventListener('click',function(e){var b=e.target.closest('.cat');if(!b)return;
+    if(b.dataset.more){CE[b.dataset.more]=!CE[b.dataset.more];buildCats();return}
+    reset();if(b.dataset.a)S.add[b.dataset.a]=true;else S.mat[b.dataset.m]=true;render();go('#butikk')});
+
+  $('#butikker').innerHTML=Object.keys(STORES).map(function(k){var s=STORES[k];var n=O.filter(function(p){return p.store===k}).length;
+    return '<a href="'+s.home+'" target="_blank" rel="noopener noreferrer"><strong>'+s.n+'</strong><span>'+n+' produkter her · Gå til butikken</span></a>'}).join('');
+
+  function go(s){try{document.querySelector(s).scrollIntoView({behavior:'smooth'})}catch(e){}}
+  function reset(){S.q='';S.mat={};S.add={};S.ref={};S.fin={};S.col={};S.store={};S.brand={};S.max=1500;S.hideOut=false;S.sale=false;$('#q').value=''}
+  function has(o){return Object.keys(o).length>0}
+  function cnt(f){return R.filter(f).length}
+  function inKey(p,key,v){return key==='store'?!!p.stores[v]:p[key]===v}
+
+  function checks(title,key,items){
+    var cn=items.map(function(v){return[v[0],v[1],FC[key][v[0]]||0]});
+    var vis=cn.filter(function(v,i){return EXP[key]||i<LIM||S[key][v[0]]});
+    return '<div class="fl"><h3>'+title+'</h3>'+vis.map(function(v){
+      return '<label'+(v[2]?'':' class="zero"')+'><span><input type="checkbox" data-k="'+key+'" data-v="'+esc(v[0])+'"'+(S[key][v[0]]?' checked':'')+(v[2]||S[key][v[0]]?'':' disabled')+'> '+esc(v[1])+'</span><span class="n">'+v[2]+'</span></label>'}).join('')+
+      (cn.length>LIM?'<button type="button" class="more-btn" data-exp="'+key+'">'+(EXP[key]?'Vis færre':'Vis alle ('+cn.length+')')+'</button>':'')+'</div>';
+  }
+  function buildFilters(){
+    FC=facet();
+    var cols=Object.keys(COL);
+    $('#filters').innerHTML=
+      '<div class="fl"><h3>Farge</h3><div class="swatches">'+cols.map(function(c){
+        var n=FC.col[c]||0;
+        var st=COL[c]==='multi'||COL[c]==='unk'?'':'background:'+COL[c];
+        return '<button class="sw'+(COL[c]==='multi'?' multi':'')+(COL[c]==='unk'?' unk':'')+(S.col[c]?' on':'')+'" style="'+st+'" data-c="'+c+'" title="'+c+' ('+n+')" aria-label="'+c+', '+n+' produkter" aria-pressed="'+!!S.col[c]+'"'+(n||S.col[c]?'':' disabled')+'>'+(COL[c]==='unk'?'?':'')+'</button>'}).join('')+'</div></div>'+
+      checks('Type','fin',FIN.map(function(f){return[f,FINL[f]]}))+
+      checks('Utførelse','ref',[['Refill','Refill (uten spole)'],['Spole','Med spole']])+
+      checks('Merke','brand',BRANDS.map(function(b){return[b,b]}))+
+      checks('Materiale','mat',MKEYS.map(function(k){return[k,MATS[k].n]}))+
+      (AKEYS.length?checks('Tilsetning','add',AKEYS.map(function(k){return[k,ADD[k]]})):'')+
+      checks('Butikk','store',Object.keys(STORES).map(function(k){return[k,STORES[k].n]}))+
+      '<div class="fl"><h3>Lager</h3><label><span><input type="checkbox" data-f="hideOut"'+(S.hideOut?' checked':'')+'> Skjul utilgjengelige</span></label>'+(HASSALE?'<label><span><input type="checkbox" data-f="sale"'+(S.sale?' checked':'')+'> Bare tilbud</span></label>':'')+'</div>'+
+      (PRICES?'<div class="fl"><h3>Maks pris</h3><input class="range" id="max" type="range" min="100" max="1500" step="10" value="'+S.max+'" aria-label="Maks pris"><div class="spec"><b id="maxv">'+kr(S.max)+'</b></div></div>':'')+
+      '<button class="btn ghost" id="clear">Nullstill filter</button>';
+  }
+  $('#filters').addEventListener('change',function(e){var t=e.target;
+    if(t.dataset.k){if(t.checked)S[t.dataset.k][t.dataset.v]=true;else delete S[t.dataset.k][t.dataset.v]}
+    if(t.dataset.f)S[t.dataset.f]=t.checked;
+    render(true)});
+  $('#filters').addEventListener('input',function(e){if(e.target.id==='max'){S.max=+e.target.value;$('#maxv').textContent=kr(S.max);render(true)}});
+  $('#filters').addEventListener('click',function(e){
+    if(e.target.dataset.exp){var k=e.target.dataset.exp;EXP[k]=!EXP[k];buildFilters();return}
+    if(e.target.id==='clear'){reset();render();return}
+    var b=e.target.closest('.sw');if(b&&!b.disabled){var c=b.dataset.c;if(S.col[c])delete S.col[c];else S.col[c]=true;
+      b.classList.toggle('on',!!S.col[c]);b.setAttribute('aria-pressed',!!S.col[c]);render(true)}});
+  $('#fbtn').addEventListener('click',function(){var f=$('#filters');f.classList.toggle('show');$('#fbtn').setAttribute('aria-expanded',f.classList.contains('show'))});
+  $('#searchForm').addEventListener('submit',function(e){e.preventDefault();S.q=$('#q').value.trim().toLowerCase();render(true);go('#butikk')});
+  $('#sort').addEventListener('change',function(){render(true)});
+
+  function pass(p,skip){
+      if(S.q&&(p.all+' '+p.name+' '+p.brand+' '+p.col+' '+p.fin+' '+p.mat+' '+(p.add||'')).toLowerCase().indexOf(S.q)<0)return false;
+      if(skip!=='ref'&&has(S.ref)&&!S.ref[p.ref])return false;
+      if(skip!=='mat'&&has(S.mat)&&!S.mat[p.mat])return false;
+      if(skip!=='add'&&has(S.add)&&!S.add[p.add])return false;
+      if(skip!=='fin'&&has(S.fin)&&!S.fin[p.fin])return false;
+      if(skip!=='brand'&&has(S.brand)&&!S.brand[p.brand])return false;
+      if(skip!=='col'&&has(S.col)&&!S.col[p.col])return false;
+      if(skip!=='store'&&has(S.store)&&!Object.keys(S.store).some(function(k){return p.stores[k]}))return false;
+      if(p.price!==null&&S.max<1500&&p.price>S.max)return false;
+      if(S.hideOut&&!p.anyAvail)return false;
+      if(S.sale&&!p.was)return false;
+      return true}
+  // Antall per valg: treff med alle ANDRE aktive filter, slik at man ser hva som gir treff.
+  var FC={};
+  function facet(){
+    var F={mat:{},add:{},fin:{},brand:{},col:{},store:{},ref:{}};
+    R.forEach(function(p){['mat','add','fin','brand','col','store','ref'].forEach(function(k){
+      if(!pass(p,k))return;
+      if(k==='store'){Object.keys(p.stores).forEach(function(s){F.store[s]=(F.store[s]||0)+1})}
+      else{var v=p[k];if(v!==null&&v!==undefined)F[k][v]=(F[k][v]||0)+1}})});
+    return F}
+  function updateCounts(){
+    FC=facet();
+    document.querySelectorAll('#filters input[data-k]').forEach(function(i){
+      var n=FC[i.dataset.k][i.dataset.v]||0,lab=i.closest('label');
+      lab.querySelector('.n').textContent=n;i.disabled=!n&&!i.checked;lab.classList.toggle('zero',!n)});
+    document.querySelectorAll('#filters .sw').forEach(function(b){
+      var c=b.dataset.c,n=FC.col[c]||0;
+      b.title=c+' ('+n+')';b.setAttribute('aria-label',c+', '+n+' produkter');b.disabled=!n&&!S.col[c]})}
+  function activeBar(){
+    var c=[],G={ref:'Utførelse',mat:'Materiale',add:'Tilsetning',fin:'Type',brand:'Merke',col:'Farge',store:'Butikk'};
+    var L={ref:function(k){return k==='Refill'?'Refill (uten spole)':'Med spole'},mat:function(k){return(MATS[k]||{n:k}).n},add:function(k){return ADD[k]||k},fin:function(k){return FINL[k]||k},brand:function(k){return k},col:function(k){return k},store:function(k){return STORES[k]?STORES[k].n:k}};
+    function chip(key,v,txt){c.push('<button type="button" data-rm="'+key+'" data-v="'+esc(v)+'" aria-label="Fjern filter: '+esc(txt)+'">'+esc(txt)+' <i aria-hidden="true">×</i></button>')}
+    if(S.q)chip('q','','Søk: '+S.q);
+    Object.keys(G).forEach(function(k){Object.keys(S[k]).forEach(function(v){chip(k,v,G[k]+': '+L[k](v))})});
+    if(S.max<1500)chip('max','','Maks '+kr(S.max));
+    if(S.hideOut)chip('hideOut','','Skjul utilgjengelige');
+    if(S.sale)chip('sale','','Bare tilbud');
+    if(c.length>1)c.push('<button type="button" class="clr" data-rm="all">Fjern alle</button>');
+    $('#active').innerHTML=c.join('')}
+  $('#active').addEventListener('click',function(e){var b=e.target.closest('button');if(!b)return;
+    var k=b.dataset.rm,v=b.dataset.v;
+    if(k==='all')reset();
+    else if(k==='q'){S.q='';$('#q').value=''}
+    else if(k==='max')S.max=1500;
+    else if(k==='hideOut'||k==='sale')S[k]=false;
+    else delete S[k][v];
+    render()});
+  function list(){
+    var r=R.filter(function(p){return pass(p,null)});
+    var m=$('#sort').value;
+    var big=1e9;
+    var cmp={p:function(a,b){return (a.price===null?big:a.price)-(b.price===null?big:b.price)},
+      ph:function(a,b){return (b.price===null?-1:b.price)-(a.price===null?-1:a.price)},
+      pk:function(a,b){return (a.pk===null?big:a.pk)-(b.pk===null?big:b.pk)},
+      s:function(a,b){return STORES[a.offers[0].store].n.localeCompare(STORES[b.offers[0].store].n,'nb')}}[m];
+    return r.sort(cmp);
+  }
+  function stockHtml(p){
+    if(!p.avail)return '';
+    if(p.avail==='out')return '<div class="stock out">Utsolgt</div>';
+    if(p.avail.indexOf('soon')===0){var d=p.avail.split(':')[1];return '<div class="stock">'+(d?'Ikke bekreftet, forventet '+d:'Snart tilgjengelig')+'</div>';}
+    if(p.avail==='order')return '<div class="stock">Utsolgt, kan bestilles</div>';
+    if(p.avail==='yes')return '<div class="stock in">På lager</div>';
+    return '<div class="stock in">På lager ('+esc(p.avail)+')</div>';
+  }
+  function offerHtml(o,best,multi){
+    var s=STORES[o.store];
+    return '<div class="of'+(best?' best':'')+(UNAV(o.avail)?' un':'')+'"><div class="ofl"><b>'+esc(s.n)+'</b>'+(best&&multi?'<em>Billigst</em>':'')+stockHtml(o)+'</div>'+
+      '<div class="ofp">'+(o.price===null?'<span class="price na">Se pris i butikk</span>':'<span class="price">'+(o.was?'<s>før '+kr(o.was)+'</s> ':'')+(o.from?'<small>fra </small>':'')+kr(o.price)+'</span>'+(o.pk?'<span class="perkg">'+kr(o.pk)+'/kg</span>':''))+'</div>'+
+      (o.url?'<a class="go" href="'+esc(o.url)+'" target="_blank" rel="noopener noreferrer" aria-label="Til '+esc(s.n)+'">Til butikken</a>':'<span class="go off" aria-disabled="true">Link kommer</span>')+'</div>';
+  }
+  function card(p){
+    var multi=p.offers.length>1;
+    var priced=p.offers.filter(function(o){return o.price!==null});
+    var ps=priced.map(function(o){return o.price});var lo=ps.length>1&&Math.min.apply(null,ps)<Math.max.apply(null,ps)?Math.min.apply(null,ps):null;
+    return '<article class="card'+(!p.anyAvail?' out':'')+'"><div class="pic">'+(p.was?'<span class="tag sale">Tilbud</span>':'')+(p.fin!=='Standard'?'<span class="tag'+(p.was?' r':'')+'">'+FINL[p.fin].split(' ')[0]+'</span>':'')+spool(p.col,p.fin)+(p.img?'<img class="ph" src="'+esc(p.img)+'" alt="" loading="lazy" decoding="async" referrerpolicy="no-referrer" onerror="this.remove()">':'')+'</div>'+
+    '<div class="body"><span class="brand">'+esc(p.brand)+'</span><h4>'+esc(p.name)+'</h4>'+
+    '<div class="spec"><span><b>'+(MATS[p.mat]||{n:p.mat}).n+'</b></span>'+(p.add?'<span><b>'+esc(p.add)+'</b></span>':'')+'<span><b>'+p.col+'</b></span>'+(p.kg?'<span><b>'+String(p.kg).replace('.',',')+'</b> kg</span>':'')+'</div>'+
+    (multi?'<div class="nstores">'+Object.keys(p.stores).length+' butikker</div>':'')+
+    '<div class="offers">'+p.offers.map(function(o){return offerHtml(o,lo!==null&&o.price===lo,multi)}).join('')+'</div></div></article>';
+  }
+  var PAGE=60,limit=PAGE,lastKey='';
+  function render(keep){
+    if(!keep)buildFilters();else updateCounts();
+    var r=list();activeBar();
+    var key=JSON.stringify([S,$('#sort').value]);
+    if(key!==lastKey){limit=PAGE;lastKey=key}
+    $('#countH').textContent=r.length+(r.length===1?' filament':' filamenter');
+    var shown=r.slice(0,limit);
+    $('#grid').innerHTML=r.length?shown.map(card).join('')+(r.length>limit?'<div style="grid-column:1/-1;text-align:center"><button class="btn ghost" id="more">Vis flere ('+(r.length-limit)+' igjen)</button></div>':''):'<div class="empty" style="grid-column:1/-1">Ingen treff. Fjern et filter eller søk på noe annet.</div>';
+  }
+  $('#grid').addEventListener('click',function(e){if(e.target.id==='more'){limit+=PAGE;render(true)}});
+  try{var qs=new URLSearchParams(location.search),pm=qs.get('mat'),pa=qs.get('add');
+    if(pm&&MATS[pm]){S.mat[pm]=true}if(pa&&ADD[pa]){S.add[pa]=true}}catch(e){}
+  render();
+  if(has(S.mat)||has(S.add))setTimeout(function(){go('#butikk')},50);
+  }
+})();
+</script>
+<script>(function(){var b=document.getElementById("tgl");if(!b)return;b.addEventListener("click",function(){var r=document.documentElement,cur=r.getAttribute("data-theme");
+if(!cur)cur=matchMedia("(prefers-color-scheme:dark)").matches?"dark":"light";var n=cur==="dark"?"light":"dark";r.setAttribute("data-theme",n);try{localStorage.setItem("theme",n)}catch(e){}})})()</script>
+<svg id="strand2" aria-hidden="true" focusable="false"><defs><clipPath id="stclip"><rect id="stcr" x="0" y="0" width="1" height="1"/></clipPath></defs><g clip-path="url(#stclip)"><path id="stl2" fill="none" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></g></svg>
+<svg id="strand" aria-hidden="true" focusable="false"><path id="stl" fill="none" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/><path id="stc" fill="none" stroke="none"/></svg>
+<script>
+/* Filamentet ruller seg ut fra spolen når man scroller ned, og inn igjen når man scroller opp. */
+(function(){
+  var svg=document.getElementById('strand'),svg2=document.getElementById('strand2'),L2=document.getElementById('stl2'),CR=document.getElementById('stcr'),L=document.getElementById('stl'),C=document.getElementById('stc'),art=document.getElementById('heroart'),wrap=document.querySelector('.wrap');
+  if(!svg||!art||!wrap||(window.matchMedia&&matchMedia('(prefers-reduced-motion:reduce)').matches))return;
+  var NS='http://www.w3.org/2000/svg',R0=46,RMIN=22,TAIL=70,raf=0,els=null,tip=null,tip2=null;
+  function find(){var sv=art.querySelector('svg');if(!sv)return null;var c=sv.querySelectorAll('circle'),p=sv.querySelectorAll('path');
+    var rings=[c[2],c[3],c[4]],dash=['34 9 12 9','22 8 30 8','14 6 18 6 9 6'];
+    rings.forEach(function(r,i){if(!r)return;r.style.stroke='rgba(0,0,0,.30)';r.setAttribute('stroke-dasharray',dash[i])});
+    var g=document.createElementNS(NS,'g'),ticks=[];
+    for(var k=0;k<3;k++){var l=document.createElementNS(NS,'line');l.setAttribute('stroke','rgba(0,0,0,.4)');l.setAttribute('stroke-width','2.6');l.setAttribute('stroke-linecap','round');g.appendChild(l);ticks.push(l)}
+    c[1].parentNode.insertBefore(g,c[5]);
+    if(!tip){tip=document.createElementNS(NS,'circle');tip.setAttribute('r','4.5');svg.appendChild(tip);tip2=document.createElementNS(NS,'circle');tip2.setAttribute('r','4.5');svg2.querySelector('g').appendChild(tip2)}
+    return {sv:sv,disc:c[1],rings:rings,hi:p,g:g,ticks:ticks}}
+  function frame(){raf=0;
+    if(!els)els=find();if(!els||getComputedStyle(art).display==='none'){L.setAttribute('d','');L2.setAttribute('d','');if(tip){tip.style.opacity=0;tip2.style.opacity=0}return}
+    var de=document.documentElement,vw=de.clientWidth,docH=Math.max(de.scrollHeight,document.body.scrollHeight),vh=window.innerHeight,y=window.pageYOffset||de.scrollTop;
+    [svg,svg2].forEach(function(e){e.setAttribute('width',vw);e.setAttribute('height',docH);e.style.width=vw+'px';e.style.height=docH+'px'});
+    var r=els.sv.getBoundingClientRect(),k=r.width/120,cx=r.left+r.width/2,cy=r.top+y+r.height/2,bottom=r.bottom+y;
+    var wr=wrap.getBoundingClientRect(),xg=Math.min(vw-8,wr.right+Math.min(20,(vw-wr.right)/2));
+    var tipY=Math.min(docH-24,y+vh*0.85);
+    /* geometri: ut av høyre side av spolen, rett ned, så gradvis ut mot høyre kant bak innholdet */
+    function geo(rad){var x0=cx+rad*k,y0=cy,yS=Math.max(y0+40,bottom+6),yE=yS+240;
+      var d='M'+x0+' '+y0+' L'+x0+' '+yS+' C'+x0+' '+(yS+110)+' '+xg+' '+(yS+60)+' '+xg+' '+yE;
+      return {d:d,yE:yE,x0:x0,y0:y0}}
+    function lenFor(g,tipY){C.setAttribute('d',g.d);var cl=C.getTotalLength();return {cl:cl,len:Math.min(cl+Math.max(0,tipY-g.yE),cl+Math.max(0,docH-24-g.yE)),tot:cl+Math.max(0,docH-24-g.yE)}}
+    var f=Math.min(1,y/140),rad=R0,g,o,len;
+    for(var i=0;i<3;i++){g=geo(rad);o=lenFor(g,tipY);
+      len=TAIL+(o.len-TAIL)*f;                                  /* en kort hale vises hele tiden */
+      rad=R0-(R0-RMIN)*Math.min(1,Math.max(0,len-TAIL)/2600)}   /* spolen tømmes raskere */
+    g=geo(rad);o=lenFor(g,tipY);len=Math.min(o.tot,TAIL+(o.len-TAIL)*f);
+    var full=g.d+' L'+g.d.split(' ').slice(-2)[0]+' '+Math.max(g.yE,docH-24);
+    L.setAttribute('d',full);L2.setAttribute('d',full);var col=els.disc.getAttribute('fill')||'#ee8239';L.style.stroke=col;L2.style.stroke=col;tip.setAttribute('fill',col);tip2.setAttribute('fill',col);CR.setAttribute('width',vw);CR.setAttribute('height',Math.max(1,bottom+4));
+    var tl=L.getTotalLength();[L,L2].forEach(function(e){e.style.strokeDasharray=tl+' '+(tl+10);e.style.strokeDashoffset=(tl-len)});
+    var pt=L.getPointAtLength(Math.min(len,tl));[tip,tip2].forEach(function(e){e.setAttribute('cx',pt.x);e.setAttribute('cy',pt.y);e.style.opacity=1});
+    /* spolen snurrer når filamentet trekkes ut (høyre side beveger seg nedover = med klokka) */
+    var deg=((len-TAIL)/(Math.max(rad,8)*k))*180/Math.PI;
+    els.disc.setAttribute('r',rad.toFixed(2));
+    els.rings.forEach(function(c){if(!c)return;c.style.display=(+c.getAttribute('r')>=rad-2)?'none':'';c.setAttribute('transform','rotate('+deg.toFixed(1)+' 60 60)')});
+    els.ticks.forEach(function(t,n){var a=(deg+n*120)*Math.PI/180,r1=rad-10,r2=rad-3.5;
+      t.setAttribute('x1',60+r1*Math.cos(a));t.setAttribute('y1',60+r1*Math.sin(a));t.setAttribute('x2',60+r2*Math.cos(a));t.setAttribute('y2',60+r2*Math.sin(a))});
+    var op=Math.max(0,Math.min(1,(rad-26)/14));for(var j=0;j<els.hi.length;j++)els.hi[j].style.opacity=op;
+  }
+  function q(){if(!raf)raf=requestAnimationFrame(frame)}
+  addEventListener('scroll',q,{passive:true});addEventListener('resize',q);addEventListener('load',q);
+  if(window.ResizeObserver)new ResizeObserver(q).observe(document.body);
+  q();
+})();
+</script>
+</body>
+</html>
