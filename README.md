@@ -42,7 +42,7 @@ Alle sidene har en bryter (sol/måne) øverst til høyre. Siden følger først i
 
 ## Filamentet som ruller ut
 
-På forsiden ruller filamentet seg ut fra spolen øverst til høyre når man scroller ned, og inn igjen når man scroller opp. Spolen blir stående mens filamentet følger siden nedover. Spolen blir litt mindre etter hvert. Dette er et script nederst i `web/index.html` (kommentaren «Filamentet ruller seg ut»). Det er skjult på smale skjermer og hvis brukeren har bedt om redusert bevegelse.
+På forsiden ruller filamentet seg ut fra spolen øverst til høyre når man scroller ned, og inn igjen når man scroller opp. Spolen blir stående mens filamentet følger siden nedover. Spolen er en 3D-modell med gjennomsiktige sideplater og oransje filament, tegnet i sanntid med WebGL2 (egen shader, ingen biblioteker) og tømmes etter hvert som filamentet trekkes ut. Hvis nettleseren ikke støtter WebGL2, vises en flat SVG-spole i stedet. Dette er et script nederst i `web/index.html` (kommentaren «Filamentet ruller seg ut»). Det er skjult på smale skjermer og hvis brukeren har bedt om redusert bevegelse.
 
 ## Støtt siden (Vipps)
 
@@ -54,6 +54,8 @@ var SUPPORT={vippsNumber:'123 45 678',vippsLink:'',qrImage:''};
 
 - `vippsNumber`: telefonnummer eller Vipps-nummer. Vises med en «Kopier»-knapp.
 - `vippsLink`: lenke fra Vipps (for eksempel fra å dele din Vipps-QR). Gir knappen «Åpne i Vipps».
+- `logo`: filnavn på den offisielle Vipps-logoen (last ned fra Vipps' designguide), for eksempel `vipps-logo.svg`. Legg filen i `web/`. Vises i knappene.
+- `officialButton`: `true` (standard) viser Vipps' egen «Bidra med Vipps»-knapp i boksen nederst. Scriptet lastes fra `cdn.vippsmobilepay.com`. Feiler det, vises en vanlig knapp. Sett til `false` for å slå det av.
 - `qrImage`: filnavn på et bilde av Vipps-QR-koden, for eksempel `vipps-qr.png`. Legg bildet i `web/` ved siden av `index.html`.
 
 Fyll ut ett eller flere felt. Er alle tomme, vises ingenting.
