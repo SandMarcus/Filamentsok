@@ -46,7 +46,11 @@ Når man skriver i søkefeltet på forsiden, vises forslag (farger, typer, mater
 
 ## Huskeliste
 
-Hvert kort har et bokmerke nederst til høyre i bildet. Valgte filamenter lagres i nettleseren (`localStorage`, nøkkel `huskeliste`) og blir værende selv om filtrene endres. Første gang du legger til noe, dukker en boble med antall opp nede til høyre. Den følger med når man scroller. Trykk på den for å åpne listen (navn, materiale, farge og butikk), og minimer den med «–». Åpen eller lukket husker nettleseren. «Last ned PDF» lager en PDF direkte i nettleseren, uten eksterne biblioteker, med bilde, pris, pris per kg og lenke til hver butikk. Hvis produktbildet ikke kan hentes (butikkens server tillater det ikke), tegnes en spole i riktig farge i stedet. Priser vises bare hvis de ikke er skrudd av i `CONFIG`.
+Hvert kort har et bokmerke øverst til høyre i bildet. Valgte filamenter lagres i nettleseren (`localStorage`, nøkkel `huskeliste`) og blir værende selv om filtrene endres. Første gang du legger til noe, dukker en boble med antall opp nede til høyre. Den følger med når man scroller. Trykk på den for å åpne listen (navn, materiale, farge og butikk), og minimer den med «–». Åpen eller lukket husker nettleseren. «Last ned PDF» lager en PDF direkte i nettleseren, uten eksterne biblioteker, med bilde, pris, pris per kg og lenke til hver butikk. Mange butikker blokkerer at andre sider leser bildene deres, så PDF-en prøver først bildet direkte og deretter via den åpne bildetjenesten images.weserv.nl (`PROXY` i koden). Lykkes ingen av delene, tegnes en spole i riktig farge i stedet. Huk av «Sammenlign» på 2–4 filamenter i listen og trykk «Sammenlign» for å se dem side om side (bilde, materiale, vekt, pris, kilopris og butikker). Beste pris og kilopris utheves. Priser vises bare hvis de ikke er skrudd av i `CONFIG`.
+
+## Mobilmeny
+
+På skjermer under 700 px samles menyen bak en hamburger-knapp øverst (på forsiden, guiden og partnersiden). «Om priser og lager» ligger nederst på forsiden, rett over bunnteksten. Første gang noen legger noe i huskelisten, vises en kort hjelpetekst over boblen. Den vises bare én gang per nettleser (`localStorage`-nøkkel `hk_tip`).
 
 ## Støtt siden (Vipps)
 
