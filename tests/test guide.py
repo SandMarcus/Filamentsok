@@ -86,3 +86,10 @@ def test_filter_and_menu_wiring():
     assert 'id="fbtn"' in html and 'id="sug"' in html and 'type="range"' in html
     for f in ("index.html", "partner/index.html"):
         assert 'class="hot"' not in (ROOT / "web" / f).read_text(encoding="utf-8")
+
+
+def test_features_page_exists_and_is_linked():
+    page = (ROOT / "web" / "funksjoner" / "index.html").read_text(encoding="utf-8")
+    assert page.count('class="card"') >= 10
+    for f in ("index.html", "guide/index.html", "partner/index.html"):
+        assert "funksjoner/" in (ROOT / "web" / f).read_text(encoding="utf-8")
