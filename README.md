@@ -40,9 +40,13 @@ Feeden oppgir bare «på lager» eller «utsolgt», ikke antall. Datoen i `snaps
 
 Alle sidene har en bryter (sol/måne) øverst til høyre. Siden følger først innstillingen i nettleseren eller systemet, og valget huskes i nettleseren (`localStorage`, nøkkelen `theme`). Fargene ligger som variabler øverst i hver HTML-fil.
 
-## Filamentet som ruller ut
+## Søkeforslag
 
-På forsiden ruller filamentet seg ut fra spolen øverst til høyre når man scroller ned, og inn igjen når man scroller opp. Spolen blir stående mens filamentet følger siden nedover. Spolen er en 3D-modell med gjennomsiktige sideplater og oransje filament, tegnet i sanntid med WebGL2 (egen shader, ingen biblioteker) og tømmes etter hvert som filamentet trekkes ut. Hvis nettleseren ikke støtter WebGL2, vises en flat SVG-spole i stedet. Dette er et script nederst i `web/index.html` (kommentaren «Filamentet ruller seg ut»). Det er skjult på smale skjermer og hvis brukeren har bedt om redusert bevegelse.
+Når man skriver i søkefeltet på forsiden, vises forslag (farger, typer, materialer, merker, butikker og vanlige ord fra produktnavnene) med antall treff. Treffene tar hensyn til filtrene som allerede er valgt, slik at du bare får forslag som gir resultater. Klikker man i feltet igjen etter et søk, foreslås ord som snevrer inn søket. Søket matcher alle ordene i vilkårlig rekkefølge («pla svart»). Koden ligger under «Søkeforslag» i `web/index.html`.
+
+## Huskeliste
+
+Hvert kort har et bokmerke nederst til høyre i bildet. Valgte filamenter lagres i nettleseren (`localStorage`, nøkkel `huskeliste`) og blir værende selv om filtrene endres. Første gang du legger til noe, dukker en boble med antall opp nede til høyre. Den følger med når man scroller. Trykk på den for å åpne listen (navn, materiale, farge og butikk), og minimer den med «–». Åpen eller lukket husker nettleseren. «Last ned PDF» lager en PDF direkte i nettleseren, uten eksterne biblioteker, med bilde, pris, pris per kg og lenke til hver butikk. Hvis produktbildet ikke kan hentes (butikkens server tillater det ikke), tegnes en spole i riktig farge i stedet. Priser vises bare hvis de ikke er skrudd av i `CONFIG`.
 
 ## Støtt siden (Vipps)
 
