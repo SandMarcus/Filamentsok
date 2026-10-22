@@ -44,6 +44,8 @@ Alle sidene har en bryter (sol/måne) øverst til høyre. Siden følger først i
 
 Når man skriver i søkefeltet på forsiden, vises forslag (farger, typer, materialer, merker, butikker og vanlige ord fra produktnavnene) med antall treff. Treffene tar hensyn til filtrene som allerede er valgt, slik at du bare får forslag som gir resultater. Klikker man i feltet igjen etter et søk, foreslås ord som snevrer inn søket. Søket matcher alle ordene i vilkårlig rekkefølge («pla svart»). Koden ligger under «Søkeforslag» i `web/index.html`.
 
+Kjente ord i søket gjøres om til filtre: «pla matt» gir pillene Materiale: PLA og Type: Matt (farge, type, materiale, tilsetning, merke og butikk gjenkjennes, også flerords-navn som «Bambu Lab»). Ord som ikke er kjent, blir stående som fritekst («Søk: …»). Fjerner du et ord i søkefeltet og søker igjen, forsvinner filteret. Fjerner du en pille, forsvinner ordet fra søkefeltet. Et helt nytt søk uten felles ord med forrige søk nullstiller alle filtre. Koden ligger i `commit()` i `web/index.html`.
+
 ## Huskeliste
 
 Hvert kort har et bokmerke øverst til høyre i bildet. Valgte filamenter lagres i nettleseren (`localStorage`, nøkkel `huskeliste`) og blir værende selv om filtrene endres. Første gang du legger til noe, dukker en boble med antall opp nede til høyre. Den følger med når man scroller. Trykk på den for å åpne listen (navn, materiale, farge og butikk), og minimer den med «–». Åpen eller lukket husker nettleseren. «Last ned PDF» lager en PDF direkte i nettleseren, uten eksterne biblioteker, med bilde, pris, pris per kg og lenke til hver butikk. Mange butikker blokkerer at andre sider leser bildene deres, så PDF-en prøver først bildet direkte og deretter via den åpne bildetjenesten images.weserv.nl (`PROXY` i koden). Lykkes ingen av delene, tegnes en spole i riktig farge i stedet. Huk av «Sammenlign» på 2–4 filamenter i listen og trykk «Sammenlign» for å se dem side om side (bilde, materiale, vekt, pris, kilopris og butikker). Beste pris og kilopris utheves. Priser vises bare hvis de ikke er skrudd av i `CONFIG`.
@@ -51,6 +53,10 @@ Hvert kort har et bokmerke øverst til høyre i bildet. Valgte filamenter lagres
 ## Mobilmeny
 
 På skjermer under 700 px samles menyen bak en hamburger-knapp øverst (på forsiden, guiden og partnersiden). «Om priser og lager» ligger nederst på forsiden, rett over bunnteksten. Første gang noen legger noe i huskelisten, vises en kort hjelpetekst over boblen. Den vises bare én gang per nettleser (`localStorage`-nøkkel `hk_tip`).
+
+## Funksjonssiden (`/funksjoner/`)
+
+`web/funksjoner/index.html` viser alle funksjonene på siden, gruppert i kort. Ny funksjon: legg til et `<div class="card">` i riktig gruppe. `CLAUDE.md` ber Claude gjøre dette automatisk når en ny funksjon bygges.
 
 ## Støtt siden (Vipps)
 
