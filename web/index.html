@@ -99,7 +99,7 @@ aside h3{margin:0 0 6px;font-size:12px;letter-spacing:.08em;text-transform:upper
 .card .pic{background:var(--chip);padding:14px;position:relative}
 .card .pic svg{width:100%;height:auto;max-height:140px;display:block}
 .tag.sale{background:var(--accent);color:var(--accent-fg)}
-.tag.r{left:auto;right:10px}
+.tag.r{top:36px}
 .price s{display:block;font-family:var(--font-b);font-weight:400;font-size:12px;color:var(--muted)}
 .tag{position:absolute;top:10px;left:10px;font-size:11px;font-weight:600;background:var(--fg);color:var(--bg);padding:2px 8px;border-radius:99px}
 .card .body{padding:12px;display:flex;flex-direction:column;gap:6px;flex:1}
@@ -159,7 +159,7 @@ dialog#vp h3{margin:0 0 6px;font-family:var(--font-d);font-size:22px}dialog#vp p
 dialog#vp img{display:block;width:min(260px,100%);height:auto;margin:0 auto 12px;border-radius:10px;background:#fff}
 .vhint{font-size:13px;color:var(--muted);text-align:center;margin:-4px 0 12px}
 dialog#vp .vgo{display:block;text-align:center;text-decoration:none;margin-bottom:8px}
-.pinfo{margin:-8px 0 18px;font-size:12.5px;color:var(--muted)}.pinfo summary{cursor:pointer;display:inline-block;padding:2px 0;text-decoration:underline;text-decoration-style:dotted}.pinfo .notice{margin:6px 0 0}
+.pinfo{margin:-8px 0 18px;font-size:12.5px;color:var(--muted)}.pinfo summary{cursor:pointer;display:inline-block;padding:2px 0;text-decoration:underline;text-decoration-style:dotted}.pinfo .notice{margin:6px 0 0}.pinfo.bot{margin:28px 0 -8px}
 @media (max-width:700px){header.top .tgl{order:1;margin-left:auto}header.top nav{order:2;width:100%;margin-left:0}}
 .vtop{display:inline-flex;align-items:center;gap:6px;height:36px;border-radius:8px;border:1px solid var(--line);background:var(--surface);color:var(--fg);padding:0 12px;font-weight:600;font-size:14px;cursor:pointer}.vtop[hidden]{display:none}.vtop svg{width:16px;height:16px;color:#ff5b24}.vtop:hover{background:var(--chip)}
 @media (max-width:700px){header.top .vtop{order:1}header.top .tgl{margin-left:0}header.top .vtop{margin-left:auto}}
@@ -181,7 +181,7 @@ dialog#vp .vgo{display:block;text-align:center;text-decoration:none;margin-botto
 .sug button:hover,.sug button.act{background:var(--chip)}
 .sug small{color:var(--muted);margin-left:8px;font-size:12px}
 .sug .n{color:var(--muted);font-family:var(--font-m);font-size:12px;white-space:nowrap}
-.fav{position:absolute;right:10px;bottom:10px;z-index:2;width:34px;height:34px;border-radius:50%;border:1px solid var(--line);background:var(--surface);color:var(--muted);display:grid;place-items:center;cursor:pointer;padding:0}
+.fav{position:absolute;right:10px;top:10px;z-index:2;width:34px;height:34px;border-radius:50%;border:1px solid var(--line);background:var(--surface);color:var(--muted);display:grid;place-items:center;cursor:pointer;padding:0}
 .fav svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2;stroke-linejoin:round}
 .fav:hover{color:var(--accent);border-color:var(--accent)}
 .fav.on{background:var(--accent);border-color:var(--accent);color:var(--accent-fg)}.fav.on svg{fill:currentColor}
@@ -209,8 +209,51 @@ dialog#vp .vgo{display:block;text-align:center;text-decoration:none;margin-botto
 .hl-pan li span{display:block;color:var(--muted);font-size:12px}
 .hl-pan li button{flex:none;width:28px;height:28px;border-radius:6px;border:0;background:none;color:var(--muted);cursor:pointer;font-size:18px}
 .hl-pan li button:hover{background:var(--chip);color:var(--fg)}
-.hl-pan footer{display:flex;gap:8px;padding:10px 12px;border-top:1px solid var(--line)}
+.hl-pan footer{display:flex;flex-wrap:wrap;gap:8px;padding:10px 12px;border-top:1px solid var(--line)}
 .hl-pan footer .btn{flex:1;padding:9px 10px;font-size:14px}
+.hl-pan footer .btn.cmpb{flex-basis:100%}
+.hl-pan footer .btn:disabled{opacity:.55;cursor:default}
+.hl-pan li label.cpl{display:flex;align-items:center;gap:6px;margin-top:4px;font-size:12px;color:var(--muted);cursor:pointer}
+.hl-pan li label.cpl input{width:15px;height:15px;margin:0;accent-color:var(--accent)}
+dialog#hc{width:min(1100px,100vw);max-width:100vw;height:min(92vh,860px);max-height:100vh;padding:0;border:1px solid var(--line);border-radius:12px;background:var(--surface);color:var(--fg)}
+dialog#hc::backdrop{background:rgba(0,0,0,.55)}
+dialog#hc[open]{display:flex;flex-direction:column;z-index:80}
+dialog#hc .dh{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:12px 16px;border-bottom:1px solid var(--line)}
+dialog#hc .dh h2{margin:0;font-family:var(--font-d);font-size:22px}
+dialog#hc .dh button{background:var(--chip);color:var(--fg);border:0;border-radius:8px;padding:8px 14px;font-weight:600;cursor:pointer}
+dialog#hc .sc{flex:1;overflow:auto}
+.hct{border-collapse:separate;border-spacing:0;font-size:14px}
+.hct th,.hct td{padding:8px 12px;border-bottom:1px solid var(--line);border-right:1px solid var(--line);vertical-align:top;background:var(--surface);text-align:left}
+.hct thead th{position:sticky;top:0;z-index:3;min-width:200px;max-width:250px;border-bottom:2px solid var(--line)}
+.hct thead th.corner{left:0;z-index:5;min-width:130px;max-width:130px}
+.hct tbody th{position:sticky;left:0;z-index:2;min-width:130px;max-width:130px;font-weight:600;color:var(--muted);font-size:13px}
+.hct .nm{display:flex;justify-content:space-between;gap:8px;font-weight:700;font-size:15px;line-height:1.25}
+.hct .nm button{background:none;border:0;cursor:pointer;color:var(--muted);font-size:18px;line-height:1;padding:0}
+.hct .pic2{height:110px;display:grid;place-items:center;background:var(--chip);border-radius:8px;overflow:hidden}
+.hct .pic2 svg,.hct .pic2 img{max-width:100%;max-height:100px;width:auto;height:100px;object-fit:contain}
+.hct .pic2 img{background:#fff;width:100%}
+.hct td.best{background:rgba(46,160,90,.14);font-weight:700}
+.hct .of2{display:flex;justify-content:space-between;gap:8px;align-items:baseline;padding:4px 0;border-bottom:1px dashed var(--line)}
+.hct .of2:last-child{border-bottom:0}
+.hct .of2 small{display:block;color:var(--muted)}
+.hct a.go2{display:block;margin-top:2px;font-weight:600;color:var(--accent)}
+@media (max-width:600px){dialog#hc{height:100vh;border-radius:0;border:0}.hct thead th{min-width:160px}.hct thead th.corner,.hct tbody th{min-width:96px;max-width:96px}}
+
+.bur{display:none;place-items:center;width:36px;height:36px;border-radius:8px;border:1px solid var(--line);background:var(--surface);color:var(--fg);cursor:pointer;padding:0;order:1}
+.bur svg{width:20px;height:20px;stroke:currentColor;stroke-width:2;stroke-linecap:round;fill:none}.bur .x{display:none}.bur[aria-expanded="true"] .x{display:block}.bur[aria-expanded="true"] .b{display:none}
+@media (max-width:700px){
+  .bur{display:inline-grid}
+  header.top nav{display:none!important;order:5;width:100%;margin-left:0;flex-direction:column;gap:2px;padding:6px;background:var(--surface);border:1px solid var(--line);border-radius:10px}
+  header.top.menu-open nav{display:flex!important}
+  header.top nav a{padding:12px 12px;font-size:16px}
+}
+#hl .hl-tip{position:relative;width:min(260px,calc(100vw - 32px));margin-bottom:12px;padding:12px 34px 12px 14px;background:var(--fg);color:var(--bg);border-radius:12px;font-size:13.5px;line-height:1.4;box-shadow:0 8px 24px rgba(0,0,0,.3);animation:tipin .3s}
+#hl .hl-tip:after{content:"";position:absolute;right:20px;bottom:-7px;width:14px;height:14px;background:var(--fg);transform:rotate(45deg);border-radius:2px}
+#hl .hl-tip b{display:block;margin-bottom:2px}
+#hl .hl-tip button{position:absolute;top:6px;right:6px;width:24px;height:24px;border:0;background:none;color:inherit;opacity:.7;font-size:18px;line-height:1;cursor:pointer}
+#hl .hl-tip[hidden]{display:none}
+@keyframes tipin{from{opacity:0;transform:translateY(6px)}}
+@media (prefers-reduced-motion:reduce){#hl .hl-tip{animation:none}}
 </style>
 </head>
 <body>
@@ -220,11 +263,12 @@ dialog#vp .vgo{display:block;text-align:center;text-decoration:none;margin-botto
       <svg width="30" height="30" viewBox="0 0 40 40" aria-hidden="true"><circle cx="20" cy="20" r="18" fill="none" stroke="currentColor" stroke-width="3"/><circle cx="20" cy="20" r="11" fill="var(--accent)"/><circle cx="20" cy="20" r="4" fill="var(--bg)"/></svg>
       Filamentsøk.no
     </a>
-    <nav aria-label="Hovedmeny">
+    <nav aria-label="Hovedmeny" id="mainnav">
       <a class="on" href="#">Hjem</a><a href="#butikk">Søk</a><a href="#kategorier">Kategorier</a><a href="#butikker">Butikker</a><a href="#om">Om oss</a><a href="guide/">Guide til filament</a><a href="partner.html">Partner</a>
     </nav>
     <button class="vtop" id="vtop" type="button" hidden aria-label="Støtt Filamentsøk med Vipps"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7.5-4.6-9.5-9.2C1.2 8.6 3 5.5 6.2 5.5c2 0 3.2 1.1 3.8 2.2h4c.6-1.1 1.8-2.2 3.8-2.2 3.2 0 5 3.1 3.7 6.3C19.5 16.4 12 21 12 21z" fill="currentColor" transform="translate(0 -1) scale(1)"/></svg><span>Støtt</span></button>
     <button class="tgl" id="tgl" type="button" aria-label="Bytt mellom lyst og mørkt tema" title="Bytt tema"><svg class="moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg><svg class="sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg></button>
+    <button class="bur" id="bur" type="button" aria-label="Meny" aria-expanded="false" aria-controls="mainnav"><svg viewBox="0 0 24 24" aria-hidden="true"><g class="b"><path d="M4 7h16M4 12h16M4 17h16"/></g><g class="x"><path d="M6 6l12 12M18 6L6 18"/></g></svg></button>
   </header>
 
   <section class="hero">
@@ -247,7 +291,7 @@ dialog#vp .vgo{display:block;text-align:center;text-decoration:none;margin-botto
     <span class="pb">Åpne guiden →</span>
   </a>
 
-  <details class="pinfo"><summary>Om priser og lager</summary><p class="notice" id="notice"></p></details>
+  <div id="pslot"></div>
 
   <section id="kategorier">
     <h2>Materiale og tilsetning</h2>
@@ -297,6 +341,7 @@ dialog#vp .vgo{display:block;text-align:center;text-decoration:none;margin-botto
     <button class="vcl" type="button" id="vx">Lukk</button>
   </dialog>
 
+  <details class="pinfo bot"><summary>Om priser og lager</summary><p class="notice" id="notice"></p></details>
   <footer>
     <span>© 2026 Filamentsøk.no</span>
     <span>Hjem · Søk · Kategorier · Butikker · Om oss · <a href="guide/">Guide</a> · <a href="partner.html">Partner</a> · <a href="mailto:marcussandersen@gmail.com">Kontakt</a><span id="vfoot" hidden> · <a href="#stott">Støtt siden</a></span></span>
@@ -457,7 +502,7 @@ dialog#vp .vgo{display:block;text-align:center;text-decoration:none;margin-botto
   }
   $('#heroart').innerHTML=spool('Oransje','Silk');
   if(PRICES){$('#notice').textContent='Priser og lager er hentet fra butikkenes nettsider og kan ha endret seg. Sjekk alltid endelig pris hos butikken. Der vekten ikke er oppgitt, kan pris per kg mangle.'+(CONFIG.hidePricesFor.length?' Enkelte butikker vises uten pris.':'')}
-  else{var nt=$('#notice');var dt=nt.closest('details');if(dt){dt.parentNode.insertBefore(nt,dt);dt.remove()}nt.classList.add('off');nt.setAttribute('role','status');nt.innerHTML='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 21V3" stroke="#c4271c" stroke-width="2.4" stroke-linecap="round" fill="none"/><path d="M6 4h12l-3 4.5 3 4.5H6z" fill="#d6251a"/></svg><div><b>Priser er skrudd av</b>Filamentsøk kan vise butikkenes priser, men de er slått av for øyeblikket. Trykk deg videre til butikken for å se gjeldende pris og lager.</div>'}
+  else{var nt=$('#notice');var dt=nt.closest('details');if(dt){$('#pslot').appendChild(nt);dt.remove()}nt.classList.add('off');nt.setAttribute('role','status');nt.innerHTML='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 21V3" stroke="#c4271c" stroke-width="2.4" stroke-linecap="round" fill="none"/><path d="M6 4h12l-3 4.5 3 4.5H6z" fill="#d6251a"/></svg><div><b>Priser er skrudd av</b>Filamentsøk kan vise butikkenes priser, men de er slått av for øyeblikket. Trykk deg videre til butikken for å se gjeldende pris og lager.</div>'}
 
   var quick=[['all','Bla gjennom alle filamenter ↓']];
   $('#quick').innerHTML=quick.map(function(x){return '<button class="chip" data-q="'+x[0]+'">'+x[1]+'</button>'}).join('');
@@ -688,38 +733,83 @@ dialog#vp .vgo{display:block;text-align:center;text-decoration:none;margin-botto
   function isFav(p){return FAV.indexOf(fk(p))>=0}
   var BM='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h12v18l-6-4.5L6 21z"/></svg>';
   var hl=document.createElement('div');hl.id='hl';hl.hidden=true;
-  hl.innerHTML='<button type="button" class="hl-bub" id="hlB" aria-label="Åpne huskelisten">'+BM+'<b id="hlN">0</b></button>'+
+  hl.innerHTML='<div class="hl-tip" id="hlTip" role="status" hidden><b>Huskelisten din</b>Åpne den her for å sammenligne filamenter og laste ned en PDF-oversikt.<button type="button" id="hlTipX" aria-label="Lukk tips">×</button></div><button type="button" class="hl-bub" id="hlB" aria-label="Åpne huskelisten">'+BM+'<b id="hlN">0</b></button>'+
     '<section class="hl-pan" id="hlP" hidden aria-label="Huskeliste"><header><h2>Huskeliste <span id="hlC"></span></h2><button type="button" id="hlMin" aria-label="Minimer huskelisten">–</button></header>'+
-    '<ul id="hlL"></ul><footer><button class="btn" id="hlPdf" type="button">Last ned PDF</button><button class="btn ghost" id="hlClr" type="button">Tøm listen</button></footer></section>';
+    '<ul id="hlL"></ul><footer><button class="btn cmpb" id="hlCmp" type="button" disabled>Velg minst to for å sammenligne</button><button class="btn" id="hlPdf" type="button">Last ned PDF</button><button class="btn ghost" id="hlClr" type="button">Tøm listen</button></footer></section>';
   document.body.appendChild(hl);
+  var CMP=[],MAXC=4;
+  var hc=document.createElement('dialog');hc.id='hc';hc.setAttribute('aria-labelledby','hcT');
+  hc.innerHTML='<div class="dh"><h2 id="hcT">Sammenligning</h2><button type="button" id="hcX">Lukk</button></div><div class="sc" id="hcSc"></div>';
+  document.body.appendChild(hc);
   function dotStyle(c){var v=COL[c];return v==='multi'?'background:conic-gradient(#d1322b,#f2c230,#2f9e5b,#2f6fd0,#d1322b)':'background:'+(v==='unk'?'#9aa6af':v)}
   function storeNames(p){return p.offers.map(function(o){return STORES[o.store].n}).filter(function(v,i,a){return a.indexOf(v)===i}).join(', ')}
   function drawHl(pop){
+    CMP=CMP.filter(function(k){return FAV.indexOf(k)>=0});
     $('#hlN').textContent=FAV.length;$('#hlC').textContent='('+FAV.length+')';
     hl.hidden=!FAV.length;if(!FAV.length)HOPEN=false;
     $('#hlP').hidden=!HOPEN;$('#hlB').hidden=HOPEN;
     $('#hlB').setAttribute('aria-label','Åpne huskelisten, '+FAV.length+(FAV.length===1?' filament':' filamenter'));
     $('#hlL').innerHTML=FAV.map(function(k){var p=byKey[k];
-      return '<li><i class="dot" style="'+dotStyle(p.col)+'"></i><div><b>'+esc(p.name)+'</b><span>'+esc((MATS[p.mat]||{n:p.mat}).n)+(p.add?' + '+esc(p.add):'')+' · '+esc(p.col)+'</span><span>'+esc(storeNames(p))+'</span></div><button type="button" data-rm="'+esc(k)+'" aria-label="Fjern fra huskelisten: '+esc(p.name)+'">×</button></li>'}).join('');
+      return '<li><i class="dot" style="'+dotStyle(p.col)+'"></i><div><b>'+esc(p.name)+'</b><span>'+esc((MATS[p.mat]||{n:p.mat}).n)+(p.add?' + '+esc(p.add):'')+' · '+esc(p.col)+'</span><span>'+esc(storeNames(p))+'</span><label class="cpl"><input type="checkbox" data-cmp="'+esc(k)+'"'+(CMP.indexOf(k)>=0?' checked':'')+'> Sammenlign</label></div><button type="button" data-rm="'+esc(k)+'" aria-label="Fjern fra huskelisten: '+esc(p.name)+'">×</button></li>'}).join('');
+    var cb=$('#hlCmp');cb.disabled=CMP.length<2;cb.textContent=CMP.length<2?'Velg minst to for å sammenligne':'Sammenlign '+CMP.length+' filamenter';
+    if(hc.open){if(CMP.length<2)hc.close();else $('#hcSc').innerHTML=cmpHtml()}
     if(pop){var b=$('#hlB');b.classList.remove('pop');void b.offsetWidth;b.classList.add('pop')}}
   function syncFavBtns(){[].forEach.call(document.querySelectorAll('.fav'),function(b){var on=isFav(R[+b.dataset.fav]);b.classList.toggle('on',on);b.setAttribute('aria-pressed',on);b.title=on?'Fjern fra huskelisten':'Legg til i huskelisten'})}
-  function toggleFav(p){var k=fk(p),i=FAV.indexOf(k);if(i>=0)FAV.splice(i,1);else FAV.push(k);saveFav();drawHl(i<0);syncFavBtns()}
+  var tipT=0;function hideTip(){$('#hlTip').hidden=true;clearTimeout(tipT)}
+  function showTip(){var seen=false;try{seen=localStorage.getItem('hk_tip')==='1';localStorage.setItem('hk_tip','1')}catch(e){}
+    if(seen||HOPEN)return;$('#hlTip').hidden=false;tipT=setTimeout(hideTip,9000)}
+  $('#hlTipX').addEventListener('click',hideTip);
+  function toggleFav(p){var k=fk(p),i=FAV.indexOf(k),first=i<0&&!FAV.length;if(i>=0)FAV.splice(i,1);else FAV.push(k);saveFav();drawHl(i<0);syncFavBtns();if(first)showTip()}
   $('#grid').addEventListener('click',function(e){var b=e.target.closest('.fav');if(b)toggleFav(R[+b.dataset.fav])});
-  $('#hlB').addEventListener('click',function(){HOPEN=true;saveFav();drawHl()});
+  $('#hlB').addEventListener('click',function(){hideTip();HOPEN=true;saveFav();drawHl()});
   $('#hlMin').addEventListener('click',function(){HOPEN=false;saveFav();drawHl();$('#hlB').focus()});
   $('#hlL').addEventListener('click',function(e){var b=e.target.closest('button');if(!b)return;var i=FAV.indexOf(b.dataset.rm);if(i>=0){FAV.splice(i,1);saveFav();drawHl();syncFavBtns()}});
   $('#hlClr').addEventListener('click',function(){if(!FAV.length||!confirm('Fjerne alle filamentene fra huskelisten?'))return;FAV=[];saveFav();drawHl();syncFavBtns()});
 
+  function cmpHtml(){
+    var ps=CMP.map(function(k){return byKey[k]});
+    function lo(p,f){var v=p.offers.map(function(o){return o[f]}).filter(function(x){return x!==null&&x!==undefined&&x>0});return v.length?Math.min.apply(null,v):null}
+    var minP=ps.map(function(p){return lo(p,'price')}),minK=ps.map(function(p){return lo(p,'pk')});
+    function bestIdx(a){var m=null;a.forEach(function(v){if(v!==null&&(m===null||v<m))m=v});return a.map(function(v){return m!==null&&v===m&&a.filter(function(x){return x===m}).length<a.length})}
+    function row(l,fn,best){return '<tr><th scope="row">'+l+'</th>'+ps.map(function(p,i){return '<td'+(best&&best[i]?' class="best"':'')+'>'+fn(p,i)+'</td>'}).join('')+'</tr>'}
+    var h='<table class="hct"><thead><tr><th class="corner" scope="col"></th>'+ps.map(function(p){return '<th scope="col"><div class="nm"><span>'+esc(p.name)+'</span><button type="button" data-hr="'+esc(fk(p))+'" aria-label="Fjern fra sammenligningen: '+esc(p.name)+'">×</button></div></th>'}).join('')+'</tr></thead><tbody>';
+    h+=row('Bilde',function(p){return '<div class="pic2">'+(p.img?'<img src="'+esc(p.img)+'" alt="" referrerpolicy="no-referrer" onerror="this.outerHTML=\'\'+window.__sp(\''+esc(p.col)+'\',\''+esc(p.fin)+'\')">':spool(p.col,p.fin))+'</div>'});
+    h+=row('Merke',function(p){return esc(p.brand)});
+    h+=row('Materiale',function(p){return esc((MATS[p.mat]||{n:p.mat}).n)});
+    h+=row('Tilsetning',function(p){return p.add?esc(p.add):'–'});
+    h+=row('Farge',function(p){return '<i class="dot" style="display:inline-block;width:12px;height:12px;border-radius:50%;vertical-align:-1px;margin-right:6px;border:1px solid rgba(0,0,0,.25);'+dotStyle(p.col)+'"></i>'+esc(p.col)});
+    h+=row('Type',function(p){return esc(FINL[p.fin]||p.fin)});
+    h+=row('Vekt',function(p){return p.kg?String(p.kg).replace('.',',')+' kg':'–'});
+    h+=row('Butikker',function(p){return Object.keys(p.stores).length});
+    if(PRICES){
+      h+=row('Laveste pris',function(p,i){return minP[i]!==null?kr(minP[i]):'–'},bestIdx(minP));
+      h+=row('Laveste kilopris',function(p,i){return minK[i]!==null?kr(minK[i])+'/kg':'–'},bestIdx(minK));
+    }
+    h+=row('Tilbud',function(p){return p.offers.map(function(o){var st=STORES[o.store];
+      return '<div class="of2"><span><b>'+esc(st.n)+'</b>'+stockHtml(o)+(o.url?'<a class="go2" href="'+esc(o.url)+'" target="_blank" rel="noopener noreferrer">Til butikken</a>':'')+'</span>'+(PRICES&&o.price!==null?'<b>'+kr(o.price)+'</b>':'')+'</div>'}).join('')});
+    return h+'</tbody></table>'}
+  window.__sp=function(c,f){return spool(c,f)};
+  hl.addEventListener('change',function(e){var c=e.target.closest('input[data-cmp]');if(!c)return;var k=c.dataset.cmp,i=CMP.indexOf(k);
+    if(c.checked){if(i<0){if(CMP.length>=MAXC){c.checked=false;alert('Du kan sammenligne opptil '+MAXC+' filamenter om gangen.');return}CMP.push(k)}}else if(i>=0)CMP.splice(i,1);
+    var cb=$('#hlCmp');cb.disabled=CMP.length<2;cb.textContent=CMP.length<2?'Velg minst to for å sammenligne':'Sammenlign '+CMP.length+' filamenter'});
+  $('#hlCmp').addEventListener('click',function(){if(CMP.length<2)return;$('#hcSc').innerHTML=cmpHtml();if(!hc.open)hc.showModal()});
+  $('#hcX').addEventListener('click',function(){hc.close()});
+  hc.addEventListener('click',function(e){if(e.target===hc){hc.close();return}var r=e.target.closest('[data-hr]');if(r){var i=CMP.indexOf(r.dataset.hr);if(i>=0)CMP.splice(i,1);drawHl()}});
+
   /* PDF uten eksterne biblioteker: Helvetica, tekst, lenker og bilde (eller tegnet spole hvis bildet ikke kan hentes). */
-  function loadImg(url){return new Promise(function(res){
-    if(!url)return res(null);
+  function loadOne(url){return new Promise(function(res){
     var im=new Image(),done=false;function fin(v){if(!done){done=true;res(v)}}
-    var t=setTimeout(function(){fin(null)},5000);
+    var t=setTimeout(function(){fin(null)},6000);
     im.crossOrigin='anonymous';im.referrerPolicy='no-referrer';
     im.onload=function(){clearTimeout(t);try{var s=240,sc=Math.min(s/im.naturalWidth,s/im.naturalHeight),w=Math.max(1,Math.round(im.naturalWidth*sc)),h=Math.max(1,Math.round(im.naturalHeight*sc));
       var c=document.createElement('canvas');c.width=w;c.height=h;var x=c.getContext('2d');x.fillStyle='#fff';x.fillRect(0,0,w,h);x.drawImage(im,0,0,w,h);
       var b=atob(c.toDataURL('image/jpeg',0.85).split(',')[1]),u=new Uint8Array(b.length);for(var i=0;i<b.length;i++)u[i]=b.charCodeAt(i);fin({u:u,w:w,h:h})}catch(e){fin(null)}};
     im.onerror=function(){clearTimeout(t);fin(null)};im.src=url})}
+  /* Mange butikker tillater ikke at bildene leses av andre nettsider (CORS). Da prøver vi en åpen bildeproxy (images.weserv.nl) som sender CORS-headere. */
+  var PROXY='https://images.weserv.nl/?w=300&h=300&fit=contain&bg=white&output=jpg&url=';
+  function loadImg(p){var urls=[];if(p.img)urls.push(p.img);p.offers.forEach(function(o){if(o.img&&urls.indexOf(o.img)<0)urls.push(o.img)});
+    urls=urls.slice(0,2);var tries=[];urls.forEach(function(u){tries.push(u);tries.push(PROXY+encodeURIComponent(u.replace(/^https?:\/\//,'')))});
+    return tries.reduce(function(pr,u){return pr.then(function(r){return r||loadOne(u)})},Promise.resolve(null))}
   function buildPdf(items,imgs){
     var W=595,H=842,M=40,pages=[],cur=null,IM=[];
     var mc=document.createElement('canvas').getContext('2d');
@@ -791,7 +881,7 @@ dialog#vp .vgo{display:block;text-align:center;text-decoration:none;margin-botto
   $('#hlPdf').addEventListener('click',function(){
     var b=this,items=FAV.map(function(k){return byKey[k]});if(!items.length)return;
     b.disabled=true;var t0=b.textContent;b.textContent='Lager PDF …';
-    Promise.all(items.map(function(p){return loadImg(p.img)})).then(function(imgs){
+    Promise.all(items.map(function(p){return loadImg(p)})).then(function(imgs){
       var bl=buildPdf(items,imgs),a=document.createElement('a');a.href=URL.createObjectURL(bl);a.download='huskeliste-filamentsok.pdf';document.body.appendChild(a);a.click();
       setTimeout(function(){URL.revokeObjectURL(a.href);a.remove()},4000)})
     .catch(function(){alert('Kunne ikke lage PDF. Prøv igjen.')})
@@ -807,5 +897,8 @@ dialog#vp .vgo{display:block;text-align:center;text-decoration:none;margin-botto
 <script>(function(){var b=document.getElementById("tgl");if(!b)return;b.addEventListener("click",function(){var r=document.documentElement,cur=r.getAttribute("data-theme");
 if(!cur)cur=matchMedia("(prefers-color-scheme:dark)").matches?"dark":"light";var n=cur==="dark"?"light":"dark";r.setAttribute("data-theme",n);try{localStorage.setItem("theme",n)}catch(e){}})})()</script>
 
+<script>(function(){var b=document.getElementById("bur"),h=document.querySelector("header.top");if(!b||!h)return;function set(o){h.classList.toggle("menu-open",o);b.setAttribute("aria-expanded",o)}
+b.addEventListener("click",function(){set(!h.classList.contains("menu-open"))});h.querySelector("nav").addEventListener("click",function(e){if(e.target.closest("a"))set(false)});
+document.addEventListener("keydown",function(e){if(e.key==="Escape")set(false)});addEventListener("resize",function(){if(innerWidth>700)set(false)})})()</script>
 </body>
 </html>
