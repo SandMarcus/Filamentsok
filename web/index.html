@@ -44,7 +44,8 @@ nav a:hover,nav a.on{background:var(--chip);color:var(--fg)}
 .search input{flex:1;min-width:0;padding:13px 14px;border:1px solid var(--line);border-radius:8px;background:var(--surface)}
 .btn{background:var(--accent);color:var(--accent-fg);border:0;border-radius:8px;padding:11px 16px;font-weight:600;cursor:pointer}
 .btn.ghost{background:var(--chip);color:var(--fg)}
-.quick{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+.quick{display:none;gap:8px;flex-wrap:wrap;margin-top:14px}
+@media (max-width:800px){.quick{display:flex}}
 .chip{border:1px solid var(--line);background:var(--surface);border-radius:99px;padding:6px 12px;cursor:pointer;font-size:13px;font-weight:500}
 .chip.on{background:var(--fg);color:var(--bg);border-color:var(--fg)}
 .heroart svg{width:100%;height:auto;display:block}
@@ -144,9 +145,10 @@ footer{border-top:1px solid var(--line);padding-block:24px 40px;color:var(--mute
 :root[data-theme="dark"] .tgl .sun{display:block}:root[data-theme="dark"] .tgl .moon{display:none}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .tgl .sun{display:block}:root:not([data-theme="light"]) .tgl .moon{display:none}}
 .wrap{position:relative;z-index:1}
+#strand2{position:absolute;left:0;top:0;pointer-events:none;z-index:2;overflow:visible}
 #strand{position:absolute;left:0;top:0;pointer-events:none;z-index:0;overflow:visible}
-@media (max-width:800px){#strand{display:none}}
-@media (prefers-reduced-motion:reduce){#strand{display:none}}
+@media (max-width:800px){#strand,#strand2{display:none}}
+@media (prefers-reduced-motion:reduce){#strand,#strand2{display:none}}
 .support{display:flex;gap:16px;align-items:center;justify-content:space-between;flex-wrap:wrap;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:18px 20px;margin-top:28px}
 .support[hidden]{display:none}
 .support h4{margin:0 0 2px;font-family:var(--font-d);font-size:19px}.support p{margin:0;color:var(--muted);max-width:60ch;font-size:14px}
@@ -158,7 +160,8 @@ dialog#vp h3{margin:0 0 6px;font-family:var(--font-d);font-size:22px}dialog#vp p
 .vnum{display:flex;gap:8px;align-items:center;margin-bottom:12px}.vnum output{flex:1;font-family:var(--font-m);font-size:20px;font-weight:600;background:var(--chip);border-radius:8px;padding:8px 12px}
 .vnum button,.vcl{background:var(--fg);color:var(--bg);border:0;border-radius:8px;padding:9px 14px;font-weight:600;cursor:pointer}
 .vcl{background:var(--chip);color:var(--fg);margin-top:8px;width:100%}
-dialog#vp img{display:block;width:180px;height:180px;margin:0 auto 12px;border-radius:8px;background:#fff;padding:6px}
+dialog#vp img{display:block;width:min(260px,100%);height:auto;margin:0 auto 12px;border-radius:10px;background:#fff}
+.vhint{font-size:13px;color:var(--muted);text-align:center;margin:-4px 0 12px}
 dialog#vp .vgo{display:block;text-align:center;text-decoration:none;margin-bottom:8px}
 .pinfo{margin:-8px 0 18px;font-size:12.5px;color:var(--muted)}.pinfo summary{cursor:pointer;display:inline-block;padding:2px 0;text-decoration:underline;text-decoration-style:dotted}.pinfo .notice{margin:6px 0 0}
 @media (max-width:700px){header.top .tgl{order:1;margin-left:auto}header.top nav{order:2;width:100%;margin-left:0}}
@@ -251,8 +254,9 @@ dialog#vp .vgo{display:block;text-align:center;text-decoration:none;margin-botto
   <dialog id="vp" aria-labelledby="vpt">
     <h3 id="vpt">Støtt Filamentsøk</h3>
     <p>Takk for at du vil bidra! Støtten er frivillig og gir ingen motytelse. Skriv gjerne «Filamentsøk» i meldingen.</p>
-    <img id="vqr" alt="QR-kode for Vipps" hidden>
     <a class="vbtn vgo" id="vgo" target="_blank" rel="noopener" hidden>Åpne i Vipps</a>
+    <img id="vqr" alt="QR-kode for Vipps" hidden>
+    <p class="vhint" id="vhint" hidden>Skann koden med Vipps-appen på mobilen.</p>
     <div class="vnum" id="vnumw" hidden><output id="vnum"></output><button type="button" id="vcp">Kopier</button></div>
     <button class="vcl" type="button" id="vx">Lukk</button>
   </dialog>
@@ -276,14 +280,16 @@ dialog#vp .vgo{display:block;text-align:center;text-decoration:none;margin-botto
   //   logo:        filnavn på den offisielle Vipps-logoen, for eksempel 'vipps-logo.svg'. Vises i knappene i stedet for hjertet og teksten.
   //   officialButton: true bruker Vipps' egen knapp («Bidra med Vipps») i boksen nederst, lastet fra Vipps. Settes til false for en vanlig knapp.
   //   qrImage:     filnavn på et bilde av Vipps-QR-koden, for eksempel 'vipps-qr.png' (legg filen ved siden av index.html)
-  var SUPPORT={vippsNumber:'',vippsLink:'https://qr.vipps.no/28/2/01/031/4798439828?v=1',qrImage:'',logo:'',officialButton:true};
+  var SUPPORT={vippsNumber:'',vippsLink:'https://qr.vipps.no/28/2/01/031/4798439828?v=1',qrImage:'vipps-qr.jpg',logo:'',officialButton:true};
   (function(){
     var sec=document.getElementById('stott');if(!sec||!(SUPPORT.vippsNumber||SUPPORT.vippsLink||SUPPORT.qrImage))return;
     sec.hidden=false;document.getElementById('vfoot').hidden=false;
     var d=document.getElementById('vp'),$=function(i){return document.getElementById(i)};
     if(SUPPORT.vippsNumber){$('vnumw').hidden=false;$('vnum').textContent=SUPPORT.vippsNumber}
     if(SUPPORT.vippsLink&&/^https?:\/\//.test(SUPPORT.vippsLink)){$('vgo').hidden=false;$('vgo').href=SUPPORT.vippsLink}
-    if(SUPPORT.qrImage){$('vqr').hidden=false;$('vqr').src=SUPPORT.qrImage}
+    var phone=(window.matchMedia&&matchMedia('(pointer:coarse)').matches&&Math.min(screen.width,screen.height)<820)||/Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+    if(SUPPORT.qrImage){$('vqr').hidden=false;$('vqr').src=SUPPORT.qrImage;$('vhint').hidden=phone;$('vhint').textContent=phone?'':'Skann koden med Vipps-appen på mobilen.'}
+    if(!phone)$('vgo').hidden=true;
     $('vopen').addEventListener('click',function(){d.showModal()});
     if(SUPPORT.logo){var im='<img src="'+SUPPORT.logo.replace(/"/g,'')+'" alt="Vipps" class="vlogo">';
       $('vopen').innerHTML=im;$('vopen').setAttribute('aria-label','Støtt med Vipps');$('vtop').innerHTML=im;$('vtop').classList.add('lg');$('vgo').innerHTML=im;$('vgo').setAttribute('aria-label','Åpne i Vipps')}
@@ -595,36 +601,50 @@ dialog#vp .vgo{display:block;text-align:center;text-decoration:none;margin-botto
 </script>
 <script>(function(){var b=document.getElementById("tgl");if(!b)return;b.addEventListener("click",function(){var r=document.documentElement,cur=r.getAttribute("data-theme");
 if(!cur)cur=matchMedia("(prefers-color-scheme:dark)").matches?"dark":"light";var n=cur==="dark"?"light":"dark";r.setAttribute("data-theme",n);try{localStorage.setItem("theme",n)}catch(e){}})})()</script>
+<svg id="strand2" aria-hidden="true" focusable="false"><defs><clipPath id="stclip"><rect id="stcr" x="0" y="0" width="1" height="1"/></clipPath></defs><g clip-path="url(#stclip)"><path id="stl2" fill="none" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></g></svg>
 <svg id="strand" aria-hidden="true" focusable="false"><path id="stl" fill="none" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/><path id="stc" fill="none" stroke="none"/></svg>
 <script>
 /* Filamentet ruller seg ut fra spolen når man scroller ned, og inn igjen når man scroller opp. */
 (function(){
-  var svg=document.getElementById('strand'),L=document.getElementById('stl'),C=document.getElementById('stc'),art=document.getElementById('heroart'),wrap=document.querySelector('.wrap');
+  var svg=document.getElementById('strand'),svg2=document.getElementById('strand2'),L2=document.getElementById('stl2'),CR=document.getElementById('stcr'),L=document.getElementById('stl'),C=document.getElementById('stc'),art=document.getElementById('heroart'),wrap=document.querySelector('.wrap');
   if(!svg||!art||!wrap||(window.matchMedia&&matchMedia('(prefers-reduced-motion:reduce)').matches))return;
-  var R0=46,RMIN=26,raf=0,els=null;
+  var NS='http://www.w3.org/2000/svg',R0=46,RMIN=22,TAIL=70,raf=0,els=null,tip=null,tip2=null;
   function find(){var sv=art.querySelector('svg');if(!sv)return null;var c=sv.querySelectorAll('circle'),p=sv.querySelectorAll('path');
-    return {sv:sv,disc:c[1],rings:[c[2],c[3],c[4]],hi:p}}
+    var rings=[c[2],c[3],c[4]],dash=['34 9 12 9','22 8 30 8','14 6 18 6 9 6'];
+    rings.forEach(function(r,i){if(!r)return;r.style.stroke='rgba(0,0,0,.30)';r.setAttribute('stroke-dasharray',dash[i])});
+    var g=document.createElementNS(NS,'g'),ticks=[];
+    for(var k=0;k<3;k++){var l=document.createElementNS(NS,'line');l.setAttribute('stroke','rgba(0,0,0,.4)');l.setAttribute('stroke-width','2.6');l.setAttribute('stroke-linecap','round');g.appendChild(l);ticks.push(l)}
+    c[1].parentNode.insertBefore(g,c[5]);
+    if(!tip){tip=document.createElementNS(NS,'circle');tip.setAttribute('r','4.5');svg.appendChild(tip);tip2=document.createElementNS(NS,'circle');tip2.setAttribute('r','4.5');svg2.querySelector('g').appendChild(tip2)}
+    return {sv:sv,disc:c[1],rings:rings,hi:p,g:g,ticks:ticks}}
   function frame(){raf=0;
-    if(!els)els=find();if(!els||getComputedStyle(art).display==='none'){L.setAttribute('d','');return}
+    if(!els)els=find();if(!els||getComputedStyle(art).display==='none'){L.setAttribute('d','');L2.setAttribute('d','');if(tip){tip.style.opacity=0;tip2.style.opacity=0}return}
     var de=document.documentElement,vw=de.clientWidth,docH=Math.max(de.scrollHeight,document.body.scrollHeight),vh=window.innerHeight,y=window.pageYOffset||de.scrollTop;
-    svg.setAttribute('width',vw);svg.setAttribute('height',docH);svg.style.width=vw+'px';svg.style.height=docH+'px';
-    var r=els.sv.getBoundingClientRect(),k=r.width/120,cx=r.left+r.width/2,cy=r.top+y+r.height/2;
+    [svg,svg2].forEach(function(e){e.setAttribute('width',vw);e.setAttribute('height',docH);e.style.width=vw+'px';e.style.height=docH+'px'});
+    var r=els.sv.getBoundingClientRect(),k=r.width/120,cx=r.left+r.width/2,cy=r.top+y+r.height/2,bottom=r.bottom+y;
     var wr=wrap.getBoundingClientRect(),xg=Math.min(vw-8,wr.right+Math.min(20,(vw-wr.right)/2));
-    /* hvor langt har filamentet rullet ut? */
-    var f=Math.min(1,y/160),tipY=Math.min(docH-24,y+vh*0.85);
-    var pre=function(R){var y0=cy+R*k;return {y0:y0,yE:y0+240,d:'M'+cx+' '+y0+' C'+(cx+(xg-cx)*0.7)+' '+y0+' '+xg+' '+(y0+70)+' '+xg+' '+(y0+240)}};
-    var g=pre(R0),rad=R0;
-    for(var i=0;i<2;i++){g=pre(rad);C.setAttribute('d',g.d);var cl=C.getTotalLength(),len=f*(cl+Math.max(0,tipY-g.yE)),tot=cl+Math.max(0,docH-24-g.yE);
-      rad=R0-(R0-RMIN)*Math.min(1,len/Math.max(1,tot*0.9))}
-    g=pre(rad);C.setAttribute('d',g.d);cl=C.getTotalLength();len=f*(cl+Math.max(0,tipY-g.yE));
-    var full=g.d+' L'+xg+' '+Math.max(g.yE,docH-24);
-    L.setAttribute('d',full);L.style.stroke=els.disc.getAttribute('fill')||'#ee8239';
-    var tl=L.getTotalLength();L.style.strokeDasharray=tl+' '+(tl+10);L.style.strokeDashoffset=(tl-len);
-    L.style.opacity=len>1?1:0;
-    /* spolen blir mindre etter hvert som filamentet går med */
+    var tipY=Math.min(docH-24,y+vh*0.85);
+    /* geometri: ut av høyre side av spolen, rett ned, så gradvis ut mot høyre kant bak innholdet */
+    function geo(rad){var x0=cx+rad*k,y0=cy,yS=Math.max(y0+40,bottom+6),yE=yS+240;
+      var d='M'+x0+' '+y0+' L'+x0+' '+yS+' C'+x0+' '+(yS+110)+' '+xg+' '+(yS+60)+' '+xg+' '+yE;
+      return {d:d,yE:yE,x0:x0,y0:y0}}
+    function lenFor(g,tipY){C.setAttribute('d',g.d);var cl=C.getTotalLength();return {cl:cl,len:Math.min(cl+Math.max(0,tipY-g.yE),cl+Math.max(0,docH-24-g.yE)),tot:cl+Math.max(0,docH-24-g.yE)}}
+    var f=Math.min(1,y/140),rad=R0,g,o,len;
+    for(var i=0;i<3;i++){g=geo(rad);o=lenFor(g,tipY);
+      len=TAIL+(o.len-TAIL)*f;                                  /* en kort hale vises hele tiden */
+      rad=R0-(R0-RMIN)*Math.min(1,Math.max(0,len-TAIL)/2600)}   /* spolen tømmes raskere */
+    g=geo(rad);o=lenFor(g,tipY);len=Math.min(o.tot,TAIL+(o.len-TAIL)*f);
+    var full=g.d+' L'+g.d.split(' ').slice(-2)[0]+' '+Math.max(g.yE,docH-24);
+    L.setAttribute('d',full);L2.setAttribute('d',full);var col=els.disc.getAttribute('fill')||'#ee8239';L.style.stroke=col;L2.style.stroke=col;tip.setAttribute('fill',col);tip2.setAttribute('fill',col);CR.setAttribute('width',vw);CR.setAttribute('height',Math.max(1,bottom+4));
+    var tl=L.getTotalLength();[L,L2].forEach(function(e){e.style.strokeDasharray=tl+' '+(tl+10);e.style.strokeDashoffset=(tl-len)});
+    var pt=L.getPointAtLength(Math.min(len,tl));[tip,tip2].forEach(function(e){e.setAttribute('cx',pt.x);e.setAttribute('cy',pt.y);e.style.opacity=1});
+    /* spolen snurrer når filamentet trekkes ut (høyre side beveger seg nedover = med klokka) */
+    var deg=((len-TAIL)/(Math.max(rad,8)*k))*180/Math.PI;
     els.disc.setAttribute('r',rad.toFixed(2));
-    els.rings.forEach(function(c){if(c)c.style.display=(+c.getAttribute('r')>=rad-2)?'none':''});
-    var o=Math.max(0,Math.min(1,(rad-30)/14));for(var j=0;j<els.hi.length;j++)els.hi[j].style.opacity=o;
+    els.rings.forEach(function(c){if(!c)return;c.style.display=(+c.getAttribute('r')>=rad-2)?'none':'';c.setAttribute('transform','rotate('+deg.toFixed(1)+' 60 60)')});
+    els.ticks.forEach(function(t,n){var a=(deg+n*120)*Math.PI/180,r1=rad-10,r2=rad-3.5;
+      t.setAttribute('x1',60+r1*Math.cos(a));t.setAttribute('y1',60+r1*Math.sin(a));t.setAttribute('x2',60+r2*Math.cos(a));t.setAttribute('y2',60+r2*Math.sin(a))});
+    var op=Math.max(0,Math.min(1,(rad-26)/14));for(var j=0;j<els.hi.length;j++)els.hi[j].style.opacity=op;
   }
   function q(){if(!raf)raf=requestAnimationFrame(frame)}
   addEventListener('scroll',q,{passive:true});addEventListener('resize',q);addEventListener('load',q);
