@@ -14,7 +14,7 @@
 <meta name="description" content="Sammenlign pris på 3D-printer-filament i norske nettbutikker. Filtrer på farge, type, merke og materiale.">
 
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Instrument+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
-<script>(function(){try{var t=localStorage.getItem("theme");if(t==="dark"||t==="light")document.documentElement.setAttribute("data-theme",t)}catch(e){}})()</script>
+<script>(function(){try{var t=localStorage.getItem("theme");if(t==="dark"||t==="light")document.documentElement.setAttribute("data-theme",t);var st=localStorage.getItem("style");if(["verksted","glass","rolig","y2005","y1999"].indexOf(st)>=0)document.documentElement.setAttribute("data-style",st)}catch(e){}})()</script>
 <style>
 /* Layout: søketjeneste med filtersøyle til venstre og produktrutenett. Hvert kort lenker ut til produktsiden i en norsk nettbutikk. */
 :root{
@@ -255,6 +255,7 @@ dialog#hc .sc{flex:1;overflow:auto}
 @keyframes tipin{from{opacity:0;transform:translateY(6px)}}
 @media (prefers-reduced-motion:reduce){#hl .hl-tip{animation:none}}
 </style>
+<link rel="stylesheet" href="themes.css">
 </head>
 <body>
 <div class="wrap">
@@ -917,5 +918,6 @@ if(!cur)cur=matchMedia("(prefers-color-scheme:dark)").matches?"dark":"light";var
 <script>(function(){var b=document.getElementById("bur"),h=document.querySelector("header.top");if(!b||!h)return;function set(o){h.classList.toggle("menu-open",o);b.setAttribute("aria-expanded",o)}
 b.addEventListener("click",function(){set(!h.classList.contains("menu-open"))});h.querySelector("nav").addEventListener("click",function(e){if(e.target.closest("a"))set(false)});
 document.addEventListener("keydown",function(e){if(e.key==="Escape")set(false)});addEventListener("resize",function(){if(innerWidth>700)set(false)})})()</script>
+<script src="themes.js"></script>
 </body>
 </html>
