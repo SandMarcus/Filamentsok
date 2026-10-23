@@ -84,5 +84,22 @@ def test_filter_and_menu_wiring():
     html = (ROOT / "web" / "guide" / "index.html").read_text(encoding="utf-8")
     assert "Utvidet informasjon" in html and "Tekniske spesifikasjoner" not in html
     assert 'id="fbtn"' in html and 'id="sug"' in html and 'type="range"' in html
-    for f in ("index.html", "partner.html"):
+    for f in ("index.html", "partner/index.html"):
         assert 'class="hot"' not in (ROOT / "web" / f).read_text(encoding="utf-8")
+
+
+def test_features_page_exists_and_is_linked():
+    page = (ROOT / "web" / "funksjoner" / "index.html").read_text(encoding="utf-8")
+    assert page.count('class="card"') >= 10
+    for f in ("index.html", "guide/index.html", "partner/index.html"):
+        assert "funksjoner/" in (ROOT / "web" / f).read_text(encoding="utf-8")
+
+
+def test_theme_picker_wired():
+    css = (ROOT / "web" / "themes.css").read_text(encoding="utf-8")
+    js = (ROOT / "web" / "themes.js").read_text(encoding="utf-8")
+    for sid in ("verksted", "glass", "rolig", "y2005", "y1999"):
+        assert f'html[data-style="{sid}"]' in css and f"'{sid}'" in js
+    for f, pre in (("index.html", ""), ("guide/index.html", "../"), ("partner/index.html", "../"), ("funksjoner/index.html", "../")):
+        h = (ROOT / "web" / f).read_text(encoding="utf-8")
+        assert pre + "themes.css" in h and pre + "themes.js" in h and 'id="mainnav"' in h
