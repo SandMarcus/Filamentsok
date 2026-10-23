@@ -54,6 +54,10 @@ Hvert kort har et bokmerke øverst til høyre i bildet. Valgte filamenter lagres
 
 På skjermer under 700 px samles menyen bak en hamburger-knapp øverst (på forsiden, guiden og partnersiden). «Om priser og lager» ligger nederst på forsiden, rett over bunnteksten. Første gang noen legger noe i huskelisten, vises en kort hjelpetekst over boblen. Den vises bare én gang per nettleser (`localStorage`-nøkkel `hk_tip`).
 
+## Kolonner og listevisning
+
+Over resultatene finnes en knappegruppe for visning: 1–4 kolonner og listevisning. På telefon (≤800 px) er 2 kolonner standard, med 1 og 2 som valg. På PC er valgene 2, 3 og 4 (uten valg brukes automatisk antall). Valget lagres i `localStorage` (`visning`), separat for telefon og PC. Koden ligger under «Visning» i `web/index.html`.
+
 ## Temaer (stiler)
 
 Siden har flere valgbare stiler: Standard, Verksted, Glass, Rolig, 2005 og 1999. Velgeren (`web/themes.js`) ligger i hamburgermenyen på mobil og som palett-knapp ved siden av mørk/lys-bryteren på PC. Valget lagres i `localStorage` (`style`) og settes som `data-style` på `<html>`. Standard har ingen `data-style`. Alle stilene ligger i `web/themes.css`, hver under `html[data-style="navn"]`. Verksted, 2005 og 1999 er bare lyse, og da skjules mørk/lys-bryteren. Nytt tema: legg reglene i `themes.css`, legg navnet i `T`-listen i `themes.js` og i listen i hode-scriptet på hver side.
