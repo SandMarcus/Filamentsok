@@ -54,6 +54,10 @@ Hvert kort har et bokmerke øverst til høyre i bildet. Valgte filamenter lagres
 
 På skjermer under 700 px samles menyen bak en hamburger-knapp øverst (på forsiden, guiden og partnersiden). «Om priser og lager» ligger nederst på forsiden, rett over bunnteksten. Første gang noen legger noe i huskelisten, vises en kort hjelpetekst over boblen. Den vises bare én gang per nettleser (`localStorage`-nøkkel `hk_tip`).
 
+## Temaer (stiler)
+
+Siden har flere valgbare stiler: Standard, Verksted, Glass, Rolig, 2005 og 1999. Velgeren (`web/themes.js`) ligger i hamburgermenyen på mobil og som palett-knapp ved siden av mørk/lys-bryteren på PC. Valget lagres i `localStorage` (`style`) og settes som `data-style` på `<html>`. Standard har ingen `data-style`. Alle stilene ligger i `web/themes.css`, hver under `html[data-style="navn"]`. Verksted, 2005 og 1999 er bare lyse, og da skjules mørk/lys-bryteren. Nytt tema: legg reglene i `themes.css`, legg navnet i `T`-listen i `themes.js` og i listen i hode-scriptet på hver side.
+
 ## Funksjonssiden (`/funksjoner/`)
 
 `web/funksjoner/index.html` viser alle funksjonene på siden, gruppert i kort. Ny funksjon: legg til et `<div class="card">` i riktig gruppe. `CLAUDE.md` ber Claude gjøre dette automatisk når en ny funksjon bygges.
