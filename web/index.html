@@ -139,7 +139,7 @@ footer{border-top:1px solid var(--line);padding-block:24px 40px;color:var(--mute
   nav{margin-left:0;width:100%}
   .grid{grid-template-columns:repeat(2,minmax(0,1fr))}
 }
-@media (max-width:400px){.grid{grid-template-columns:minmax(0,1fr)}}
+
 .notice.off{display:flex;gap:10px;align-items:flex-start;background:#fff3b0;border:1px solid #e0b800;color:#3a2f00;font-size:14px;line-height:1.45}.notice.off svg{flex:none;width:22px;height:22px;margin-top:1px}.notice.off b{display:block}
 .tgl{display:inline-grid;place-items:center;width:36px;height:36px;border-radius:8px;border:1px solid var(--line);background:var(--surface);color:var(--fg);cursor:pointer;padding:0}
 .tgl:hover{background:var(--chip)}.tgl svg{width:18px;height:18px}.tgl .sun{display:none}
@@ -254,6 +254,43 @@ dialog#hc .sc{flex:1;overflow:auto}
 #hl .hl-tip[hidden]{display:none}
 @keyframes tipin{from{opacity:0;transform:translateY(6px)}}
 @media (prefers-reduced-motion:reduce){#hl .hl-tip{animation:none}}
+.grid[data-n]{grid-template-columns:repeat(var(--n),minmax(0,1fr))}
+.vw{display:inline-flex;border:1px solid var(--line);border-radius:8px;overflow:hidden;background:var(--surface)}
+.vw button{display:grid;place-items:center;width:34px;height:34px;border:0;border-right:1px solid var(--line);background:none;color:var(--muted);cursor:pointer;padding:0}
+.vw button:last-child{border-right:0}
+.vw button:hover{background:var(--chip);color:var(--fg)}
+.vw button[aria-pressed="true"]{background:var(--fg);color:var(--bg)}
+.vw svg{width:18px;height:18px;fill:currentColor}
+.vw .c1{display:none}
+@media (max-width:800px){.vw .c1{display:grid}.vw .c3,.vw .c4{display:none}.toolbar{flex-wrap:wrap}.toolbar>div{flex-wrap:wrap}.toolbar select{max-width:100%}.toolbar label[for=sort]{display:none}}
+.grid.list{grid-template-columns:minmax(0,1fr)!important;gap:10px}
+.grid.list .card{flex-direction:row}
+.grid.list .card{position:relative}
+.grid.list .card .pic{position:static;width:0;padding:0;background:none;border:0;flex:none;min-height:0}
+.grid.list .card .pic>svg,.grid.list .card .pic>img,.grid.list .card .pic>.tag{display:none}
+.grid.list .card .fav{top:10px;right:10px}
+.grid.list .card .body{padding:10px 52px 10px 14px;gap:3px}
+.grid.list .card.out .body{opacity:.6}
+.grid.list .card .body{grid-template-columns:minmax(0,1fr) minmax(300px,380px)}
+.grid.list .offers{gap:0}
+.grid.list .of{grid-template-columns:minmax(0,1fr) auto auto;gap:2px 12px;padding:6px 0}
+.grid.list .of .go{grid-column:auto;padding:6px 12px}
+@media (max-width:700px){.grid.list .of{grid-template-columns:minmax(0,1fr) auto}.grid.list .of .go{grid-column:1/-1;padding:7px}}
+.grid.list .card .body{display:grid;grid-template-columns:minmax(0,1fr) minmax(230px,300px);column-gap:24px;align-content:start;align-items:start}
+.grid.list .card .body>*{grid-column:1}
+.grid.list .card .body>.offers{grid-column:2;grid-row:1/span 6;margin-top:0}
+@media (max-width:700px){.grid.list .card .body{grid-template-columns:minmax(0,1fr);padding:10px 48px 10px 12px}.grid.list .card .body>.offers{grid-column:1;grid-row:auto;margin-top:6px}}
+@media (max-width:800px){
+  .grid[data-n="2"]{gap:8px}
+  .grid[data-n="2"] .card .pic{padding:8px}.grid[data-n="2"] .card .pic svg{max-height:96px}
+  .grid[data-n="2"] .card .body{padding:8px;gap:4px}
+  .grid[data-n="2"] .card h4{font-size:13px}
+  .grid[data-n="2"] .brand{font-size:10.5px}
+  .grid[data-n="2"] .spec{font-size:11px}
+  .grid[data-n="2"] .ofp .price{font-size:16px}
+  .grid[data-n="2"] .card .go{padding:8px 4px;font-size:13px}
+  .grid[data-n="2"] .fav{width:30px;height:30px;right:6px;top:6px}
+}
 </style>
 <link rel="stylesheet" href="themes.css">
 </head>
@@ -305,7 +342,7 @@ dialog#hc .sc{flex:1;overflow:auto}
       <div style="display:flex;gap:8px;align-items:center">
         <button class="chip fbtn" id="fbtn" aria-expanded="false">Filter</button>
         <label for="sort" class="store">Sorter</label>
-        <select id="sort">
+        <select id="sort" aria-label="Sorter">
           <option value="p">Lavest pris</option>
           <option value="pk">Lavest pris per kg</option>
           <option value="ph">Høyest pris</option>
@@ -740,6 +777,30 @@ dialog#hc .sc{flex:1;overflow:auto}
   document.addEventListener('click',function(e){if(!e.target.closest('#searchForm'))hideSug()});
   $('#searchForm').addEventListener('submit',hideSug);
   qi.addEventListener('blur',function(){setTimeout(hideSug,120)});
+
+  /* ---------- Visning: kolonner og liste ---------- */
+  var VK='visning',VW={m:2,d:0,list:false};
+  try{var vv=JSON.parse(localStorage.getItem(VK)||'null');if(vv){VW.m=[1,2].indexOf(vv.m)>=0?vv.m:2;VW.d=[0,2,3,4].indexOf(vv.d)>=0?vv.d:0;VW.list=!!vv.list}}catch(e){}
+  var mq=window.matchMedia?matchMedia('(max-width:800px)'):{matches:false};
+  function icoCols(n){var w=16/n-1.6,o='';for(var i=0;i<n;i++)o+='<rect x="'+(4+i*(16/n))+'" y="4" width="'+w+'" height="16" rx="1"/>';return '<svg viewBox="0 0 24 24" aria-hidden="true">'+o+'</svg>'}
+  var vw=document.createElement('div');vw.className='vw';vw.id='vw';vw.setAttribute('role','group');vw.setAttribute('aria-label','Visning');
+  vw.innerHTML=[1,2,3,4].map(function(n){return '<button type="button" class="c'+n+'" data-c="'+n+'" title="'+n+(n===1?' kolonne':' kolonner')+'" aria-label="'+n+(n===1?' kolonne':' kolonner')+'">'+icoCols(n)+'</button>'}).join('')+
+    '<button type="button" class="cl" data-l="1" title="Listevisning" aria-label="Listevisning"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="5" width="16" height="3" rx="1"/><rect x="4" y="10.5" width="16" height="3" rx="1"/><rect x="4" y="16" width="16" height="3" rx="1"/></svg></button>';
+  var sl=document.querySelector('label[for="sort"]');sl.parentNode.insertBefore(vw,sl);
+  function applyView(){
+    var g=$('#grid'),m=mq.matches,n=m?VW.m:VW.d;
+    g.classList.toggle('list',VW.list);
+    if(n&&!VW.list)g.setAttribute('data-n',n);else g.removeAttribute('data-n');
+    g.style.setProperty('--n',n||'');
+    [].forEach.call(vw.querySelectorAll('button[data-c]'),function(b){b.setAttribute('aria-pressed',!VW.list&&+b.dataset.c===n)});
+    vw.querySelector('[data-l]').setAttribute('aria-pressed',VW.list)}
+  vw.addEventListener('click',function(e){var b=e.target.closest('button');if(!b)return;
+    if(b.dataset.l){VW.list=!VW.list}
+    else{VW.list=false;if(mq.matches)VW.m=+b.dataset.c;else VW.d=+b.dataset.c}
+    try{localStorage.setItem(VK,JSON.stringify(VW))}catch(e){}
+    applyView()});
+  if(mq.addEventListener)mq.addEventListener('change',applyView);else if(mq.addListener)mq.addListener(applyView);
+  applyView();
 
   /* ---------- Huskeliste ---------- */
   var HK='huskeliste',HO='huskeliste_apen';
