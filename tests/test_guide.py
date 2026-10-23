@@ -103,3 +103,8 @@ def test_theme_picker_wired():
     for f, pre in (("index.html", ""), ("guide/index.html", "../"), ("partner/index.html", "../"), ("funksjoner/index.html", "../")):
         h = (ROOT / "web" / f).read_text(encoding="utf-8")
         assert pre + "themes.css" in h and pre + "themes.js" in h and 'id="mainnav"' in h
+
+
+def test_view_controls_present():
+    h = (ROOT / "web" / "index.html").read_text(encoding="utf-8")
+    assert "Listevisning" in h and "data-n" in h and "visning" in h
