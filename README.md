@@ -62,6 +62,17 @@ Over resultatene finnes en knappegruppe for visning: 1–4 kolonner og listevisn
 
 Siden har flere valgbare stiler: Standard, Verksted, Glass, Rolig, 2005 og 1999. Velgeren (`web/themes.js`) ligger i hamburgermenyen på mobil og som palett-knapp ved siden av mørk/lys-bryteren på PC. Valget lagres i `localStorage` (`style`) og settes som `data-style` på `<html>`. Standard har ingen `data-style`. Alle stilene ligger i `web/themes.css`, hver under `html[data-style="navn"]`. Verksted, 2005 og 1999 er bare lyse, og da skjules mørk/lys-bryteren. Nytt tema: legg reglene i `themes.css`, legg navnet i `T`-listen i `themes.js` og i listen i hode-scriptet på hver side.
 
+## Besøksstatistikk (valgfritt)
+
+Siden kan telle besøk med GoatCounter (gratis, uten cookies, ingen samtykkebanner). Google-tjenester brukes ikke, for å slippe cookie-banner.
+
+1. Opprett en konto på goatcounter.com og velg en kode, for eksempel `filamentsok`.
+2. Sett GitHub-variabelen `GOATCOUNTER_CODE` til koden (Settings → Secrets and variables → Actions → Variables).
+3. Start «Bygg og publiser» for hånd (Actions → Run workflow), eller vent på nattkjøringen.
+4. Tallene ser du på `https://<kode>.goatcounter.com`.
+
+Er koden tom (standard), settes ingenting inn. Lokalt kan du bruke en valgfri `config/analytics.json` med `{"goatcounter": "kode"}`. Plassholderne `<!--__ANALYTICS__-->` og `<!--__ANALYTICS_NOTE__-->` i sidene byttes ut av `src/build.py`.
+
 ## Funksjonssiden (`/funksjoner/`)
 
 `web/funksjoner/index.html` viser alle funksjonene på siden, gruppert i kort. Ny funksjon: legg til et `<div class="card">` i riktig gruppe. `CLAUDE.md` ber Claude gjøre dette automatisk når en ny funksjon bygges.
