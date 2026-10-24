@@ -27,6 +27,28 @@ SITE_COLORS = {"Svart", "Hvit", "Grå", "Rød", "Blå", "Grønn", "Gul", "Oransj
 MONTHS = ["januar", "februar", "mars", "april", "mai", "juni", "juli", "august", "september", "oktober", "november", "desember"]
 
 
+def analytics_config(root):
+    """Leser GOATCOUNTER_CODE (GitHub-variabel), ellers valgfri config/analytics.json. Tomt betyr avslått."""
+    d = {}
+    f = root / "config" / "analytics.json"
+    if f.exists():
+        d = json.loads(f.read_text(encoding="utf-8"))
+    gc = (os.environ.get("GOATCOUNTER_CODE") or str(d.get("goatcounter", ""))).strip().lower()
+    if gc and not re.fullmatch(r"[a-z0-9][a-z0-9-]{0,40}", gc):
+        raise ConfigError("analytics: GOATCOUNTER_CODE må være kun bokstaver, tall og bindestrek")
+    return gc
+
+
+def inject_analytics(html, gc=""):
+    """Setter inn GoatCounter (uten cookies) og en kort merknad i bunnteksten, eller fjerner plassholderne."""
+    script = note = ""
+    if gc:
+        script = (f'<script data-goatcounter="https://{gc}.goatcounter.com/count" '
+                  'async src="//gc.zgo.at/count.js"></script>')
+        note = " · Anonym besøksstatistikk, uten cookies"
+    return html.replace("<!--__ANALYTICS__-->", script).replace("<!--__ANALYTICS_NOTE__-->", note)
+
+
 class ConfigError(Exception):
     pass
 
@@ -163,10 +185,11 @@ def main(argv=None):
         shutil.rmtree(out)
     shutil.copytree(ROOT / "web", out)
     (out / "products.json").write_text(payload, encoding="utf-8")
-    for page in ("index.html", "guide/index.html"):
+    gc = analytics_config(ROOT)
+    for page in ("index.html", "guide/index.html", "partner/index.html", "funksjoner/index.html"):
         f = out / page
         if f.exists():
-            f.write_text(f.read_text(encoding="utf-8").replace("__BUILD__", build_id), encoding="utf-8")
+            f.write_text(inject_analytics(f.read_text(encoding="utf-8").replace("__BUILD__", build_id), gc), encoding="utf-8")
     guide = ROOT / "data" / "guide.json"
     if guide.exists():
         shutil.copy(guide, out / "guide.json")
