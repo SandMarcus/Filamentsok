@@ -192,3 +192,7 @@ Guiden er én side med datakort, bygget fra masterdatabladet i Excel.
 ### Filter og forslag i guiden
 
 Knappen «Finn riktig filament» åpner et filter med to temperatur-sliders (dyse og seng) og avkrysning for «Ønsker» / «Unngå». Listen oppdateres med en gang. Kriteriene er definert i `CG` i `web/guide/index.html` og leser direkte fra `guide.json`. Materialer med manglende eller varierende data skjules som standard (og kan vises med et valg). Forslag er materialer som bryter høyst to av valgene, med begrunnelse hentet fra de samme dataene. Temperaturer finnes bare for materialene som har et oppgitt område i masterarket.
+
+## Forsidebildet
+
+Bildet på forsiden ligger som `web/hero.webp` (840 px bred, vises 420 px bredt på PC): en mann som klør seg i hodet foran en høy hylle med filamentspoler. Det står til høyre for overskriften og søkefeltet, og skjules på telefon. Bakgrunnen er ren hvit, og i lyst tema blandes bildet inn i sidens bakgrunn (`mix-blend-mode:multiply`). I mørkt tema vises det som et kort med runde hjørner. Rolig og 1999 skjuler bildet. Skal bildet byttes, lag en ny `hero.webp` med ren hvit bakgrunn.
