@@ -214,7 +214,7 @@ html[data-style="y2005"] .hero{padding:16px 0!important;background:linear-gradie
 html[data-style="y2005"] h1{font-size:26px!important;color:#1a3f7a;text-shadow:1px 1px 0 #fff;margin:0 0 6px!important;line-height:1.15!important}
 html[data-style="y2005"] .hero p{color:#333}
 html[data-style="y2005"] .heroart{filter:drop-shadow(2px 3px 3px rgba(0,0,0,.3))}
-html[data-style="y2005"] .heroart svg{max-width:190px;margin:auto}
+html[data-style="y2005"] .heroart img{max-width:100%}
 html[data-style="y2005"] .search input,html[data-style="y2005"] select,html[data-style="y2005"] .fbtn{border:2px inset #9fb2c8!important;border-radius:0!important;background:#fff!important;font:12px Tahoma,Verdana,'DejaVu Sans',sans-serif;padding:6px 7px;box-shadow:none!important}
 html[data-style="y2005"] .btn,html[data-style="y2005"] .hl-bub{background:linear-gradient(#ffb457 0,#f28a1a 48%,#e6720a 52%,#f59a2e 100%)!important;color:#fff!important;font-weight:bold;text-shadow:0 -1px 0 #a04800;border:1px solid #b45a00!important;border-radius:5px!important;box-shadow:inset 0 1px 0 rgba(255,255,255,.7),0 1px 2px rgba(0,0,0,.3)!important;padding:6px 16px;font-size:12px}
 html[data-style="y2005"] .btn:hover{filter:brightness(1.08)}
