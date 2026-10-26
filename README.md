@@ -128,15 +128,25 @@ Feil i malen gir en tydelig melding med kolonnene filen faktisk har. Hjelpeverkt
 
 | Butikk | Fil | Kolonner | Vekt som antas |
 |---|---|---|---|
-| Kjell & Company | `kjell.csv` | Lenke, navn, Pris, lager, Bilde | 1 kg |
-| 3D Klubben | `3dklubben.csv` | Lenke, Navn, Pris, Lager | ingen |
-| NorMax3D | `normax3d.csv` | Lenke, Navn, Pris, Lager | ingen |
-| Stratum3D | `stratum3d.csv` | Navn, Pris, lager (ellers lagerbeholding), Bilde. Ingen lenke, så kortet viser «Link kommer» | ingen |
+| Kjell & Company | `kjell.csv` | Lenke, Navn, Price, Bilde (ingen lagerkolonne) | 1 kg |
+| 3D Klubben | `3dklubben.csv` | Lenke, Navn, Pris, Bilde | ingen |
+| NorMax3D | `normax3d.csv` (lages av `tools/nm3d_feed.py`) | Lenke, Bilde, Navn, Farge, Pris, Førpris, Lager | ingen |
+| Stratum3D | `stratum3d.csv` | Navn, Pris, lager, Bilde. Ingen lenke, så kortet viser «Link kommer» | ingen |
 | Clas Ohlson | `clasohlson.csv` | `Bilde` (inneholder produktlenken), Navn + featureValue, Pris | ingen |
 | Elefun | `elefun.csv` | Lenke, Navn, Pris, Lager, Bilde, Produsent | 1 kg for Bambu Lab-PLA/PETG/ABS/ASA |
 | Polyalkemi | `polyalkemi.csv` | Lenke, Navn + Farge/type, pris, Lager, Bilde | 1 kg |
 
 `3dklubben.csv` og `normax3d.csv` er lagd fra utvalget som lå på siden fra før. Bytt dem ut med egen scraping når du har den.
+
+### NorMax3D (automatisk henting)
+
+NorMax3D bruker WooCommerce, som har et åpent Store API (`https://nm3d.no/wp-json/wc/store/v1/products`). `tools/nm3d_feed.py` henter alle produkter, beholder filament (kategorien «Filament og Resin», uten harpiks) og skriver `data/normax3d.csv`. Hver farge eller vekt blir en egen rad med egen pris, lager og bilde. Er varen på tilbud, står vanlig pris i `Førpris`, og kortet viser tilbudsmerke og «før»-pris. Priser er inkl. mva. Vekt som bare står i etiketten (for eksempel «750g filament») legges til navnet.
+
+`pages.yml` kjører skriptet hver natt og ved hver push. Feiler det, beholdes filen som ligger i repoet. Kjør det for hånd med `python tools/nm3d_feed.py data/normax3d.csv`. Har du en lagret JSON-side fra API-et, kan du teste uten nett: `python tools/nm3d_feed.py data/normax3d.csv --sample side.json` (da brukes prisen på hovedproduktet for alle varianter).
+
+I malen heter nøkkelen for førpris `was`. Eldre filer med to priser (`sale_price` og `onsale`) kan fortsatt leses.
+
+Valgfrie kolonner (lager, bilde, merke, farge) kan mangle i en fil. Byggingen hopper da over dem og skriver en merknad, men stopper ikke. Navn og pris må finnes.
 
 ## Hva byggingen gjør
 
