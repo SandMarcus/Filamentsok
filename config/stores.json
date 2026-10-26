@@ -108,6 +108,24 @@
       },
       "default_kg": 1,
       "rolls_as_kg": true
+    },
+    {
+      "id": "materiex",
+      "name": "Materie X",
+      "home": "https://materiex.no/",
+      "file": "data/materiex.csv",
+      "columns": {
+        "url": "Lenke",
+        "image": "Bilde",
+        "name": [
+          "Navn"
+        ],
+        "color": "Farge",
+        "price": "Pris",
+        "was": "Førpris",
+        "stock": "Lager"
+      },
+      "default_kg": 1
     }
   ]
 }
