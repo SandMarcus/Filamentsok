@@ -144,6 +144,10 @@ NorMax3D bruker WooCommerce, som har et åpent Store API (`https://nm3d.no/wp-js
 
 `pages.yml` kjører skriptet hver natt og ved hver push. Feiler det, beholdes filen som ligger i repoet. Kjør det for hånd med `python tools/nm3d_feed.py data/normax3d.csv`. Har du en lagret JSON-side fra API-et, kan du teste uten nett: `python tools/nm3d_feed.py data/normax3d.csv --sample side.json` (da brukes prisen på hovedproduktet for alle varianter).
 
+### Materie X (automatisk henting)
+
+Materie X publiserer en Google Shopping-feed på `https://materiex.no/gshopping.xml`. `tools/materiex_feed.py` leser den, beholder produkter med produkttype «Filament» og skriver `data/materiex.csv` (én rad per farge, med pris, `sale_price` som pris og vanlig pris som `Førpris`, og lager). `pages.yml` kjører skriptet hver natt. Test uten nett: `python tools/materiex_feed.py data/materiex.csv --sample feed.xml`. Filen som ligger i repoet er en startfil og erstattes ved første kjøring.
+
 I malen heter nøkkelen for førpris `was`. Eldre filer med to priser (`sale_price` og `onsale`) kan fortsatt leses.
 
 Valgfrie kolonner (lager, bilde, merke, farge) kan mangle i en fil. Byggingen hopper da over dem og skriver en merknad, men stopper ikke. Navn og pris må finnes.
