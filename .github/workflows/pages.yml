@@ -32,11 +32,18 @@ jobs:
         run: |
           curl -fsSL --retry 3 -o "$RUNNER_TEMP/elefun.csv" "https://www.elefun.no/dokumenter/pricefeed/Feed_Pricespy_NO.CSV"
           python tools/elefun_feed.py "$RUNNER_TEMP/elefun.csv" data/elefun.csv
+      - name: Hent NorMax3D (WooCommerce Store API)
+        # Feiler henting, beholdes data/normax3d.csv fra repoet.
+        continue-on-error: true
+        run: python tools/nm3d_feed.py data/normax3d.csv
       - name: Tester
         run: |
           pip install pytest
           python -m pytest -q
       - name: Bygg products.json og nettside
+        env:
+          # Valgfritt: sett som «Variables» under Settings → Secrets and variables → Actions.
+          GOATCOUNTER_CODE: ${{ vars.GOATCOUNTER_CODE }}
         run: python -m src.build --strict
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
