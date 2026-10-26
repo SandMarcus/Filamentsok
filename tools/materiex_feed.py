@@ -60,7 +60,8 @@ def val(item, tag):
 def is_filament(item):
     ptype = val(item, "product_type").lower()
     title = val(item, "title")
-    if "filament" in ptype and "resin" not in ptype:
+    # Produkttypene er «Filament» og «Refill» (spoleløse refiller). Resin, printere og tilbehør tas ikke med.
+    if ptype in ("filament", "refill"):
         return not NOT_FILAMENT.search(title)
     return False
 
