@@ -522,7 +522,7 @@ dialog#hc .sc{flex:1;overflow:auto}
     g.img=null;g.offers.some(function(o){if(o.img){g.img=o.img;return true}});
     g.stores={};g.offers.forEach(function(o){g.stores[o.store]=true});
     g.was=g.offers.some(function(o){return o.was})?1:0;
-    g.anyAvail=g.offers.some(function(o){return !UNAV(o.avail)});
+    g.anyAvail=g.offers.some(function(o){return !UNAV(o.avail)});g.stk=g.anyAvail?'in':'out';
     g.all=g.offers.map(function(o){return o.name+' '+STORES[o.store].n}).join(' ');
   });
 
@@ -535,7 +535,7 @@ dialog#hc .sc{flex:1;overflow:auto}
   var EXP={},LIM=6;
   var BRANDS=Object.keys(bc).sort(function(a,b){return (bc[b]-bc[a])||a.localeCompare(b,'nb')});
   var SF=[],CM='';
-  var S={q:'',mat:{},add:{},fin:{},col:{},store:{},brand:{},ref:{'Spole':true},max:1500,hideOut:true,sale:false};
+  var S={q:'',mat:{},add:{},fin:{},col:{},store:{},brand:{},ref:{'Spole':true},stock:{'in':true},max:1500,sale:false};
   var kr=function(n){return Math.round(n).toLocaleString('nb-NO')+' kr'};
   var esc=function(s){return String(s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})};
 
@@ -582,7 +582,7 @@ dialog#hc .sc{flex:1;overflow:auto}
     return '<a href="'+s.home+'" target="_blank" rel="noopener noreferrer"><strong>'+s.n+'</strong><span>'+n+' produkter her · Gå til butikken</span></a>'}).join('');
 
   function go(s){try{document.querySelector(s).scrollIntoView({behavior:'smooth'})}catch(e){}}
-  function reset(){SF=[];CM='';S.q='';S.mat={};S.add={};S.ref={'Spole':true};S.fin={};S.col={};S.store={};S.brand={};S.max=1500;S.hideOut=true;S.sale=false;$('#q').value=''}
+  function reset(){SF=[];CM='';S.q='';S.mat={};S.add={};S.ref={};S.fin={};S.col={};S.store={};S.brand={};S.stock={};S.max=1500;S.sale=false;$('#q').value=''}
   function has(o){return Object.keys(o).length>0}
   function cnt(f){return R.filter(f).length}
   function inKey(p,key,v){return key==='store'?!!p.stores[v]:p[key]===v}
@@ -599,7 +599,8 @@ dialog#hc .sc{flex:1;overflow:auto}
     var cols=Object.keys(COL);
     $('#filters').innerHTML=
       checks('Utførelse','ref',[['Spole','Med spole'],['Refill','Refill (uten spole)']])+
-      '<div class="fl"><h3>Lager</h3><label><span><input type="checkbox" data-f="showOut"'+(S.hideOut?'':' checked')+'> Vis også utilgjengelige</span></label>'+(HASSALE?'<label><span><input type="checkbox" data-f="sale"'+(S.sale?' checked':'')+'> Bare tilbud</span></label>':'')+'</div>'+
+      checks('Lager','stock',[['in','På lager'],['out','Ikke på lager']])+
+      (HASSALE?'<div class="fl"><h3>Tilbud</h3><label><span><input type="checkbox" data-f="sale"'+(S.sale?' checked':'')+'> Bare tilbud</span></label></div>':'')+
       '<div class="fl"><h3>Farge</h3><div class="swatches">'+cols.map(function(c){
         var n=FC.col[c]||0;
         var st=COL[c]==='multi'||COL[c]==='unk'?'':'background:'+COL[c];
@@ -614,7 +615,7 @@ dialog#hc .sc{flex:1;overflow:auto}
   }
   $('#filters').addEventListener('change',function(e){var t=e.target;
     if(t.dataset.k){if(t.checked)S[t.dataset.k][t.dataset.v]=true;else delete S[t.dataset.k][t.dataset.v]}
-    if(t.dataset.f==='showOut')S.hideOut=!t.checked;else if(t.dataset.f)S[t.dataset.f]=t.checked;
+    if(t.dataset.f)S[t.dataset.f]=t.checked;
     render(true)});
   $('#filters').addEventListener('input',function(e){if(e.target.id==='max'){S.max=+e.target.value;$('#maxv').textContent=kr(S.max);render(true)}});
   $('#filters').addEventListener('click',function(e){
@@ -637,17 +638,17 @@ dialog#hc .sc{flex:1;overflow:auto}
       if(skip!=='col'&&has(S.col)&&!S.col[p.col])return false;
       if(skip!=='store'&&has(S.store)&&!Object.keys(S.store).some(function(k){return p.stores[k]}))return false;
       if(p.price!==null&&S.max<1500&&p.price>S.max)return false;
-      if(S.hideOut&&!p.anyAvail)return false;
+      if(skip!=='stock'&&has(S.stock)&&!S.stock[p.stk])return false;
       if(S.sale&&!p.was)return false;
       return true}
   // Antall per valg: treff med alle ANDRE aktive filter, slik at man ser hva som gir treff.
   var FC={};
   function facet(){
-    var F={mat:{},add:{},fin:{},brand:{},col:{},store:{},ref:{}};
-    R.forEach(function(p){['mat','add','fin','brand','col','store','ref'].forEach(function(k){
+    var F={mat:{},add:{},fin:{},brand:{},col:{},store:{},ref:{},stock:{}};
+    R.forEach(function(p){['mat','add','fin','brand','col','store','ref','stock'].forEach(function(k){
       if(!pass(p,k))return;
       if(k==='store'){Object.keys(p.stores).forEach(function(s){F.store[s]=(F.store[s]||0)+1})}
-      else{var v=p[k];if(v!==null&&v!==undefined)F[k][v]=(F[k][v]||0)+1}})});
+      else{var v=k==='stock'?p.stk:p[k];if(v!==null&&v!==undefined)F[k][v]=(F[k][v]||0)+1}})});
     return F}
   function updateCounts(){
     FC=facet();
@@ -658,13 +659,12 @@ dialog#hc .sc{flex:1;overflow:auto}
       var c=b.dataset.c,n=FC.col[c]||0;
       b.title=c+' ('+n+')';b.setAttribute('aria-label',c+', '+n+' produkter');b.disabled=!n&&!S.col[c]})}
   function activeBar(){
-    var c=[],G={ref:'Utførelse',mat:'Materiale',add:'Tilsetning',fin:'Type',brand:'Merke',col:'Farge',store:'Butikk'};
-    var L={ref:function(k){return k==='Refill'?'Refill (uten spole)':'Med spole'},mat:function(k){return(MATS[k]||{n:k}).n},add:function(k){return ADD[k]||k},fin:function(k){return FINL[k]||k},brand:function(k){return k},col:function(k){return k},store:function(k){return STORES[k]?STORES[k].n:k}};
+    var c=[],G={stock:'Lager',ref:'Utførelse',mat:'Materiale',add:'Tilsetning',fin:'Type',brand:'Merke',col:'Farge',store:'Butikk'};
+    var L={stock:function(k){return k==='in'?'På lager':'Ikke på lager'},ref:function(k){return k==='Refill'?'Refill (uten spole)':'Med spole'},mat:function(k){return(MATS[k]||{n:k}).n},add:function(k){return ADD[k]||k},fin:function(k){return FINL[k]||k},brand:function(k){return k},col:function(k){return k},store:function(k){return STORES[k]?STORES[k].n:k}};
     function chip(key,v,txt){c.push('<button type="button" data-rm="'+key+'" data-v="'+esc(v)+'" aria-label="Fjern filter: '+esc(txt)+'">'+esc(txt)+' <i aria-hidden="true">×</i></button>')}
     if(S.q)chip('q','','Søk: '+S.q);
     Object.keys(G).forEach(function(k){Object.keys(S[k]).forEach(function(v){chip(k,v,G[k]+': '+L[k](v))})});
     if(S.max<1500)chip('max','','Maks '+kr(S.max));
-    if(!S.hideOut)chip('hideOut','','Viser også utilgjengelige');
     if(S.sale)chip('sale','','Bare tilbud');
     if(c.length>1)c.push('<button type="button" class="clr" data-rm="all">Fjern alle</button>');
     $('#active').innerHTML=c.join('')}
@@ -673,7 +673,7 @@ dialog#hc .sc{flex:1;overflow:auto}
     if(k==='all')reset();
     else if(k==='q'){S.q.split(/\s+/).forEach(dropWord);S.q='';CM=$('#q').value.trim().toLowerCase()}
     else if(k==='max')S.max=1500;
-    else if(k==='hideOut')S.hideOut=true;else if(k==='sale')S.sale=false;
+    else if(k==='sale')S.sale=false;
     else{delete S[k][v];SF=SF.filter(function(f){if(f.k===k&&f.v===v){dropWord(f.w);return false}return true});CM=$('#q').value.trim().toLowerCase()}
     render()});
   function list(){
