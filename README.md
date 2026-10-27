@@ -150,6 +150,8 @@ Materie X publiserer en Google Shopping-feed på `https://materiex.no/gshopping.
 
 I malen heter nøkkelen for førpris `was`. Eldre filer med to priser (`sale_price` og `onsale`) kan fortsatt leses.
 
+Tomt lagerfelt betyr «utsolgt» for butikker som har `"empty_stock": "Utsolgt"` i `config/stores.json` (gjelder Polyalkemi). Andre butikker tolker tomt felt som ukjent lager.
+
 Valgfrie kolonner (lager, bilde, merke, farge) kan mangle i en fil. Byggingen hopper da over dem og skriver en merknad, men stopper ikke. Navn og pris må finnes.
 
 ## Hva byggingen gjør
