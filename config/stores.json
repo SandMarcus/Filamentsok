@@ -107,7 +107,8 @@
         "color": "Farge/type"
       },
       "default_kg": 1,
-      "rolls_as_kg": true
+      "rolls_as_kg": true,
+      "empty_stock": "Utsolgt"
     },
     {
       "id": "materiex",
