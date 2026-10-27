@@ -36,6 +36,16 @@ jobs:
         # Feiler henting, beholdes data/normax3d.csv fra repoet.
         continue-on-error: true
         run: python tools/nm3d_feed.py data/normax3d.csv
+      - name: Hent Materie X (Google Shopping-feed)
+        continue-on-error: true
+        run: python tools/materiex_feed.py data/materiex.csv
+      - name: Hent Polyalkemi (kategorisider og produktsider)
+        # Tar opptil ca. 40 minutter og kjøres derfor bare nattlig eller for hånd, ikke ved hver push.
+        # Feiler henting, eller går tiden ut, beholdes forrige pris fra data/polyalkemi.csv i repoet.
+        if: github.event_name != 'push'
+        continue-on-error: true
+        timeout-minutes: 50
+        run: python tools/polyalkemi_feed.py data/polyalkemi.csv --budget 40
       - name: Tester
         run: |
           pip install pytest
