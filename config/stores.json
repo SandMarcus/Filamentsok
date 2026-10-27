@@ -50,10 +50,15 @@
       "home": "https://stratum3d.no/",
       "file": "data/stratum3d.csv",
       "columns": {
-        "name": "Navn",
+        "url": "Lenke",
+        "image": "Bilde",
+        "name": [
+          "Navn"
+        ],
+        "color": "Farge",
         "price": "Pris",
-        "stock": "lager",
-        "image": "Bilde"
+        "was": "Førpris",
+        "stock": "Lager"
       }
     },
     {
