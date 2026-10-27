@@ -694,11 +694,17 @@ dialog#hc .sc{flex:1;overflow:auto}
     if(p.avail==='yes')return '<div class="stock in">På lager</div>';
     return '<div class="stock in">På lager ('+esc(p.avail)+')</div>';
   }
+  /* Teller klikk videre til butikkene som hendelser i GoatCounter (anonymt, uten cookies): sti «klikk/<butikk>». */
+  function trackOut(e){
+    if(e.type==='auxclick'&&e.button!==1)return;
+    var a=e.target.closest&&e.target.closest('a[data-s]');if(!a)return;
+    try{if(window.goatcounter&&window.goatcounter.count)window.goatcounter.count({path:'klikk/'+a.dataset.s,title:'Klikk til '+a.dataset.n,event:true})}catch(x){}}
+  document.addEventListener('click',trackOut,true);document.addEventListener('auxclick',trackOut,true);
   function offerHtml(o,best,multi){
     var s=STORES[o.store];
     return '<div class="of'+(best?' best':'')+(UNAV(o.avail)?' un':'')+'"><div class="ofl"><b>'+esc(s.n)+'</b>'+(best&&multi?'<em>Billigst</em>':'')+stockHtml(o)+'</div>'+
       '<div class="ofp">'+(o.price===null?'<span class="price na">Se pris i butikk</span>':'<span class="price">'+(o.was?'<s>før '+kr(o.was)+'</s> ':'')+(o.from?'<small>fra </small>':'')+kr(o.price)+'</span>'+(o.pk?'<span class="perkg">'+kr(o.pk)+'/kg</span>':''))+'</div>'+
-      (o.url?'<a class="go" href="'+esc(o.url)+'" target="_blank" rel="noopener noreferrer" aria-label="Til '+esc(s.n)+'">Til butikken</a>':'<span class="go off" aria-disabled="true">Link kommer</span>')+'</div>';
+      (o.url?'<a class="go" data-s="'+esc(o.store)+'" data-n="'+esc(s.n)+'" href="'+esc(o.url)+'" target="_blank" rel="noopener noreferrer" aria-label="Til '+esc(s.n)+'">Til butikken</a>':'<span class="go off" aria-disabled="true">Link kommer</span>')+'</div>';
   }
   function card(p){
     var multi=p.offers.length>1;
@@ -873,7 +879,7 @@ dialog#hc .sc{flex:1;overflow:auto}
       h+=row('Laveste kilopris',function(p,i){return minK[i]!==null?kr(minK[i])+'/kg':'–'},bestIdx(minK));
     }
     h+=row('Tilbud',function(p){return p.offers.map(function(o){var st=STORES[o.store];
-      return '<div class="of2"><span><b>'+esc(st.n)+'</b>'+stockHtml(o)+(o.url?'<a class="go2" href="'+esc(o.url)+'" target="_blank" rel="noopener noreferrer">Til butikken</a>':'')+'</span>'+(PRICES&&o.price!==null?'<b>'+kr(o.price)+'</b>':'')+'</div>'}).join('')});
+      return '<div class="of2"><span><b>'+esc(st.n)+'</b>'+stockHtml(o)+(o.url?'<a class="go2" data-s="'+esc(o.store)+'" data-n="'+esc(st.n)+'" href="'+esc(o.url)+'" target="_blank" rel="noopener noreferrer">Til butikken</a>':'')+'</span>'+(PRICES&&o.price!==null?'<b>'+kr(o.price)+'</b>':'')+'</div>'}).join('')});
     return h+'</tbody></table>'}
   window.__sp=function(c,f){return spool(c,f)};
   hl.addEventListener('change',function(e){var c=e.target.closest('input[data-cmp]');if(!c)return;var k=c.dataset.cmp,i=CMP.indexOf(k);
