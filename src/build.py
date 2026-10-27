@@ -157,6 +157,8 @@ def read_store(cfg, report):
                 name, rolls_as_kg=cfg.get("rolls_as_kg", False), default_kg=cfg.get("default_kg"),
                 default_kg_brands=cfg.get("default_kg_brands"), brand=brand, material=e.ui_material, additive=e.additive)
             stock_text = c("stock") or c("stock_fallback")
+            if not stock_text and cfg.get("empty_stock"):
+                stock_text = cfg["empty_stock"]  # tomt lagerfelt betyr utsolgt i denne butikkens fil
             url = c("url")
             if url and not re.match(r"https?://", url):
                 url = urljoin(cfg.get("url_base", cfg["home"]), url)
