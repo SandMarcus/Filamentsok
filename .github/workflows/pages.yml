@@ -36,6 +36,9 @@ jobs:
         # Feiler henting, beholdes data/normax3d.csv fra repoet.
         continue-on-error: true
         run: python tools/nm3d_feed.py data/normax3d.csv
+      - name: Hent Stratum3D (WooCommerce Store API)
+        continue-on-error: true
+        run: python tools/stratum_feed.py data/stratum3d.csv
       - name: Hent Materie X (Google Shopping-feed)
         continue-on-error: true
         run: python tools/materiex_feed.py data/materiex.csv
