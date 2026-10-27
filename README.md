@@ -144,6 +144,12 @@ NorMax3D bruker WooCommerce, som har et åpent Store API (`https://nm3d.no/wp-js
 
 `pages.yml` kjører skriptet hver natt og ved hver push. Feiler det, beholdes filen som ligger i repoet. Kjør det for hånd med `python tools/nm3d_feed.py data/normax3d.csv`. Har du en lagret JSON-side fra API-et, kan du teste uten nett: `python tools/nm3d_feed.py data/normax3d.csv --sample side.json` (da brukes prisen på hovedproduktet for alle varianter).
 
+### Polyalkemi (automatisk henting)
+
+Polyalkemi har ingen åpen feed, så `tools/polyalkemi_feed.py` leser de vanlige sidene som robots.txt tillater. Hovedsiden `/filament?pageID=110` (ca. 38 MB) gir alle varer med lager, bilde og lenke i ett kall. Mislykkes det, brukes kategorisidene `/filament/<materiale>?pageID=100`. Prisen fylles inn av JavaScript der, så den leses fra hver produktside (`data-priceincvat`), med ca. 0,6 sekunds pause. Rekker ikke skriptet alt innen tidsrammen (`--budget`, standard 40 minutter), eller feiler en side, brukes forrige pris fra `data/polyalkemi.csv`. Varer uten kjent pris tas ikke med.
+
+`pages.yml` kjører dette bare nattlig og ved manuell start, ikke ved hver push, fordi det tar lang tid. Kjør for hånd: `python tools/polyalkemi_feed.py data/polyalkemi.csv`. Med `--no-price` oppdateres bare lager og nye varer, og prisene hentes fra forrige fil. Vil du heller ha en egen prisfil fra butikken, kan du lagre den som `data/polyalkemi.csv` i samme kolonner.
+
 ### Materie X (automatisk henting)
 
 Materie X publiserer en Google Shopping-feed på `https://materiex.no/gshopping.xml`. `tools/materiex_feed.py` leser den, beholder produkter med produkttype «Filament» og skriver `data/materiex.csv` (én rad per farge, med pris, `sale_price` som pris og vanlig pris som `Førpris`, og lager). `pages.yml` kjører skriptet hver natt. Test uten nett: `python tools/materiex_feed.py data/materiex.csv --sample feed.xml`. Filen som ligger i repoet er en startfil og erstattes ved første kjøring.
