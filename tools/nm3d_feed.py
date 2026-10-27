@@ -68,19 +68,32 @@ def stock_text(p):
     if not p.get("is_in_stock", True):
         return "Utsolgt"
     txt = clean((p.get("stock_availability") or {}).get("text"))
-    if re.match(r"\d+ på lager", txt):
-        return txt
+    if re.match(r"\d+\+? på lager", txt):
+        return re.match(r"\d+\+? på lager", txt).group(0)
     if "kan bestilles" in txt.lower():
         return "Utsolgt, men kan bestilles"
     return "På lager"
 
 
+def attr_terms(p, pattern):
+    """Navn på verdiene til attributtet som matcher mønsteret (verdiene kan være tekst eller objekter)."""
+    for a in p.get("attributes", []):
+        if re.search(pattern, a.get("name", ""), re.I):
+            return [clean(t.get("name", "") if isinstance(t, dict) else t) for t in a.get("terms", [])]
+    return []
+
+
 def tag_weight(p):
-    """Vekt fra etiketten (for eksempel «750g filament») når navnet ikke har noen."""
+    """Vekt fra etiketten (for eksempel «750g filament») eller attributtet «Vekt» når navnet ikke har noen."""
     for t in p.get("tags", []):
         m = WEIGHT_RE.fullmatch(clean(t.get("name", "")).replace(" filament", "").strip())
         if m:
             return m.group(0).replace(" ", "")
+    terms = attr_terms(p, r"^(vekt|weight)$")
+    if len(terms) == 1:
+        m = WEIGHT_RE.fullmatch(terms[0].replace(" ", ""))
+        if m:
+            return m.group(0)
     return ""
 
 
@@ -152,7 +165,8 @@ def rows_for(p, fetch=None):
         pr = p["prices"]
         name = " ".join(x for x in (base_name, extra_w) if x)
         was = money(pr, "regular_price") if p.get("on_sale") else ""
-        out.append([link, img, name, "", money(pr, "price"), was, stock_text(p)])
+        colors = attr_terms(p, r"^(farge|color|colour)$")
+        out.append([link, img, name, colors[0] if len(colors) == 1 else "", money(pr, "price"), was, stock_text(p)])
     return [r for r in out if r[4]]
 
 
@@ -170,10 +184,11 @@ def all_products(fetch):
     return res
 
 
-def convert(products, dst, fetch=None):
+def convert(products, dst, fetch=None, keep=None):
+    keep = keep or is_filament
     rows = []
     for p in products:
-        if p.get("parent") or not is_filament(p):
+        if p.get("parent") or not keep(p):
             continue
         rows += rows_for(p, fetch)
     if not rows:
