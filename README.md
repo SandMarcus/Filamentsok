@@ -73,6 +73,9 @@ Siden kan telle besøk med GoatCounter (gratis, uten cookies, ingen samtykkebann
 
 Er koden tom (standard), settes ingenting inn. Lokalt kan du bruke en valgfri `config/analytics.json` med `{"goatcounter": "kode"}`. Plassholderne `<!--__ANALYTICS__-->` og `<!--__ANALYTICS_NOTE__-->` i sidene byttes ut av `src/build.py`.
 
+
+Klikk videre til butikkene telles som hendelser med stien `klikk/<butikk>` (for eksempel `klikk/poly`), også ved midtklikk. Det lagres ingenting om personen. I GoatCounter ligger de i listen over sider, merket som hendelser. Velg tidsrom øverst (i dag, uke, måned, kvartal, år eller egen periode).
+
 ## Funksjonssiden (`/funksjoner/`)
 
 `web/funksjoner/index.html` viser alle funksjonene på siden, gruppert i kort. Ny funksjon: legg til et `<div class="card">` i riktig gruppe. `CLAUDE.md` ber Claude gjøre dette automatisk når en ny funksjon bygges.
