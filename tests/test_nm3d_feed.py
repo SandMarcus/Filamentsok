@@ -55,3 +55,25 @@ def test_filter_kategorier():
     assert not n.is_filament(_p("filament-lagring", "tilbehor-og-ekstradeler"))
     assert not n.is_filament(_p("resin"))
     assert not n.is_filament(_p("rengjoring"))
+
+
+def test_stratum_filter_og_konvertering(tmp_path):
+    import json
+    from tools import stratum_feed as sf
+    from tools import nm3d_feed as nf
+    prods = json.load(open(Path(__file__).parent / "fixtures" / "nm3d_sample.json", encoding="utf-8"))
+    for p in prods:
+        p["categories"] = [{"slug": "3d-print-filament"}]
+    assert sf.is_filament(prods[0]) and sf.is_filament({"categories": [{"slug": "3d-print-filament-peek"}]})
+    assert not sf.is_filament({"categories": [{"slug": "3d-printer-filament"}]})  # printere ligger her
+    out = tmp_path / "s.csv"
+    assert nf.convert(prods, out, fetch=None, keep=sf.is_filament) > 0
+
+
+def test_vekt_og_farge_fra_attributter():
+    p = {"id": 1, "name": "Kexcelled K11 PEEK", "type": "simple", "permalink": "https://x/p/", "images": [], "tags": [],
+         "prices": {"price": "549000", "regular_price": "549000", "currency_minor_unit": 2}, "is_in_stock": True,
+         "stock_availability": {"text": "10+ på lager (3-5 dager levering)"},
+         "attributes": [{"name": "Vekt", "terms": [{"name": "500g"}]}, {"name": "Farge", "terms": [{"name": "Natural"}]}]}
+    row = nm3d_feed.rows_for(p)[0]
+    assert row[2] == "Kexcelled K11 PEEK 500g" and row[3] == "Natural" and row[4] == "5490" and row[6] == "10+ på lager"
