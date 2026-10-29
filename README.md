@@ -167,6 +167,9 @@ Tomt lagerfelt betyr «utsolgt» for butikker som har `"empty_stock": "Utsolgt"`
 
 Valgfrie kolonner (lager, bilde, merke, farge) kan mangle i en fil. Byggingen hopper da over dem og skriver en merknad, men stopper ikke. Navn og pris må finnes.
 
+### 3D-printere (`/3d-printere/`)
+Egen side med printere fra butikkene som har automatisk feed (NorMax3D, Stratum3D, Materie X, Elefun). Hver feed skriver `data/printers_<butikk>.csv` ved siden av filamentfilen (samme kolonner, uten vekt). `printers_file` i `config/stores.json` peker på filen. Bygget grupperer lik printer fra flere butikker (`src/printers.py`) og skriver `printers.json`. Siden har søk, sortering på pris, og filtre for lager (standard «På lager»), tilbud, type (FDM/Resin), merke, butikk og maks pris. Tilbehør (CFS, dyser, byggeplater osv.) filtreres bort med et regex i `tools/printers_common.py`, og rader uten pris droppes. Mangler en printerfil, noteres det i `merknader` i byggrapporten. Polyalkemi har ingen printerfeed.
+
 ### Språk (norsk og engelsk)
 
 Siden er skrevet på norsk. Knappen «EN» øverst bytter til engelsk (og «NO» tilbake). `web/i18n.js` bytter ut tekst i nettleseren, og ordlisten `web/i18n-en.js` lastes først når engelsk velges. Valget huskes i `localStorage` (`lang`). Tekst som ikke står i ordlisten vises uendret, for eksempel produktnavn. Legger du til ny tekst på en side, legg den også inn i `i18n-en.js` (nøkkel: norsk tekst slik den står, verdi: engelsk).
