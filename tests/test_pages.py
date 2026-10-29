@@ -1,7 +1,7 @@
 from pathlib import Path
 
 WEB = Path(__file__).resolve().parent.parent / "web"
-PAGES = ["index.html", "guide/index.html", "funksjoner/index.html", "partner/index.html", "3d-print/index.html"]
+PAGES = ["index.html", "guide/index.html", "funksjoner/index.html", "partner/index.html", "3d-print/index.html", "3d-printere/index.html"]
 
 
 def test_alle_sider_har_sprakknapp_og_skript():
@@ -9,7 +9,7 @@ def test_alle_sider_har_sprakknapp_og_skript():
         html = (WEB / p).read_text(encoding="utf-8")
         assert 'id="lang"' in html, p
         assert "i18n.js" in html, p
-        if p != "3d-print/index.html":  # siden lenker til seg selv med «./»
+        if p not in ("3d-print/index.html", "3d-printere/index.html"):  # siden lenker til seg selv med «./»
             assert "3d-print/" in html, p
 
 
