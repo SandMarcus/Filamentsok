@@ -167,6 +167,9 @@ Tomt lagerfelt betyr «utsolgt» for butikker som har `"empty_stock": "Utsolgt"`
 
 Valgfrie kolonner (lager, bilde, merke, farge) kan mangle i en fil. Byggingen hopper da over dem og skriver en merknad, men stopper ikke. Navn og pris må finnes.
 
+### Multicom (automatisk henting)
+Multicom har ingen åpen feed. `tools/multicom_feed.py` leser kategorisiden «Filament» (`https://www.multicom.no/filament/cat-c/c1000798/ps_100`, opptil 100 varer per side) og skriver `data/multicom.csv`. Har butikken flere enn 100 varer, følger skriptet sidene (`pi_2` ...). Vekt og farge står i varenavnet. «N+» og «N stk» blir lagerantall, «Ingen på lager» blir utsolgt, og varer på leverandørlager (sendes etter 6-10 dager) vises som «kan bestilles». Lesingen bygger på sidens markup (`b-product-list__item`), så endrer Multicom nettbutikken, må `parse_list` justeres. Skriptet stopper uten å skrive filen hvis det leser færre enn 80 % av antallet siden oppgir. Test uten nett: `python tools/multicom_feed.py data/multicom.csv --sample side.html`.
+
 ### Språk (norsk og engelsk)
 
 Siden er skrevet på norsk. Knappen «EN» øverst bytter til engelsk (og «NO» tilbake). `web/i18n.js` bytter ut tekst i nettleseren, og ordlisten `web/i18n-en.js` lastes først når engelsk velges. Valget huskes i `localStorage` (`lang`). Tekst som ikke står i ordlisten vises uendret, for eksempel produktnavn. Legger du til ny tekst på en side, legg den også inn i `i18n-en.js` (nøkkel: norsk tekst slik den står, verdi: engelsk).
