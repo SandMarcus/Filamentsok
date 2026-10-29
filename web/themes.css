@@ -347,3 +347,8 @@ html[data-style="y1999"] .wrap>footer:before{content:"";flex-basis:100%;height:6
 html[data-style="y1999"] .hero,html[data-style="y1999"] .hero>div,html[data-style="y1999"] .hero p{text-align:center!important}
 html[data-style="y1999"] .hero p{margin:4px auto}
 @media (max-width:700px){header.top.menu-open nav{max-height:calc(100vh - 90px);max-height:calc(100dvh - 90px);overflow:auto}}
+
+/* Språkknapp (NO/EN) ved siden av temaknappen */
+.tgl.lang{width:auto;min-width:36px;padding:0 8px;font:600 12px/1 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;letter-spacing:.02em}
+header.top .tgl.lang{margin-left:0}
+@media (max-width:700px){header.top .tgl.lang{order:1;margin-left:auto}header.top .tgl.lang+.tgl{margin-left:0}}
