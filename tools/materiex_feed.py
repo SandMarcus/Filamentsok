@@ -18,8 +18,6 @@ import urllib.request
 import xml.etree.ElementTree as ET
 from pathlib import Path
 
-sys.path.insert(0, str(Path(__file__).resolve().parent))
-import printers_common as pc  # noqa: E402
 
 FEED = "https://materiex.no/gshopping.xml"
 UA = "Filamentsok/1.0 (prissammenligning; +https://xn--filamentsk-s5a.no)"
@@ -95,23 +93,6 @@ def rows_from_feed(xml_bytes):
     return rows
 
 
-def printer_rows(xml_bytes):
-    """Produkter med produkttype «3D Printere» (resin og tilbehør har egne typer)."""
-    out = []
-    for item in ET.fromstring(xml_bytes).iter("item"):
-        if val(item, "product_type").lower() != "3d printere":
-            continue
-        name = pc.clean_name(val(item, "title"))
-        price, sale = money(val(item, "price")), money(val(item, "sale_price"))
-        was = ""
-        if sale and price and float(sale.replace(",", ".")) < float(price.replace(",", ".")):
-            price, was = sale, price
-        if not price or pc.is_accessory(name):
-            continue
-        out.append([val(item, "link"), val(item, "image_link"), name, "", price, was, stock_text(val(item, "availability"))])
-    return out
-
-
 def convert(xml_bytes, dst):
     rows = rows_from_feed(xml_bytes)
     if not rows:
@@ -142,8 +123,6 @@ def main(argv):
         dst = args[0] if args else "data/materiex.csv"
         data = fetch(FEED)
     print(f"Skrev {convert(data, dst)} rader til {dst}")
-    n = pc.write(printer_rows(data), pc.path_for(dst))
-    print(f"Skrev {n} printere til {pc.path_for(dst)}")
 
 
 if __name__ == "__main__":

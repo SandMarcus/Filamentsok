@@ -18,8 +18,6 @@ import time
 import urllib.request
 from pathlib import Path
 
-sys.path.insert(0, str(Path(__file__).resolve().parent))
-import printers_common as pc  # noqa: E402
 
 BASE = "https://nm3d.no/wp-json/wc/store/v1"
 UA = "Filamentsok/1.0 (prissammenligning; +https://xn--filamentsk-s5a.no)"
@@ -53,31 +51,6 @@ def is_filament(p):
         return False
     # Harpiks (resin) og underkategorier av den er ikke filament.
     return not any("resin" in s and not s.endswith("filament-og-resin") for s in slugs)
-
-
-PRINTER_SKIP = {"tilbehor-og-ekstradeler", "oppgradering", "vaske-og-kurekammer", "reservedeler"}
-
-
-def is_printer(p):
-    """3D-printere: kategorien «printer» med FDM eller resin (DLP), uten tilbehørskategorier."""
-    slugs = {c["slug"] for c in p.get("categories", [])}
-    return "printer" in slugs and bool(slugs & {"fdm", "dlp"}) and not (slugs & PRINTER_SKIP)
-
-
-def printer_rows(products):
-    out = []
-    for p in products:
-        if p.get("parent") or not is_printer(p):
-            continue
-        name = pc.clean_name(p["name"])
-        price = money(p.get("prices"), "price")
-        if not price or pc.is_accessory(name):
-            continue
-        slugs = {c["slug"] for c in p.get("categories", [])}
-        was = money(p["prices"], "regular_price") if p.get("on_sale") else ""
-        img = (p.get("images") or [{}])[0].get("src", "")
-        out.append([p["permalink"], img, name, "Resin" if "dlp" in slugs else "FDM", price, was, stock_text(p)])
-    return out
 
 
 def money(prices, key):
@@ -212,7 +185,7 @@ def all_products(fetch):
     return res
 
 
-def convert(products, dst, fetch=None, keep=None, printer_fn=None):
+def convert(products, dst, fetch=None, keep=None):
     keep = keep or is_filament
     rows = []
     for p in products:
@@ -233,9 +206,6 @@ def convert(products, dst, fetch=None, keep=None, printer_fn=None):
         w = csv.writer(f)
         w.writerow(["Lenke", "Bilde", "Navn", "Farge", "Pris", "Førpris", "Lager"])
         w.writerows(uniq)
-    if printer_fn:  # 3D-printere skrives til en egen fil ved siden av (data/printers_<navn>.csv)
-        n = pc.write(printer_fn(products), pc.path_for(dst))
-        print(f"Skrev {n} printere til {pc.path_for(dst)}")
     return len(uniq)
 
 
@@ -246,9 +216,9 @@ def main(argv):
         src = argv[argv.index("--sample") + 1]
         dst = [a for a in args if a != src][0] if len([a for a in args if a != src]) else dst
         products = json.loads(Path(src).read_text(encoding="utf-8"))
-        n = convert(products, dst, fetch=None, printer_fn=printer_rows)
+        n = convert(products, dst, fetch=None)
     else:
-        n = convert(all_products(fetch_json), dst, fetch=fetch_json, printer_fn=printer_rows)
+        n = convert(all_products(fetch_json), dst, fetch=fetch_json)
     print(f"Skrev {n} rader til {dst}")
 
 
