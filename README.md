@@ -147,6 +147,10 @@ NorMax3D bruker WooCommerce, som har et åpent Store API (`https://nm3d.no/wp-js
 
 `pages.yml` kjører skriptet hver natt og ved hver push. Feiler det, beholdes filen som ligger i repoet. Kjør det for hånd med `python tools/nm3d_feed.py data/normax3d.csv`. Har du en lagret JSON-side fra API-et, kan du teste uten nett: `python tools/nm3d_feed.py data/normax3d.csv --sample side.json` (da brukes prisen på hovedproduktet for alle varianter).
 
+### Stratum3D (automatisk henting)
+
+Stratum3D bruker også WooCommerce, så `tools/stratum_feed.py` bruker samme Store API (`https://stratum3d.no/wp-json/wc/store/v1/products`) og samme logikk som NorMax3D. Det tas med produkter i kategorien `3d-print-filament` og dens underkategorier (for eksempel `3d-print-filament-peek`). Kategorien `3d-printer-filament` tas ikke med, for der ligger printere. Vekt og farge hentes fra attributtene «Vekt» og «Farge» når de ikke står i navnet. `pages.yml` kjører skriptet hver natt og ved hver push, og feiler det, beholdes filen i repoet. Filen som ligger i repoet er en startfil uten lenker, og den erstattes ved første kjøring.
+
 ### Polyalkemi (automatisk henting)
 
 Polyalkemi har ingen åpen feed, så `tools/polyalkemi_feed.py` leser de vanlige sidene som robots.txt tillater. Hovedsiden `/filament?pageID=110` (ca. 38 MB) gir alle varer med lager, bilde og lenke i ett kall. Mislykkes det, brukes kategorisidene `/filament/<materiale>?pageID=100`. Prisen fylles inn av JavaScript der, så den leses fra hver produktside (`data-priceincvat`), med ca. 0,6 sekunds pause. Rekker ikke skriptet alt innen tidsrammen (`--budget`, standard 40 minutter), eller feiler en side, brukes forrige pris fra `data/polyalkemi.csv`. Varer uten kjent pris tas ikke med.
@@ -162,6 +166,14 @@ I malen heter nøkkelen for førpris `was`. Eldre filer med to priser (`sale_pri
 Tomt lagerfelt betyr «utsolgt» for butikker som har `"empty_stock": "Utsolgt"` i `config/stores.json` (gjelder Polyalkemi). Andre butikker tolker tomt felt som ukjent lager.
 
 Valgfrie kolonner (lager, bilde, merke, farge) kan mangle i en fil. Byggingen hopper da over dem og skriver en merknad, men stopper ikke. Navn og pris må finnes.
+
+### Språk (norsk og engelsk)
+
+Siden er skrevet på norsk. Knappen «EN» øverst bytter til engelsk (og «NO» tilbake). `web/i18n.js` bytter ut tekst i nettleseren, og ordlisten `web/i18n-en.js` lastes først når engelsk velges. Valget huskes i `localStorage` (`lang`). Tekst som ikke står i ordlisten vises uendret, for eksempel produktnavn. Legger du til ny tekst på en side, legg den også inn i `i18n-en.js` (nøkkel: norsk tekst slik den står, verdi: engelsk).
+
+### 3D-printing som tjeneste
+
+`web/3d-print/index.html` er en egen side der besøkende kan bestille 3D-print via Signal (knapp og QR-kode `web/signal-qr.jpg`), med tre bestillingsmåter, materialer, farger og vilkår. Signal-lenken ligger to steder i siden (`#sigbtn` og `#sigbtn2`). Siden ligger i menyen og bunnteksten på alle sider og er beskrevet på funksjonssiden.
 
 ## Hva byggingen gjør
 
