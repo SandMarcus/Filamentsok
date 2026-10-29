@@ -405,7 +405,7 @@ rx: [
   [/^Sammenlign (\d+) filamenter$/, 'Compare $1 filaments'],
   [/^Alle \((.+)\)$/, 'All ($1)'], [/^Oppgitt for (\d+) av (\d+) materialer\.$/, 'Given for $1 of $2 materials.'],
   [/^Materialets anbefalte område må ligge innenfor valgt område\. Oppgitt for (\d+) av (\d+) materialer\.$/, 'The material’s recommended range must lie within the chosen range. Given for $1 of $2 materials.'],
-  [/^Til (Elefun|Materie X|Multicom|NorMax3D|Polyalkemi|Kjell & Company|3DKlubben|3D-klubben|Stratum3D|Clas Ohlson)$/, 'To $1'],
+  [/^Til (Elefun|Materie X|Multicom|Tonerweb|NorMax3D|Polyalkemi|Kjell & Company|3DKlubben|3D-klubben|Stratum3D|Clas Ohlson)$/, 'To $1'],
   [/^Filamentspole (.+)$/, function (m, s) { var c = m[1].charAt(0).toUpperCase() + m[1].slice(1); return 'Filament spool ' + s(c).toLowerCase(); }],
   [/^(.+) \((\d+)\)$/, function (m, s) { var a = s(m[1]); return a === m[1] ? m[0] : a + ' (' + m[2] + ')'; }]
 ]
