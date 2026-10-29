@@ -1,0 +1,10 @@
+{"products":[
+{"id":1,"title":"Bambu Lab: PLA Basic, Black","handle":"bambu-lab-pla-basic-black","vendor":"Bambu Lab","product_type":"Filament",
+ "variants":[{"id":11,"title":"Default Title","price":"199.00","compare_at_price":null,"available":true,"image_id":null,"featured_image":null}],
+ "images":[{"id":101,"src":"https://cdn.shopify.com/s/files/1/a.jpg"}]},
+{"id":2,"title":"Elegoo: PLA Pro, Red","handle":"elegoo-pla-pro-red","vendor":"Elegoo","product_type":"Filament",
+ "variants":[{"id":21,"title":"1 kg","price":"249.50","compare_at_price":"299.00","available":false,"image_id":102,"featured_image":null},
+             {"id":22,"title":"500 g","price":"139.00","compare_at_price":"139.00","available":true,"image_id":null,"featured_image":null}],
+ "images":[{"id":101,"src":"https://cdn.shopify.com/s/files/1/a.jpg"},{"id":102,"src":"https://cdn.shopify.com/s/files/1/b.jpg"}]},
+{"id":3,"title":"Filamenttørker","handle":"tork","vendor":"X","variants":[{"id":31,"title":"Default Title","price":"499.00","available":true}],"images":[]}
+]}
