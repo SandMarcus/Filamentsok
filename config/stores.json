@@ -150,6 +150,24 @@
         "stock": "Lager"
       },
       "default_kg": 1
+    },
+    {
+      "id": "tonerweb",
+      "name": "Tonerweb",
+      "home": "https://www.tonerweb.no/",
+      "file": "data/tonerweb.csv",
+      "columns": {
+        "url": "Lenke",
+        "image": "Bilde",
+        "name": [
+          "Navn"
+        ],
+        "color": "Farge",
+        "price": "Pris",
+        "was": "Førpris",
+        "stock": "Lager"
+      },
+      "default_kg": 1
     }
   ]
 }
