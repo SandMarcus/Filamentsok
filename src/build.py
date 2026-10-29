@@ -131,6 +131,9 @@ def apply_sale(offer, sale_text, onsale_text, cfg, report, name):
 def read_store(cfg, report):
     store, path = cfg["id"], ROOT / cfg["file"]
     if not path.exists():
+        if cfg.get("optional_file"):  # nye butikker uten startfil: fylles av feeden i workflow
+            report["merknader"].append(f"{store}: {cfg['file']} finnes ikke ennå (hentes av feeden i workflow). Butikken hoppes over")
+            return []
         raise ConfigError(f"{store}: finner ikke {cfg['file']}")
     cols = cfg["columns"]
     out = []
@@ -235,7 +238,9 @@ def main(argv=None):
             "uten_materiale": sum(o["mat"] == "Annet" for o in rows),
             "uten_lenke": sum(o["url"] is None for o in rows),
         }
-        if n == 0:
+        if n == 0 and s.get("optional_file") and not (ROOT / s["file"]).exists():
+            pass  # ny butikk uten startfil, allerede nevnt i merknader
+        elif n == 0:
             report["warnings"].append(f"{s['id']}: ingen rader")
         elif report["stores"][s["id"]]["uten_pris"] / n > 0.25 and s["id"] != "clas":
             report["warnings"].append(f"{s['id']}: over 25 % uten pris. Sjekk kolonnen for pris i malen")
