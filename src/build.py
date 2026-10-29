@@ -19,7 +19,6 @@ from urllib.parse import urljoin
 
 from .csvparse import parse_price, parse_stock
 from .csvparse import weight_kg
-from .printers import build_printers
 from .enrich import REJECT, enrich
 from .grouping import group
 
@@ -242,7 +241,6 @@ def main(argv=None):
             report["warnings"].append(f"{s['id']}: over 25 % uten pris. Sjekk kolonnen for pris i malen")
 
     products = build_products(offers)
-    printers = build_printers(cfg["stores"], ROOT, report)
     snapshot = cfg.get("snapshot") or dt.date.today().isoformat()
     body = {
         "v": 1,
@@ -258,11 +256,8 @@ def main(argv=None):
         shutil.rmtree(out)
     shutil.copytree(ROOT / "web", out)
     (out / "products.json").write_text(payload, encoding="utf-8")
-    pstores = {s["id"]: {"n": s["name"], "home": s["home"]} for s in cfg["stores"] if s.get("printers_file")}
-    (out / "printers.json").write_text(json.dumps({"v": 1, "snapshot": norwegian_date(snapshot), "stores": pstores, "items": printers},
-                                                  ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
     gc = analytics_config(ROOT)
-    for page in ("index.html", "guide/index.html", "partner/index.html", "funksjoner/index.html", "3d-print/index.html", "3d-printere/index.html"):
+    for page in ("index.html", "guide/index.html", "partner/index.html", "funksjoner/index.html", "3d-print/index.html"):
         f = out / page
         if f.exists():
             f.write_text(inject_analytics(f.read_text(encoding="utf-8").replace("__BUILD__", build_id), gc), encoding="utf-8")
