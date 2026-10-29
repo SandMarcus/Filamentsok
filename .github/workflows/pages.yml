@@ -45,6 +45,9 @@ jobs:
       - name: Hent Multicom (kategorisiden)
         continue-on-error: true
         run: python tools/multicom_feed.py data/multicom.csv
+      - name: Hent Tonerweb (kategorisiden)
+        continue-on-error: true
+        run: python tools/tonerweb_feed.py data/tonerweb.csv
       - name: Hent Polyalkemi (kategorisider og produktsider)
         # Tar opptil ca. 40 minutter og kjøres derfor bare nattlig eller for hånd, ikke ved hver push.
         # Feiler henting, eller går tiden ut, beholdes forrige pris fra data/polyalkemi.csv i repoet.
