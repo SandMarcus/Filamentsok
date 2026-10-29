@@ -42,8 +42,7 @@
         "price": "Pris",
         "was": "Førpris",
         "stock": "Lager"
-      },
-      "printers_file": "data/printers_normax3d.csv"
+      }
     },
     {
       "id": "stratum",
@@ -60,8 +59,7 @@
         "price": "Pris",
         "was": "Førpris",
         "stock": "Lager"
-      },
-      "printers_file": "data/printers_stratum3d.csv"
+      }
     },
     {
       "id": "clas",
@@ -95,8 +93,7 @@
       "brand_strip": "Produsent ",
       "default_kg_brands": {
         "Bambu Lab": 1
-      },
-      "printers_file": "data/printers_elefun.csv"
+      }
     },
     {
       "id": "poly",
@@ -134,8 +131,7 @@
         "was": "Førpris",
         "stock": "Lager"
       },
-      "default_kg": 1,
-      "printers_file": "data/printers_materiex.csv"
+      "default_kg": 1
     }
   ]
 }
