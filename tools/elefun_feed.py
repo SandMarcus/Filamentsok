@@ -14,8 +14,36 @@ import re
 import sys
 from pathlib import Path
 
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+import printers_common as pc  # noqa: E402
+
 STOCK = {"in_stock": "På lager", "out_of_stock": "Utsolgt", "preorder": "Utsolgt, men kan bestilles",
          "backorder": "Utsolgt, men kan bestilles"}
+
+
+PRINTER_SKIP = re.compile(r"tilbeh|filament|resin|deler|dyse|nozzle|verktøy|kabinett|skriver", re.I)
+
+
+def is_printer_type(product_type):
+    """«3dprint > <gruppe> > ...» der gruppen inneholder «printer» (for eksempel «3D-printere»), men ikke tilbehør."""
+    parts = [s.strip() for s in (product_type or "").split(">")]
+    return len(parts) >= 2 and parts[0].lower() == "3dprint" and "printer" in parts[1].lower() and not PRINTER_SKIP.search(parts[1])
+
+
+def printer_rows(rows):
+    out, seen = [], set()
+    for r in rows:
+        if not is_printer_type(r["product_type"]) or r["link"] in seen:
+            continue
+        m = re.search(r"\d+(?:[.,]\d+)?", (r["price"] or "").replace(" ", ""))
+        name = pc.clean_name(r["title"])
+        if not m or pc.is_accessory(name):
+            continue
+        seen.add(r["link"])
+        v = float(m.group(0).replace(",", "."))
+        price = ("%d" % v) if v == int(v) else ("%.2f" % v).replace(".", ",")
+        out.append([r["link"], r["image_link"], name, "", price, "", STOCK.get((r["availability"] or "").strip(), "")])
+    return out
 
 
 def convert(src, dst):
@@ -36,6 +64,8 @@ def convert(src, dst):
         out.append([r["image_link"], r["link"], r["title"].strip(), "",
                     "kr %s,-" % (int(price) if price == int(price) else str(price).replace(".", ",")),
                     STOCK.get((r["availability"] or "").strip(), "")])
+    n_pr = pc.write(printer_rows(rows), pc.path_for(dst))
+    print(f"{n_pr} printere skrevet til {pc.path_for(dst)}")
     if not out:
         raise SystemExit("Fant ingen filamentrader i feeden. Filen ble ikke skrevet.")
     Path(dst).parent.mkdir(parents=True, exist_ok=True)
