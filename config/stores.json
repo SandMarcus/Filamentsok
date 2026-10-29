@@ -168,6 +168,25 @@
         "stock": "Lager"
       },
       "default_kg": 1
+    },
+    {
+      "id": "filamentfabrikken",
+      "name": "Filamentfabrikken",
+      "home": "https://filamentfabrikken.no/",
+      "file": "data/filamentfabrikken.csv",
+      "columns": {
+        "url": "Lenke",
+        "image": "Bilde",
+        "name": [
+          "Navn"
+        ],
+        "color": "Farge",
+        "price": "Pris",
+        "was": "Førpris",
+        "stock": "Lager"
+      },
+      "default_kg": 1,
+      "optional_file": true
     }
   ]
 }
