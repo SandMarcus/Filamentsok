@@ -5,6 +5,7 @@ map: {
 /* Meny, topp og bunn */
 'Filamentsøk': 'Filamentsøk',
 'Filamentsøk.no': 'Filamentsøk.no',
+'Filamentsøk – sammenlign priser på 3D-printer-filament': 'Filamentsøk – compare prices on 3D printer filament', 'Guide til filament – PLA, PETG, ABS og flere materialer | Filamentsøk': 'Filament guide – PLA, PETG, ABS and more materials | Filamentsøk',
 'Hjem': 'Home', 'Søk': 'Search', 'Kategorier': 'Categories', 'Butikker': 'Stores', 'Om oss': 'About',
 'Guide til filament': 'Filament guide', 'Guide': 'Guide', 'Funksjoner': 'Features', '3D-printing': '3D printing', '3D-printtjeneste': '3D printing service', '3D-printtjeneste – Filamentsøk': '3D printing service – Filamentsøk',
 'Partner': 'Partner', 'Støtt': 'Support', 'Kontakt': 'Contact', 'Støtt siden': 'Support the site',
