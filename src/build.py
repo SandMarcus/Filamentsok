@@ -19,6 +19,7 @@ from urllib.parse import urljoin
 
 from .csvparse import parse_price, parse_stock
 from .csvparse import weight_kg
+from .seo import PAGES as SEO_PAGES, inject_seo, site_config, write_files as write_seo_files
 from .enrich import REJECT, enrich
 from .grouping import group
 
@@ -262,10 +263,13 @@ def main(argv=None):
     shutil.copytree(ROOT / "web", out)
     (out / "products.json").write_text(payload, encoding="utf-8")
     gc = analytics_config(ROOT)
+    site = site_config(ROOT)
     for page in ("index.html", "guide/index.html", "partner/index.html", "funksjoner/index.html", "3d-print/index.html"):
         f = out / page
         if f.exists():
-            f.write_text(inject_analytics(f.read_text(encoding="utf-8").replace("__BUILD__", build_id), gc), encoding="utf-8")
+            text = inject_analytics(f.read_text(encoding="utf-8").replace("__BUILD__", build_id), gc)
+            f.write_text(inject_seo(text, SEO_PAGES.get(page, "/"), site), encoding="utf-8")
+    write_seo_files(out, site, dt.date.today().isoformat(), lambda pg: (out / pg).exists())
     guide = ROOT / "data" / "guide.json"
     if guide.exists():
         shutil.copy(guide, out / "guide.json")
