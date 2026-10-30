@@ -184,6 +184,9 @@ Siden er skrevet på norsk. Knappen «EN» øverst bytter til engelsk (og «NO»
 
 `web/3d-print/index.html` er en egen side der besøkende kan bestille 3D-print via Signal (knapp og QR-kode `web/signal-qr.jpg`), med tre bestillingsmåter, materialer, farger og vilkår. Signal-lenken ligger to steder i siden (`#sigbtn` og `#sigbtn2`). Siden ligger i menyen og bunnteksten på alle sider og er beskrevet på funksjonssiden.
 
+## Søkemotorer (Google)
+Bygget lager `robots.txt` og `sitemap.xml` og legger `canonical`, Open Graph og strukturerte data (JSON-LD) i hver side (`src/seo.py`). Adressen står i `config/site.json` (`url`). Stemmer ikke adressen med den du faktisk bruker (for eksempel `https://www.filamentsøk.no`), må den rettes der, ellers peker canonical feil vei. For å verifisere siden i Google Search Console: velg «HTML-tag», kopier verdien i `content="..."` og legg den i `google_verification` i `config/site.json`. Send deretter inn `https://<adressen>/sitemap.xml` under «Områdekart».
+
 ## Hva byggingen gjør
 
 1. Leser hver CSV etter malen: pris (`299,90`, `499,-`, `kr 9.999,-`, `1 590,00 kr`), lager (`Utsolgt`, `25+ på lager`, `10-25`, `27`, `Snart tilgjengelig`) og vekt.
