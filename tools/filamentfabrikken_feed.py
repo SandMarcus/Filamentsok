@@ -20,7 +20,7 @@ from pathlib import Path
 
 BASE = "https://filamentfabrikken.no"
 URL = BASE + "/collections/filament/products.json?limit=250&page={page}"
-UA = "Filamentsok/1.0 (prissammenligning; +https://xn--filamentsk-s5a.no)"
+UA = "Filamentsok/1.0 (prissammenligning; +https://xn--filamentsk-8cb.no)"
 COLUMNS = ["Lenke", "Bilde", "Navn", "Farge", "Pris", "Førpris", "Lager"]
 NOT_FILAMENT = re.compile(r"tørk|dryer|dry box|hotend|dyse|nozzle|byggeplate|sensor|verktøy|gavekort|gift card", re.I)
 

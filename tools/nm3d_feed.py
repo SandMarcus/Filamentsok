@@ -20,7 +20,7 @@ from pathlib import Path
 
 
 BASE = "https://nm3d.no/wp-json/wc/store/v1"
-UA = "Filamentsok/1.0 (prissammenligning; +https://xn--filamentsk-s5a.no)"
+UA = "Filamentsok/1.0 (prissammenligning; +https://xn--filamentsk-8cb.no)"
 WEIGHT_RE = re.compile(r"(\d+(?:[.,]\d+)?)\s*(kg|g)\b", re.I)
 SIZE_ATTR = re.compile(r"vekt|weight|størrelse|pakke|mengde", re.I)
 COLOR_ATTR = re.compile(r"farge|color|colour", re.I)

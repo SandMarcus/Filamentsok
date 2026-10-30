@@ -19,7 +19,7 @@ from pathlib import Path
 
 BASE = "https://www.multicom.no"
 CATEGORY = BASE + "/filament/cat-c/c1000798"
-UA = "Filamentsok/1.0 (prissammenligning; +https://xn--filamentsk-s5a.no)"
+UA = "Filamentsok/1.0 (prissammenligning; +https://xn--filamentsk-8cb.no)"
 COLUMNS = ["Lenke", "Bilde", "Navn", "Farge", "Pris", "Førpris", "Lager"]
 NOT_FILAMENT = re.compile(r"tørk|dryer|dry box|hotend|dyse|nozzle|byggeplate|printer\b|sensor|verktøy|spoleholder", re.I)
 

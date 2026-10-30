@@ -18,7 +18,7 @@ from pathlib import Path
 
 BASE = "https://www.tonerweb.no"
 CATEGORY = BASE + "/k/kontormaskiner/skrivere/3d_skrivere/3d_filament"
-UA = "Filamentsok/1.0 (prissammenligning; +https://xn--filamentsk-s5a.no)"
+UA = "Filamentsok/1.0 (prissammenligning; +https://xn--filamentsk-8cb.no)"
 COLUMNS = ["Lenke", "Bilde", "Navn", "Farge", "Pris", "Førpris", "Lager"]
 NOT_FILAMENT = re.compile(r"tørk|dryer|dry box|hotend|dyse|nozzle|byggeplate|printer\b(?!\s+filament)|sensor|verktøy", re.I)
 

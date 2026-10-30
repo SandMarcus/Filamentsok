@@ -20,7 +20,7 @@ from pathlib import Path
 
 
 FEED = "https://materiex.no/gshopping.xml"
-UA = "Filamentsok/1.0 (prissammenligning; +https://xn--filamentsk-s5a.no)"
+UA = "Filamentsok/1.0 (prissammenligning; +https://xn--filamentsk-8cb.no)"
 G = "{http://base.google.com/ns/1.0}"
 NOT_FILAMENT = re.compile(r"resin|harpiks|tørk|dryer|dry box|hotend|dyse|nozzle|plate|byggeplate|printer\b|sensor|verktøy|lim\b", re.I)
 

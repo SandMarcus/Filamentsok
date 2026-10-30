@@ -22,7 +22,7 @@ from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
 BASE = "https://polyalkemi.no"
-UA = "Filamentsok/1.0 (prissammenligning; +https://xn--filamentsk-s5a.no)"
+UA = "Filamentsok/1.0 (prissammenligning; +https://xn--filamentsk-8cb.no)"
 CATEGORIES = ["pla", "petg", "abs", "asa", "cope", "cpe", "fleksibelt", "pa-nylon", "pc", "pctg", "pet", "pp",
               "ppa", "pps", "pva", "wood", "support", "filamentpakker"]
 COLUMNS = ["Lenke", "Bilde", "Navn", "Farge/type", "Varenummer", "Lager", "pris"]
