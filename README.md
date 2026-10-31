@@ -176,6 +176,9 @@ Tonerweb har ingen åpen feed. `tools/tonerweb_feed.py` leser kategorisiden «3D
 ### Filamentfabrikken (automatisk henting)
 Filamentfabrikken bruker Shopify, som publiserer varelisten som JSON. `tools/filamentfabrikken_feed.py` leser `https://filamentfabrikken.no/collections/filament/products.json` (250 per side, `page=N`) og skriver `data/filamentfabrikken.csv`. Hver variant blir én rad. Shopify oppgir bare om varen kan kjøpes, ikke antall, så lager blir «På lager» eller «Utsolgt». Vekt settes til 1 kg som standard (varene er 1 kg-spoler). Førpris hentes fra `compare_at_price`. Test uten nett: lagre JSON-adressen som fil og kjør `python tools/filamentfabrikken_feed.py data/filamentfabrikken.csv --sample products.json`.
 
+### 3D Kongen (automatisk henting)
+3D Kongen bruker WooCommerce, som NorMax3D og Stratum3D. `tools/dkongen_feed.py` bruker samme Store API (`https://www.3dkongen.no/wp-json/wc/store/v1/products?per_page=100`) og skriver `data/3dkongen.csv`. Kategoriene hos butikken er ikke ryddige (filament ligger blant annet i «Tømmesalg»), så filament gjenkjennes på navn og kategori (`is_filament`), og tilbehør, printere og resin sorteres bort. Prisen er inkl. mva, og førpris hentes fra `regular_price`. Mangler startfilen, bygges siden uten butikken til workflow har hentet den (`optional_file` i `config/stores.json`). Test uten nett: lagre JSON-adressen som fil og kjør `python tools/dkongen_feed.py data/3dkongen.csv --sample side.json`.
+
 ### Språk (norsk og engelsk)
 
 Siden er skrevet på norsk. Knappen «EN» øverst bytter til engelsk (og «NO» tilbake). `web/i18n.js` bytter ut tekst i nettleseren, og ordlisten `web/i18n-en.js` lastes først når engelsk velges. Valget huskes i `localStorage` (`lang`). Tekst som ikke står i ordlisten vises uendret, for eksempel produktnavn. Legger du til ny tekst på en side, legg den også inn i `i18n-en.js` (nøkkel: norsk tekst slik den står, verdi: engelsk).
