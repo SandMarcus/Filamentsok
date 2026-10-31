@@ -1,0 +1,157 @@
+[
+ {
+  "id": 1,
+  "name": "Polymaker Polyterra PLA &#8211; 1.75mm &#8211; 1Kg &#8211; Peach",
+  "permalink": "https://www.3dkongen.no/produkt/p1/",
+  "type": "simple",
+  "parent": 0,
+  "variations": [],
+  "prices": {
+   "price": "22900",
+   "regular_price": "27900",
+   "sale_price": "22900",
+   "currency_minor_unit": 2
+  },
+  "on_sale": true,
+  "is_in_stock": true,
+  "categories": [
+   {
+    "id": 1,
+    "name": "*T&oslash;mmesalg Filament*",
+    "slug": "primaselect-matte-pla"
+   }
+  ],
+  "attributes": [],
+  "images": [
+   {
+    "src": "https://www.3dkongen.no/img1.png"
+   }
+  ],
+  "tags": [
+   {
+    "name": "PLA",
+    "slug": "pla"
+   }
+  ]
+ },
+ {
+  "id": 2,
+  "name": "Polymaker Polyterra PLA &#8211; 1.75mm &#8211; 1Kg &#8211; Lava Red",
+  "permalink": "https://www.3dkongen.no/produkt/p2/",
+  "type": "simple",
+  "parent": 0,
+  "variations": [],
+  "prices": {
+   "price": "29900",
+   "regular_price": "29900",
+   "sale_price": "29900",
+   "currency_minor_unit": 2
+  },
+  "on_sale": false,
+  "is_in_stock": false,
+  "categories": [
+   {
+    "id": 1,
+    "name": "*T&oslash;mmesalg Filament*",
+    "slug": "primaselect-matte-pla"
+   }
+  ],
+  "attributes": [],
+  "images": [
+   {
+    "src": "https://www.3dkongen.no/img2.png"
+   }
+  ],
+  "tags": []
+ },
+ {
+  "id": 3,
+  "name": "Bambu Lab Hotend A1",
+  "permalink": "https://www.3dkongen.no/produkt/p3/",
+  "type": "simple",
+  "parent": 0,
+  "variations": [],
+  "prices": {
+   "price": "19900",
+   "regular_price": "19900",
+   "sale_price": "19900",
+   "currency_minor_unit": 2
+  },
+  "on_sale": false,
+  "is_in_stock": true,
+  "categories": [
+   {
+    "id": 1,
+    "name": "Tilbehør",
+    "slug": "tilbehor"
+   }
+  ],
+  "attributes": [],
+  "images": [
+   {
+    "src": "https://www.3dkongen.no/img3.png"
+   }
+  ],
+  "tags": []
+ },
+ {
+  "id": 4,
+  "name": "Bambu Lab P1S 3D-printer",
+  "permalink": "https://www.3dkongen.no/produkt/p4/",
+  "type": "simple",
+  "parent": 0,
+  "variations": [],
+  "prices": {
+   "price": "699900",
+   "regular_price": "699900",
+   "sale_price": "699900",
+   "currency_minor_unit": 2
+  },
+  "on_sale": false,
+  "is_in_stock": true,
+  "categories": [
+   {
+    "id": 1,
+    "name": "3D-printere",
+    "slug": "printere"
+   }
+  ],
+  "attributes": [],
+  "images": [
+   {
+    "src": "https://www.3dkongen.no/img4.png"
+   }
+  ],
+  "tags": []
+ },
+ {
+  "id": 5,
+  "name": "Polymaker PolyDryer Box",
+  "permalink": "https://www.3dkongen.no/produkt/p5/",
+  "type": "simple",
+  "parent": 0,
+  "variations": [],
+  "prices": {
+   "price": "49900",
+   "regular_price": "49900",
+   "sale_price": "49900",
+   "currency_minor_unit": 2
+  },
+  "on_sale": false,
+  "is_in_stock": true,
+  "categories": [
+   {
+    "id": 1,
+    "name": "Tilbehør",
+    "slug": "tilbehor"
+   }
+  ],
+  "attributes": [],
+  "images": [
+   {
+    "src": "https://www.3dkongen.no/img5.png"
+   }
+  ],
+  "tags": []
+ }
+]
