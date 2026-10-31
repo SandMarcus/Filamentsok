@@ -6,6 +6,8 @@ map: {
 'Filamentsøk': 'Filamentsøk',
 'Filamentsøk.no': 'Filamentsøk.no',
 'Filamentsøk – sammenlign priser på 3D-printer-filament': 'Filamentsøk – compare prices on 3D printer filament', 'Guide til filament – PLA, PETG, ABS og flere materialer | Filamentsøk': 'Filament guide – PLA, PETG, ABS and more materials | Filamentsøk',
+'tilbud': 'offers', 'unike produkter': 'unique products', 'butikker': 'stores', 'Tall fra siden': 'Site figures',
+'Tall på forsiden': 'Figures on the front page', 'Forsiden viser hvor mange tilbud, unike produkter og butikker som er med akkurat nå. Tallene hentes fra prislisten og øker av seg selv når flere butikker eller produkter kommer til.': 'The front page shows how many offers, unique products and stores are included right now. The figures come from the price list and grow on their own as more stores or products are added.',
 'Hjem': 'Home', 'Søk': 'Search', 'Kategorier': 'Categories', 'Butikker': 'Stores', 'Om oss': 'About',
 'Guide til filament': 'Filament guide', 'Guide': 'Guide', 'Funksjoner': 'Features', '3D-printing': '3D printing', '3D-printtjeneste': '3D printing service', '3D-printtjeneste – Filamentsøk': '3D printing service – Filamentsøk',
 'Partner': 'Partner', 'Støtt': 'Support', 'Kontakt': 'Contact', 'Støtt siden': 'Support the site',
@@ -406,7 +408,7 @@ rx: [
   [/^Sammenlign (\d+) filamenter$/, 'Compare $1 filaments'],
   [/^Alle \((.+)\)$/, 'All ($1)'], [/^Oppgitt for (\d+) av (\d+) materialer\.$/, 'Given for $1 of $2 materials.'],
   [/^Materialets anbefalte område må ligge innenfor valgt område\. Oppgitt for (\d+) av (\d+) materialer\.$/, 'The material’s recommended range must lie within the chosen range. Given for $1 of $2 materials.'],
-  [/^Til (Elefun|Materie X|Multicom|Tonerweb|Filamentfabrikken|NorMax3D|Polyalkemi|Kjell & Company|3DKlubben|3D-klubben|Stratum3D|Clas Ohlson)$/, 'To $1'],
+  [/^Til (Elefun|Materie X|Multicom|Tonerweb|Filamentfabrikken|3D Kongen|NorMax3D|Polyalkemi|Kjell & Company|3DKlubben|3D-klubben|Stratum3D|Clas Ohlson)$/, 'To $1'],
   [/^Filamentspole (.+)$/, function (m, s) { var c = m[1].charAt(0).toUpperCase() + m[1].slice(1); return 'Filament spool ' + s(c).toLowerCase(); }],
   [/^(.+) \((\d+)\)$/, function (m, s) { var a = s(m[1]); return a === m[1] ? m[0] : a + ' (' + m[2] + ')'; }]
 ]
