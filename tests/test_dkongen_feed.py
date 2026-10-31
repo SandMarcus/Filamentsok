@@ -22,3 +22,10 @@ def test_rader(tmp_path):
     assert "Polyterra PLA – 1.75mm – 1Kg – Peach" in lines[1]
     assert ",229,279," in lines[1]  # pris i øre -> kroner, førpris fra regular_price
     assert lines[2].endswith("Utsolgt")
+
+
+def test_tilbehor_med_filament_i_navnet_og_tomt_lager():
+    acc = {"name": "Snapmaker Filament Holder (for U1)", "categories": [{"name": "Snapmaker U1", "slug": "snapmaker-u1"}]}
+    assert not k.is_filament(acc)
+    assert nf.stock_text({"is_in_stock": True, "stock_availability": {"text": "Tomt på fjernlager, sjekk andre lager"}}) == "Utsolgt"
+    assert nf.clean("A &amp;#8211; B") == "A – B"
