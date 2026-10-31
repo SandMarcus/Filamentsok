@@ -40,7 +40,9 @@ def fetch_json(url, retries=3):
 
 
 def clean(text):
-    return re.sub(r"\s+", " ", html.unescape(text or "")).strip()
+    t = html.unescape(text or "")
+    t = html.unescape(t) if "&" in t else t  # noen butikker dobbeltkoder tegn («&amp;#8211;»)
+    return re.sub(r"\s+", " ", t).strip()
 
 
 def is_filament(p):
@@ -69,6 +71,8 @@ def stock_text(p):
     if not p.get("is_in_stock", True):
         return "Utsolgt"
     txt = clean((p.get("stock_availability") or {}).get("text"))
+    if re.match(r"tomt\b", txt, re.I):  # «Tomt på fjernlager, sjekk andre lager»
+        return "Utsolgt"
     if re.match(r"\d+\+? på lager", txt):
         return re.match(r"\d+\+? på lager", txt).group(0)
     if "kan bestilles" in txt.lower():

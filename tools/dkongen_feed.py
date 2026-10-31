@@ -21,13 +21,14 @@ BASE = "https://www.3dkongen.no/wp-json/wc/store/v1"
 MATERIAL = re.compile(r"\b(pla|pla\+|petg|pet-g|abs|asa|tpu|tpe|pa-?cf|pa12|pa6|nylon|pc|pctg|pva|hips|peek|pp)\b|filament|polyterra|polylite|polymax", re.I)
 NOT_FILAMENT = re.compile(
     r"dry(er|box)|tørk|hotend|nozzle|dyse|byggeplate|build\s*plate|printer\b|skriver|resin|harpiks|sensor|spoleholder|"
-    r"verktøy|tool|kit\b|gavekort|gift|lim\b|glue|vask|wash|cure|ams\b|mmu|extruder|belt|reim|fan\b|vifte|kabel|lcd", re.I)
+    r"verktøy|tool|kit\b|gavekort|gift|lim\b|glue|vask|wash|cure|ams\b|mmu|extruder|belt|reim|fan\b|vifte|kabel|lcd|"
+    r"\(for\b|feeder|tube|runout|holder|module|adapter|scanner|cutter", re.I)
 
 
 def is_filament(p):
     name = nf.clean(p.get("name"))
     cats = " ".join(nf.clean(c.get("name")) + " " + c.get("slug", "") for c in p.get("categories", []))
-    if NOT_FILAMENT.search(name) and not re.search(r"\bfilament\b", name, re.I):
+    if NOT_FILAMENT.search(name):  # tilbehør kan hete «… Filament Holder (for U1)», så «filament» i navnet redder ikke
         return False
     if re.search(r"resin|harpiks|printer", cats, re.I) and not re.search(r"filament", cats, re.I):
         return False
