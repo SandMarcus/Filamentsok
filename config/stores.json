@@ -203,8 +203,7 @@
         "was": "Førpris",
         "stock": "Lager"
       },
-      "default_kg": 1,
-      "optional_file": true
+      "default_kg": 1
     }
   ]
 }
