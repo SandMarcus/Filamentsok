@@ -6,6 +6,11 @@ on:
     branches: [main]
     paths: ["data/**", "config/**", "src/**", "web/**", "tests/**", ".github/workflows/pages.yml"]
   workflow_dispatch:
+    inputs:
+      hopp_over_polyalkemi:
+        description: "Hopp over Polyalkemi (sparer ca. 17 minutter, bruker forrige pris fra repoet)"
+        type: boolean
+        default: true
   schedule:
     - cron: "0 4 * * *"   # hver natt, så Elefun-prisene oppdateres av seg selv
 
@@ -51,10 +56,14 @@ jobs:
       - name: Hent Filamentfabrikken (Shopify)
         continue-on-error: true
         run: python tools/filamentfabrikken_feed.py data/filamentfabrikken.csv
+      - name: Hent 3D Kongen (WooCommerce Store API)
+        continue-on-error: true
+        run: python tools/dkongen_feed.py data/3dkongen.csv
       - name: Hent Polyalkemi (kategorisider og produktsider)
         # Tar opptil ca. 40 minutter og kjøres derfor bare nattlig eller for hånd, ikke ved hver push.
+        # Ved manuell start kan det hakes av for å hoppe over steget («Hopp over Polyalkemi»).
         # Feiler henting, eller går tiden ut, beholdes forrige pris fra data/polyalkemi.csv i repoet.
-        if: github.event_name != 'push'
+        if: github.event_name != 'push' && inputs.hopp_over_polyalkemi != true
         continue-on-error: true
         timeout-minutes: 50
         run: python tools/polyalkemi_feed.py data/polyalkemi.csv --budget 40
