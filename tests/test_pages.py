@@ -26,6 +26,7 @@ def test_ordlisten_er_lastbar_og_vedlikeholdssiden_er_borte():
     assert not (WEB / "404.html").exists()
 
 
-def test_forsiden_viser_antall_tilbud_i_knappen():
+def test_forsiden_viser_antall_tilbud_under_tellingen():
     html = (WEB / "index.html").read_text(encoding="utf-8")
-    assert "Bla gjennom '+nOff" in html and 'id="stats"' not in html
+    assert 'id="offSub"' in html and "tilbud fra " in html
+    assert 'id="quick"' not in html and 'id="stats"' not in html
