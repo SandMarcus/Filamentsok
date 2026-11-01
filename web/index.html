@@ -45,8 +45,6 @@ nav a:hover,nav a.on{background:var(--chip);color:var(--fg)}
 .search input{flex:1;min-width:0;padding:13px 14px;border:1px solid var(--line);border-radius:8px;background:var(--surface)}
 .btn{background:var(--accent);color:var(--accent-fg);border:0;border-radius:8px;padding:11px 16px;font-weight:600;cursor:pointer}
 .btn.ghost{background:var(--chip);color:var(--fg)}
-.quick{display:none;gap:8px;flex-wrap:wrap;margin-top:14px}
-@media (max-width:800px){.quick{display:flex}}
 .chip{border:1px solid var(--line);background:var(--surface);border-radius:99px;padding:6px 12px;cursor:pointer;font-size:13px;font-weight:500}
 .chip.on{background:var(--fg);color:var(--bg);border-color:var(--fg)}
 .heroart{position:relative}
@@ -63,6 +61,16 @@ h2{font-family:var(--font-d);font-weight:800;letter-spacing:-.02em;font-size:24p
 .cat strong{font-family:var(--font-d);font-size:20px}
 .cat span{color:var(--muted);font-size:13px}
 .cat code{font-family:var(--font-m);font-size:12px;color:var(--accent)}
+.sub{color:var(--muted);font-size:13px;margin-top:2px}.sub[hidden]{display:none}
+@media (max-width:700px){
+  .hero{padding-block:12px 4px}.hero h1{font-size:28px;margin-bottom:10px}.hero p{display:none}
+  .promo{display:block;background:none;padding:0;margin:0 0 10px;border-radius:0;color:var(--muted);font-size:13px;font-weight:600}.promo:hover{background:none}
+  .promo .pi{display:none}.promo .pt,.promo .pb{display:inline;padding:0;background:none}.promo .pt strong{font:inherit;color:inherit}.promo .pb{color:var(--accent);font-weight:700;font-size:13px}
+  #kategorier{display:none}
+  .toolbar{display:grid;grid-template-columns:1fr;gap:8px;margin-bottom:8px}#countH{font-size:18px}
+  .toolbar>div:last-child{display:flex;gap:8px;align-items:center}.toolbar>div:last-child label{display:none}.toolbar select{flex:1;min-width:0}
+  .active{flex-wrap:nowrap;overflow-x:auto;margin:0 -16px 10px;padding:0 16px;scrollbar-width:none}.active::-webkit-scrollbar{display:none}.active>*{flex:none}
+}
 @media (max-width:700px){
   #kategorier h2{font-size:18px;margin-bottom:8px}
   .cats{display:flex;gap:8px;overflow-x:auto;margin:0 -16px 20px;padding:2px 16px 6px;scroll-snap-type:x proximity;scrollbar-width:none;-webkit-overflow-scrolling:touch}
@@ -344,7 +352,6 @@ dialog#hc .sc{flex:1;overflow:auto}
         <button class="btn" type="submit">Søk</button>
         <div class="sug" id="sug" role="listbox" hidden></div>
       </form>
-      <div class="quick" id="quick"></div>
     </div>
     <div class="heroart" id="heroart">
       <img src="hero.webp" width="840" height="573" alt="Mann som klør seg i hodet foran hyller fylt med filamentspoler" fetchpriority="high" decoding="async">
@@ -366,7 +373,7 @@ dialog#hc .sc{flex:1;overflow:auto}
 
   <section id="butikk">
     <div class="toolbar">
-      <h2 style="margin:0" id="countH">Alle filamenter</h2>
+      <div><h2 style="margin:0" id="countH">Alle filamenter</h2><div class="sub" id="offSub" hidden></div></div>
       <div style="display:flex;gap:8px;align-items:center">
         <button class="chip fbtn" id="fbtn" aria-expanded="false">Filter</button>
         <label for="sort" class="store">Sorter</label>
@@ -570,11 +577,8 @@ dialog#hc .sc{flex:1;overflow:auto}
   if(PRICES){$('#notice').textContent='Priser og lager er hentet fra butikkenes nettsider og kan ha endret seg. Sjekk alltid endelig pris hos butikken. Der vekten ikke er oppgitt, kan pris per kg mangle.'+(CONFIG.hidePricesFor.length?' Enkelte butikker vises uten pris.':'')}
   else{var nt=$('#notice');var dt=nt.closest('details');if(dt){$('#pslot').appendChild(nt);dt.remove()}nt.classList.add('off');nt.setAttribute('role','status');nt.innerHTML='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 21V3" stroke="#c4271c" stroke-width="2.4" stroke-linecap="round" fill="none"/><path d="M6 4h12l-3 4.5 3 4.5H6z" fill="#d6251a"/></svg><div><b>Priser er skrudd av</b>Filamentsøk kan vise butikkenes priser, men de er slått av for øyeblikket. Trykk deg videre til butikken for å se gjeldende pris og lager.</div>'}
 
-  var nOff=D.products.reduce(function(n,g){return n+g.offers.length},0);
-  var quick=[['all','Bla gjennom '+nOff.toLocaleString('nb-NO')+' filamenter ↓']];
-  $('#quick').innerHTML=quick.map(function(x){return '<button class="chip" data-q="'+x[0]+'">'+x[1]+'</button>'}).join('');
-  $('#quick').addEventListener('click',function(e){var k=e.target.dataset.q;if(!k)return;
-    reset();if(k==='silk')S.fin.Silk=true;if(k==='matt')S.fin.Matt=true;render();go('#butikk')});
+  (function(){var n=0,st={};D.products.forEach(function(g){n+=g.offers.length;g.offers.forEach(function(x){st[x.store]=1})});
+    var e=document.getElementById('offSub');e.textContent=n.toLocaleString('nb-NO')+' tilbud fra '+Object.keys(st).length+' butikker';e.hidden=false})();
 
   var ALLM=Object.keys(MATS).filter(function(k){return k!=='Annet'||MKEYS.indexOf(k)>=0}).sort(function(a,b){return R.filter(function(p){return p.mat===b}).length-R.filter(function(p){return p.mat===a}).length});
   var ADESC={Karbon:'Stiv og lett, med karbonfiber',Glassfiber:'Sterk og stiv, med glassfiber',ESD:'Antistatisk, for elektronikk',Flammehemmende:'Tåler brann bedre (UL94)',Lettvekt:'Skummende, lavere vekt',Antibakteriell:'Hemmer bakterievekst'};
