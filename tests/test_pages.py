@@ -24,3 +24,8 @@ def test_ordlisten_er_lastbar_og_vedlikeholdssiden_er_borte():
     js = (WEB / "i18n-en.js").read_text(encoding="utf-8")
     assert "window.I18N_EN" in js and "'Hjem': 'Home'" in js
     assert not (WEB / "404.html").exists()
+
+
+def test_forsiden_viser_antall_tilbud_i_knappen():
+    html = (WEB / "index.html").read_text(encoding="utf-8")
+    assert "Bla gjennom '+nOff" in html and 'id="stats"' not in html
