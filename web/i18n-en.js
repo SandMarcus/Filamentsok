@@ -6,8 +6,7 @@ map: {
 'Filamentsøk': 'Filamentsøk',
 'Filamentsøk.no': 'Filamentsøk.no',
 'Filamentsøk – sammenlign priser på 3D-printer-filament': 'Filamentsøk – compare prices on 3D printer filament', 'Guide til filament – PLA, PETG, ABS og flere materialer | Filamentsøk': 'Filament guide – PLA, PETG, ABS and more materials | Filamentsøk',
-'tilbud': 'offers', 'unike produkter': 'unique products', 'butikker': 'stores', 'Tall fra siden': 'Site figures',
-'Tall på forsiden': 'Figures on the front page', 'Forsiden viser hvor mange tilbud, unike produkter og butikker som er med akkurat nå. Tallene hentes fra prislisten og øker av seg selv når flere butikker eller produkter kommer til.': 'The front page shows how many offers, unique products and stores are included right now. The figures come from the price list and grow on their own as more stores or products are added.',
+'Bla gjennom alle': 'Browse all', 'Tall på forsiden': 'Figures on the front page', 'Knappen «Bla gjennom … filamenter» på forsiden viser hvor mange tilbud som er med akkurat nå. Tallet hentes fra prislisten og øker av seg selv når flere butikker eller produkter kommer til.': 'The “Browse … filaments” button on the front page shows how many offers are included right now. The figure comes from the price list and grows on its own as more stores or products are added.',
 'Trykk på bokmerket på et kort. Filamentet blir liggende i listen selv om du endrer filter, og listen huskes til neste gang du besøker siden. Under hvert filament ligger lenker rett til butikkene, med pris.': 'Tap the bookmark on a card. The filament stays in the list even if you change filters, and the list is remembered the next time you visit. Under each filament are links straight to the stores, with prices.',
 'Hjem': 'Home', 'Søk': 'Search', 'Kategorier': 'Categories', 'Butikker': 'Stores', 'Om oss': 'About',
 'Guide til filament': 'Filament guide', 'Guide': 'Guide', 'Funksjoner': 'Features', '3D-printing': '3D printing', '3D-printtjeneste': '3D printing service', '3D-printtjeneste – Filamentsøk': '3D printing service – Filamentsøk',
@@ -396,6 +395,7 @@ map: {
 "Ved print av eksterne eller forhåndslagde modeller (filer fra nett) overtar du ansvaret for modellens utforming og funksjon. Jeg går gjennom filene for å avdekke åpenbare designfeil før print startes, men kan ikke gi noen garanti for den endelige passformen, funksjonaliteten eller styrken til modeller eller modifikasjoner du selv har lastet ned.": "When printing external or ready-made models (files from the web) you take responsibility for the design and function of the model. I go through the files to uncover obvious design errors before printing starts, but cannot give any guarantee for the final fit, functionality or strength of models or modifications you have downloaded yourself."
 },
 rx: [
+  [/^Bla gjennom (.+) filamenter ↓$/, 'Browse $1 filaments ↓'],
   [/^(\d[\d\s]*) filamenter$/, '$1 filaments'], [/^1 filament$/, '1 filament'],
   [/^(\d+) butikker$/, '$1 stores'], [/^(\d+) produkter?( her)?( · Gå til butikken)?$/, function (m) { return m[1] + (m[1] === '1' ? ' product' : ' products') + (m[2] ? ' here' : '') + (m[3] ? ' · Go to the store' : ''); }],
   [/^(\d+) treff$/, '$1 hits'], [/^(\d+) til$/, '$1 more'], [/^Bare de (\d+) vanligste$/, 'Only the $1 most common'],

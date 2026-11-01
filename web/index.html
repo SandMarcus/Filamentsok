@@ -47,11 +47,6 @@ nav a:hover,nav a.on{background:var(--chip);color:var(--fg)}
 .btn.ghost{background:var(--chip);color:var(--fg)}
 .quick{display:none;gap:8px;flex-wrap:wrap;margin-top:14px}
 @media (max-width:800px){.quick{display:flex}}
-.stats{display:flex;gap:10px;flex-wrap:wrap;margin:18px 0 0;padding:0}.stats[hidden]{display:none}
-.stats>div{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:8px 14px;min-width:92px}
-.stats dt{font-family:var(--font-d);font-weight:800;font-size:26px;line-height:1.1;letter-spacing:-.02em;color:var(--accent);font-variant-numeric:tabular-nums}
-.stats dd{margin:0;font-size:13px;color:var(--muted)}
-@media (max-width:460px){.stats{gap:8px}.stats>div{padding:8px 10px;min-width:0;flex:1 1 0}.stats dt{font-size:22px}}
 .chip{border:1px solid var(--line);background:var(--surface);border-radius:99px;padding:6px 12px;cursor:pointer;font-size:13px;font-weight:500}
 .chip.on{background:var(--fg);color:var(--bg);border-color:var(--fg)}
 .heroart{position:relative}
@@ -350,11 +345,6 @@ dialog#hc .sc{flex:1;overflow:auto}
         <div class="sug" id="sug" role="listbox" hidden></div>
       </form>
       <div class="quick" id="quick"></div>
-      <dl class="stats" id="stats" hidden aria-label="Tall fra siden">
-        <div><dt id="stO">0</dt><dd>tilbud</dd></div>
-        <div><dt id="stP">0</dt><dd>unike produkter</dd></div>
-        <div><dt id="stS">0</dt><dd>butikker</dd></div>
-      </dl>
     </div>
     <div class="heroart" id="heroart">
       <img src="hero.webp" width="840" height="573" alt="Mann som klør seg i hodet foran hyller fylt med filamentspoler" fetchpriority="high" decoding="async">
@@ -530,10 +520,6 @@ dialog#hc .sc{flex:1;overflow:auto}
     if(window.console)console.error(err)});
 
   function start(D){
-  (function(){var o=0,s={};D.products.forEach(function(g){o+=g.offers.length;g.offers.forEach(function(x){s[x.s]=1})});
-    var f=function(n){return n.toLocaleString('nb-NO')};
-    var g=function(i){return document.getElementById(i)};
-    g('stO').textContent=f(o);g('stP').textContent=f(D.products.length);g('stS').textContent=f(Object.keys(s).length);g('stats').hidden=false})();
   var STORES={};Object.keys(D.stores).forEach(function(k){STORES[k]={n:D.stores[k].n,home:D.stores[k].home}});
   // Ett kort per produkt. Tilbud fra flere butikker ligger i offers, billigste først.
   var O=[];
@@ -584,7 +570,8 @@ dialog#hc .sc{flex:1;overflow:auto}
   if(PRICES){$('#notice').textContent='Priser og lager er hentet fra butikkenes nettsider og kan ha endret seg. Sjekk alltid endelig pris hos butikken. Der vekten ikke er oppgitt, kan pris per kg mangle.'+(CONFIG.hidePricesFor.length?' Enkelte butikker vises uten pris.':'')}
   else{var nt=$('#notice');var dt=nt.closest('details');if(dt){$('#pslot').appendChild(nt);dt.remove()}nt.classList.add('off');nt.setAttribute('role','status');nt.innerHTML='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 21V3" stroke="#c4271c" stroke-width="2.4" stroke-linecap="round" fill="none"/><path d="M6 4h12l-3 4.5 3 4.5H6z" fill="#d6251a"/></svg><div><b>Priser er skrudd av</b>Filamentsøk kan vise butikkenes priser, men de er slått av for øyeblikket. Trykk deg videre til butikken for å se gjeldende pris og lager.</div>'}
 
-  var quick=[['all','Bla gjennom alle filamenter ↓']];
+  var nOff=D.products.reduce(function(n,g){return n+g.offers.length},0);
+  var quick=[['all','Bla gjennom '+nOff.toLocaleString('nb-NO')+' filamenter ↓']];
   $('#quick').innerHTML=quick.map(function(x){return '<button class="chip" data-q="'+x[0]+'">'+x[1]+'</button>'}).join('');
   $('#quick').addEventListener('click',function(e){var k=e.target.dataset.q;if(!k)return;
     reset();if(k==='silk')S.fin.Silk=true;if(k==='matt')S.fin.Matt=true;render();go('#butikk')});
