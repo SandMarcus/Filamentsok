@@ -250,3 +250,13 @@ Knappen «Finn riktig filament» åpner et filter med to temperatur-sliders (dys
 ## Forsidebildet
 
 Bildet på forsiden ligger som `web/hero.webp` (840 px bred, vises 420 px bredt på PC): en mann som klør seg i hodet foran en høy hylle med filamentspoler. Det står til høyre for overskriften og søkefeltet, og skjules på telefon. Bakgrunnen er ren hvit, og i lyst tema blandes bildet inn i sidens bakgrunn (`mix-blend-mode:multiply`). I mørkt tema vises det som et kort med runde hjørner. Rolig og 1999 skjuler bildet. Skal bildet byttes, lag en ny `hero.webp` med ren hvit bakgrunn.
+
+## Prisendringer (prishistorikk)
+
+Siden `/prisendringer/` viser filamenter som nylig har endret pris (siste 24 timer, 3, 7 eller 30 dager): pris før, pris nå, prosent, når det skjedde, og lenker til de andre butikkene.
+
+- Historikken ligger i `history.json` på den publiserte siden. Hvert bygg med `python -m src.build --keep-history` henter forrige fil derfra (`config/site.json` → `url`), legger til dagens priser og skriver ny `history.json` og `prisendringer.json`. GitHub-workflowen bruker flagget.
+- Bare prisendringer lagres (maks 12 punkter per tilbud). Tilbud som ikke er sett på 45 dager glemmes.
+- Første gang (404) startes en tom historikk. Andre feil ved henting stopper bygget, så historikken ikke går tapt.
+- Uten `--keep-history` lages ingen historikkfiler (lokale bygg og tester).
+- Tilbud kjennes igjen på butikk + lenke (+ navn når flere varianter deler lenke). Logikken ligger i `src/history.py`.
