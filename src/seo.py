@@ -11,8 +11,9 @@ PAGES = {
     "funksjoner/index.html": "/funksjoner/",
     "partner/index.html": "/partner/",
     "3d-print/index.html": "/3d-print/",
+    "prisendringer/index.html": "/prisendringer/",
 }
-PRIORITY = {"/": "1.0", "/guide/": "0.8", "/funksjoner/": "0.5", "/partner/": "0.4", "/3d-print/": "0.5"}
+PRIORITY = {"/": "1.0", "/guide/": "0.8", "/funksjoner/": "0.5", "/partner/": "0.4", "/3d-print/": "0.5", "/prisendringer/": "0.7"}
 
 
 def site_config(root):

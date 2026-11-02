@@ -22,6 +22,7 @@ from .csvparse import weight_kg
 from .seo import PAGES as SEO_PAGES, inject_seo, site_config, write_files as write_seo_files
 from .enrich import REJECT, enrich
 from .grouping import group
+from . import history
 
 ROOT = Path(__file__).resolve().parent.parent
 SITE_COLORS = {"Svart", "Hvit", "Grå", "Rød", "Blå", "Grønn", "Gul", "Oransje", "Lilla", "Rosa", "Gull", "Sølv", "Brun",
@@ -222,6 +223,8 @@ def main(argv=None):
     ap.add_argument("--strict", action="store_true")
     ap.add_argument("--config", default=str(ROOT / "config" / "stores.json"))
     ap.add_argument("--out", default=str(ROOT / "dist"))
+    ap.add_argument("--keep-history", action="store_true",
+                    help="hent forrige prishistorikk fra den publiserte siden, oppdater den og lag prisendringer.json")
     args = ap.parse_args(argv)
 
     cfg = json.loads(Path(args.config).read_text(encoding="utf-8"))
@@ -257,14 +260,23 @@ def main(argv=None):
     payload = json.dumps(body, ensure_ascii=False, separators=(",", ":"))
     build_id = hashlib.sha1(payload.encode()).hexdigest()[:10]
 
+    site = site_config(ROOT)
     out = Path(args.out)
     if out.exists():
         shutil.rmtree(out)
     shutil.copytree(ROOT / "web", out)
     (out / "products.json").write_text(payload, encoding="utf-8")
+    if args.keep_history:
+        if not site["url"]:
+            raise ConfigError("--keep-history krever «url» i config/site.json")
+        now = int(dt.datetime.now(dt.timezone.utc).timestamp() // 60)
+        hist = history.update(history.load_previous(site["url"] + "/history.json"), products, now)
+        (out / "history.json").write_text(json.dumps(hist, separators=(",", ":")), encoding="utf-8")
+        pj = history.page_json(hist, products, now, {s["id"]: s["name"] for s in cfg["stores"]})
+        (out / "prisendringer.json").write_text(json.dumps(pj, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
+        report["prisendringer"] = len(pj["items"])
     gc = analytics_config(ROOT)
-    site = site_config(ROOT)
-    for page in ("index.html", "guide/index.html", "partner/index.html", "funksjoner/index.html", "3d-print/index.html"):
+    for page in ("index.html", "guide/index.html", "partner/index.html", "funksjoner/index.html", "3d-print/index.html", "prisendringer/index.html"):
         f = out / page
         if f.exists():
             text = inject_analytics(f.read_text(encoding="utf-8").replace("__BUILD__", build_id), gc)
