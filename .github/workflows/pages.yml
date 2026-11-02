@@ -59,6 +59,9 @@ jobs:
       - name: Hent 3D Kongen (WooCommerce Store API)
         continue-on-error: true
         run: python tools/dkongen_feed.py data/3dkongen.csv
+      - name: Hent Fjord3D (produkt-API)
+        continue-on-error: true
+        run: python tools/fjord3d_feed.py data/fjord3d.csv
       - name: Hent Polyalkemi (kategorisider og produktsider)
         # Tar opptil ca. 40 minutter og kjøres derfor bare nattlig eller for hånd, ikke ved hver push.
         # Ved manuell start kan det hakes av for å hoppe over steget («Hopp over Polyalkemi»).
