@@ -75,7 +75,7 @@ jobs:
         env:
           # Valgfritt: sett som «Variables» under Settings → Secrets and variables → Actions.
           GOATCOUNTER_CODE: ${{ vars.GOATCOUNTER_CODE }}
-        run: python -m src.build --strict
+        run: python -m src.build --strict --keep-history
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:
