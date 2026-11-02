@@ -181,6 +181,9 @@ Filamentfabrikken bruker Shopify, som publiserer varelisten som JSON. `tools/fil
 ### 3D Kongen (automatisk henting)
 3D Kongen bruker WooCommerce, som NorMax3D og Stratum3D. `tools/dkongen_feed.py` bruker samme Store API (`https://www.3dkongen.no/wp-json/wc/store/v1/products?per_page=100`) og skriver `data/3dkongen.csv`. Kategoriene hos butikken er ikke ryddige (filament ligger blant annet i «Tømmesalg»), så filament gjenkjennes på navn og kategori (`is_filament`), og tilbehør, printere og resin sorteres bort. Prisen er inkl. mva, og førpris hentes fra `regular_price`. Mangler startfilen, bygges siden uten butikken til workflow har hentet den (`optional_file` i `config/stores.json`). Test uten nett: lagre JSON-adressen som fil og kjør `python tools/dkongen_feed.py data/3dkongen.csv --sample side.json`.
 
+### Fjord3D (automatisk henting)
+Fjord3D (norskprodusert PLA fra Manger) har et åpent produkt-API, `https://fjord3d.no/api/products.php`, med pris, lagerantall og vekt per variant. `tools/fjord3d_feed.py` leser det og skriver `data/fjord3d.csv`. Bare varer med `product_type` filament tas med (ikke tilbehør). Finnes samme farge både med pappspole og gjenbrukbar spole, beholdes én rad (helst den som er på lager). Lenken er variantsiden `/filament-pla-<farge>`, og `stock_qty` 0 gir «Utsolgt». Prisen er inkl. mva. Bruk `--sample fil.json` for å kjøre uten nett. Steget i `pages.yml` kjører ved hvert bygg, og feiler det beholdes forrige fil.
+
 ### Språk (norsk og engelsk)
 
 Siden er skrevet på norsk. Knappen «EN» øverst bytter til engelsk (og «NO» tilbake). `web/i18n.js` bytter ut tekst i nettleseren, og ordlisten `web/i18n-en.js` lastes først når engelsk velges. Valget huskes i `localStorage` (`lang`). Tekst som ikke står i ordlisten vises uendret, for eksempel produktnavn. Legger du til ny tekst på en side, legg den også inn i `i18n-en.js` (nøkkel: norsk tekst slik den står, verdi: engelsk).

@@ -204,6 +204,24 @@
         "stock": "Lager"
       },
       "default_kg": 1
+    },
+    {
+      "id": "fjord3d",
+      "name": "Fjord3D",
+      "home": "https://fjord3d.no/",
+      "file": "data/fjord3d.csv",
+      "optional_file": true,
+      "columns": {
+        "url": "Lenke",
+        "image": "Bilde",
+        "name": [
+          "Navn"
+        ],
+        "color": "Farge",
+        "price": "Pris",
+        "stock": "Lager"
+      },
+      "default_kg": 1
     }
   ]
 }
