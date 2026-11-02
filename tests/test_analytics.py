@@ -5,7 +5,7 @@ ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 from src.build import inject_analytics  # noqa: E402
 
-PAGES = ("index.html", "guide/index.html", "partner/index.html", "funksjoner/index.html")
+PAGES = ("index.html", "guide/index.html", "partner/index.html", "funksjoner/index.html", "prisendringer/index.html")
 
 
 def test_pages_have_placeholders():

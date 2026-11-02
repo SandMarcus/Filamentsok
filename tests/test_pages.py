@@ -1,7 +1,7 @@
 from pathlib import Path
 
 WEB = Path(__file__).resolve().parent.parent / "web"
-PAGES = ["index.html", "guide/index.html", "funksjoner/index.html", "partner/index.html", "3d-print/index.html"]
+PAGES = ["index.html", "guide/index.html", "funksjoner/index.html", "partner/index.html", "3d-print/index.html", "prisendringer/index.html"]
 
 
 def test_alle_sider_har_sprakknapp_og_skript():
