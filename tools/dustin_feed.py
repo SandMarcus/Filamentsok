@@ -4,7 +4,7 @@ Bruk:
     python tools/dustin_feed.py [data/dustin.csv]                          # henter kategorisidene
     python tools/dustin_feed.py data/dustin.csv --sample side.html [side2.html ...]   # leser lagrede sider (uten nett)
 
-Dustin har ingen åpen feed. Kategorien «Forbruksvarer til 3D-skrivere» (`?page=N`, 18 varer per side) har varelisten
+Dustin har ingen åpen feed. Kategorien «Forbruksvarer til 3D-skrivere» (`?page=N`, 18 varer per side, sidene overlapper litt) har varelisten
 som JSON i sidens `self.__next_f.push`-data (`searchResultProduct`). Skriptet leser den (ikke HTML-kortene) og tar bare
 med filament (varer med materiale og tykkhet 1,75/2,85 mm, eller filament i navnet), ikke dyser, byggeplater osv.
 Prisen i JSON-en uten mva står i `price`, mens `priceIncludingVat` er prisen kunden betaler. Den siste brukes.
@@ -125,18 +125,28 @@ def row(p):
     return [link, image, name, color, price, was, stock]
 
 
-def all_pages(fetch_fn=fetch, max_pages=15):
+def all_pages(fetch_fn=fetch, max_pages=12, delay=1.0):
+    """Blar gjennom `?page=N` til alle treff er funnet. Rekkefølgen mellom sidene er ikke helt stabil hos Dustin (side 2 gjentar
+    noen varer fra side 1), så varene slås sammen på id. Stopper når alle treff er funnet, når en side er tom, eller når to
+    sider på rad ikke gir noe nytt."""
     prods, seen = [], set()
-    total = None
+    total, stale = None, 0
     for n in range(1, max_pages + 1):
+        if n > 1 and delay:
+            time.sleep(delay)
         got, hits = parse_page(fetch_fn(CATEGORY + (f"?page={n}" if n > 1 else "")))
         total = hits if total is None else total
+        if not got:
+            break
         new = [p for p in got if p["id"] not in seen]
         for p in new:
             seen.add(p["id"])
         prods += new
-        if not new or len(seen) >= total:
+        stale = 0 if new else stale + 1
+        if len(seen) >= total or stale >= 2:
             break
+    if total and len(seen) < total:
+        print(f"Advarsel: fant {len(seen)} av {total} varer i kategorien.", file=sys.stderr)
     return prods
 
 

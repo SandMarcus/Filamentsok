@@ -38,15 +38,20 @@ def test_forpris_regnes_inkl_mva():
     assert r[4] == "100" and r[5] == "150" and r[6] == "På lager"
 
 
-def test_sider_hentes_til_alle_treff():
+PAGE2 = (Path(__file__).parent / "fixtures" / "dustin_sample_p2.html").read_text(encoding="utf-8")
+
+
+def test_sider_slaas_sammen_selv_om_de_overlapper():
     calls = []
 
     def fake(url):
         calls.append(url)
-        return PAGE if "page=" not in url else PAGE.replace("5011244163", "9999999999")  # side 2 med andre id-er
+        return PAGE if "page=" not in url else PAGE2 if url.endswith("page=2") else "<html></html>"
 
-    got = d.all_pages(fake, max_pages=3)
-    assert len(calls) >= 2 and len(got) > 18
+    got = d.all_pages(fake, max_pages=5, delay=0)
+    ids = [p["id"] for p in got]
+    assert len(ids) == len(set(ids)) == 29  # 18 på side 1 + 11 nye på side 2 (7 gjentas)
+    assert len(calls) == 3  # side 3 er tom, og da stopper vi
 
 
 def test_flere_farger_blir_flerfarget():
