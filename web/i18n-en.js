@@ -3,13 +3,18 @@
 window.I18N_EN = {
 map: {
 /* Meny, topp og bunn */
+'Filamenter som nylig har endret pris: hva de kostet før, hva de koster nå, og når det skjedde.': 'Filaments that recently changed price: what they cost before, what they cost now, and when it happened.',
+'24 timer': '24 hours', '3 dager': '3 days', '7 dager': '7 days', '30 dager': '30 days', 'Til butikken': 'To the store',
+'Prisendringer': 'Price changes',
+'Egen side som viser filamenter som nylig har endret pris: prisen før, prisen nå, hvor mange prosent det er og når det skjedde. Velg mellom siste 24 timer, 3, 7 og 30 dager. På hvert kort kan du åpne lenkene til de andre butikkene. Historikken bygges opp av seg selv for hver oppdatering, så siden fylles gradvis.': 'A page showing filaments that recently changed price: the old price, the new price, the percentage and when it happened. Choose between the last 24 hours, 3, 7 and 30 days. Each card links to the other stores. The history builds itself with every update, so the page fills up gradually.',
+'Åpne Prisendringer': 'Open Price changes', 'Ikke på lager': 'Out of stock', 'Se pris': 'See price',
 'Filamentsøk': 'Filamentsøk',
 'Filamentsøk.no': 'Filamentsøk.no',
 'Filamentsøk – sammenlign priser på 3D-printer-filament': 'Filamentsøk – compare prices on 3D printer filament', 'Guide til filament – PLA, PETG, ABS og flere materialer | Filamentsøk': 'Filament guide – PLA, PETG, ABS and more materials | Filamentsøk',
 'Tall på forsiden': 'Figures on the front page', 'Under tellingen over listen står det hvor mange tilbud og butikker som er med akkurat nå. Tallene hentes fra prislisten og øker av seg selv når flere butikker eller produkter kommer til. På mobil er toppen av forsiden ryddet, så filter, kolonnevalg og sortering ligger på én rad.': 'The count above the list shows how many offers and stores are included right now. The figures come from the price list and grow on their own as more stores or products are added. On mobile the top of the front page is tidied up, so filter, column choice and sorting sit on one row.',
 'Trykk på bokmerket på et kort. Filamentet blir liggende i listen selv om du endrer filter, og listen huskes til neste gang du besøker siden. Under hvert filament ligger lenker rett til butikkene, med pris.': 'Tap the bookmark on a card. The filament stays in the list even if you change filters, and the list is remembered the next time you visit. Under each filament are links straight to the stores, with prices.',
 'Hjem': 'Home', 'Søk': 'Search', 'Kategorier': 'Categories', 'Butikker': 'Stores', 'Om oss': 'About',
-'Guide til filament': 'Filament guide', 'Guide': 'Guide', 'Funksjoner': 'Features', '3D-printing': '3D printing', '3D-printtjeneste': '3D printing service', '3D-printtjeneste – Filamentsøk': '3D printing service – Filamentsøk',
+'Guide til filament': 'Filament guide', 'Guide': 'Guide', 'Funksjoner': 'Features', '3D-printing': '3D printing', '3D-printtjeneste': '3D printing service', 'Prisendringer – Filamentsøk': 'Price changes – Filamentsøk', '3D-printtjeneste – Filamentsøk': '3D printing service – Filamentsøk',
 'Partner': 'Partner', 'Støtt': 'Support', 'Kontakt': 'Contact', 'Støtt siden': 'Support the site',
 'Filamentsøk forside': 'Filamentsøk home page', 'Hovedmeny': 'Main menu', 'Meny': 'Menu',
 'Bytt mellom lyst og mørkt tema': 'Switch between light and dark theme', 'Bytt tema': 'Switch theme',
@@ -395,6 +400,11 @@ map: {
 "Ved print av eksterne eller forhåndslagde modeller (filer fra nett) overtar du ansvaret for modellens utforming og funksjon. Jeg går gjennom filene for å avdekke åpenbare designfeil før print startes, men kan ikke gi noen garanti for den endelige passformen, funksjonaliteten eller styrken til modeller eller modifikasjoner du selv har lastet ned.": "When printing external or ready-made models (files from the web) you take responsibility for the design and function of the model. I go through the files to uncover obvious design errors before printing starts, but cannot give any guarantee for the final fit, functionality or strength of models or modifications you have downloaded yourself."
 },
 rx: [
+  [/^Endret (\d+) minutter siden$/, 'Changed $1 minutes ago'], [/^Endret akkurat nå$/, 'Changed just now'], [/^Endret (\d+) timer? siden$/, function (m) { return 'Changed ' + m[1] + (m[1] === '1' ? ' hour ago' : ' hours ago'); }],
+  [/^Endret (\d+) dager siden$/, 'Changed $1 days ago'], [/^(\d+) produkter? med prisendring siste (24 timer|3 dager|7 dager|30 dager)$/, function (m) { return m[1] + (m[1] === '1' ? ' product' : ' products') + ' with a price change in the last ' + ({'24 timer':'24 hours','3 dager':'3 days','7 dager':'7 days','30 dager':'30 days'})[m[2]]; }],
+  [/^Se i (\d+) (annen butikk|andre butikker)$/, function (m) { return 'See ' + m[1] + (m[1] === '1' ? ' other store' : ' other stores'); }],
+  [/^Kjøp hos (.+)$/, 'Buy at $1'], [/^Prishistorikken startet (.+)\. Endringer før dette er ikke registrert\.$/, 'Price history started $1. Earlier changes are not recorded.'],
+  [/^Ingen prisendringer registrert siste (24 timer|3 dager|7 dager|30 dager)\. Prøv en lengre periode, eller kom tilbake senere\. Prisene sjekkes jevnlig\.$/, 'No price changes recorded in this period. Try a longer period, or come back later. Prices are checked regularly.'],
   [/^(.+) tilbud fra (\d+) butikker$/, '$1 offers from $2 stores'],
   [/^(\d[\d\s]*) filamenter$/, '$1 filaments'], [/^1 filament$/, '1 filament'],
   [/^(\d+) butikker$/, '$1 stores'], [/^(\d+) produkter?( her)?( · Gå til butikken)?$/, function (m) { return m[1] + (m[1] === '1' ? ' product' : ' products') + (m[2] ? ' here' : '') + (m[3] ? ' · Go to the store' : ''); }],
