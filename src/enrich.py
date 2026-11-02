@@ -9,6 +9,7 @@ from typing import Optional
 
 BRANDS = {
     "Fjord3D": ["fjord3d", "fjord 3d"],
+    "Gilford": ["gilford"],
     "Addnorth": ["addnorth", "add:north", "add north"],
     "Bambu Lab": ["bambu lab", "bambulab", "bambu"],
     "Copymaster3D": ["copymaster3d", "copymaster"],
