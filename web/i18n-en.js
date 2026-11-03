@@ -3,6 +3,11 @@
 window.I18N_EN = {
 map: {
 /* Meny, topp og bunn */
+'Sorter': 'Sort', 'Nyeste endring': 'Latest change', 'Størst prisfall (%)': 'Biggest price drop (%)', 'Størst prisfall (kr)': 'Biggest price drop (kr)', 'Størst prisøkning (%)': 'Biggest price increase (%)', 'Laveste pris nå': 'Lowest price now',
+'Retning': 'Direction', 'Alle endringer': 'All changes', 'Bare prisfall': 'Price drops only', 'Bare prisøkning': 'Price increases only',
+'Butikk': 'Store', 'Alle butikker': 'All stores', 'Materiale': 'Material', 'Alle materialer': 'All materials', 'Størrelse på endring': 'Size of change',
+'Alle': 'All', 'Minst 5 %': 'At least 5 %', 'Minst 10 %': 'At least 10 %', 'Minst 20 %': 'At least 20 %', 'Bare på lager': 'In stock only', 'Nullstill filtre': 'Reset filters',
+'Ingen produkter passer filtrene. Prøv å nullstille dem, eller velg en lengre periode.': 'No products match the filters. Try resetting them, or choose a longer period.',
 'Filamenter som nylig har endret pris: hva de kostet før, hva de koster nå, og når det skjedde.': 'Filaments that recently changed price: what they cost before, what they cost now, and when it happened.',
 '24 timer': '24 hours', '3 dager': '3 days', '7 dager': '7 days', '30 dager': '30 days', 'Til butikken': 'To the store',
 'Prisendringer': 'Price changes',
@@ -400,6 +405,8 @@ map: {
 "Ved print av eksterne eller forhåndslagde modeller (filer fra nett) overtar du ansvaret for modellens utforming og funksjon. Jeg går gjennom filene for å avdekke åpenbare designfeil før print startes, men kan ikke gi noen garanti for den endelige passformen, funksjonaliteten eller styrken til modeller eller modifikasjoner du selv har lastet ned.": "When printing external or ready-made models (files from the web) you take responsibility for the design and function of the model. I go through the files to uncover obvious design errors before printing starts, but cannot give any guarantee for the final fit, functionality or strength of models or modifications you have downloaded yourself."
 },
 rx: [
+  [/^Versjon (\d[\d.]*) \((.+)\)$/, 'Version $1 ($2)'],
+  [/^(\d+) av (\d+) produkter? med prisendring siste (24 timer|3 dager|7 dager|30 dager)$/, function (m) { return m[1] + ' of ' + m[2] + ' products with a price change in the last ' + ({'24 timer':'24 hours','3 dager':'3 days','7 dager':'7 days','30 dager':'30 days'})[m[3]]; }],
   [/^Endret (\d+) minutter siden$/, 'Changed $1 minutes ago'], [/^Endret akkurat nå$/, 'Changed just now'], [/^Endret (\d+) timer? siden$/, function (m) { return 'Changed ' + m[1] + (m[1] === '1' ? ' hour ago' : ' hours ago'); }],
   [/^Endret (\d+) dager siden$/, 'Changed $1 days ago'], [/^(\d+) produkter? med prisendring siste (24 timer|3 dager|7 dager|30 dager)$/, function (m) { return m[1] + (m[1] === '1' ? ' product' : ' products') + ' with a price change in the last ' + ({'24 timer':'24 hours','3 dager':'3 days','7 dager':'7 days','30 dager':'30 days'})[m[2]]; }],
   [/^Se i (\d+) (annen butikk|andre butikker)$/, function (m) { return 'See ' + m[1] + (m[1] === '1' ? ' other store' : ' other stores'); }],

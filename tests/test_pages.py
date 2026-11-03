@@ -30,3 +30,26 @@ def test_forsiden_viser_antall_tilbud_under_tellingen():
     html = (WEB / "index.html").read_text(encoding="utf-8")
     assert 'id="offSub"' in html and "tilbud fra " in html
     assert 'id="quick"' not in html and 'id="stats"' not in html
+
+
+def test_alle_sider_har_plass_til_versjonsnummer_og_bygget_fyller_det():
+    import json
+    import tempfile
+    from src import build
+    root = Path(__file__).resolve().parent.parent
+    v = json.loads((root / "config" / "version.json").read_text(encoding="utf-8"))
+    assert v["version"] and v["date"]
+    for p in PAGES:
+        assert "<!--__VERSION__-->" in (WEB / p).read_text(encoding="utf-8"), p
+    out = Path(tempfile.mkdtemp()) / "o"
+    assert build.main(["--out", str(out)]) == 0
+    for p in PAGES:
+        html = (out / p).read_text(encoding="utf-8")
+        assert f'Versjon {v["version"]} (' in html and "__VERSION__" not in html, p
+
+
+def test_prisendringer_har_sortering_og_filtre():
+    html = (WEB / "prisendringer" / "index.html").read_text(encoding="utf-8")
+    for i in ("fSort", "fDir", "fStore", "fMat", "fMin", "fStock", "fReset"):
+        assert f'id="{i}"' in html, i
+    assert "farge" not in html.lower().split("<main>")[1].split("</main>")[0]  # ingen fargefilter, som på forsiden

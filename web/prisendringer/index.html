@@ -97,6 +97,15 @@ footer{border-top:1px solid var(--line);padding-block:24px 40px;color:var(--mute
 .seg button{font:inherit;font-weight:600;font-size:14.5px;padding:8px 14px;border-radius:99px;border:1px solid var(--line);background:var(--surface);color:var(--fg);cursor:pointer}
 .seg button[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--accent-fg)}
 @media (max-width:460px){.seg{display:grid;grid-template-columns:repeat(4,auto);gap:4px}.seg button{padding:8px 6px;font-size:13px}}
+.flt{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px 10px;margin:10px 0 4px;align-items:end}
+.flt label{display:grid;gap:3px;font-size:12px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:var(--muted);min-width:0}
+.flt select{font:inherit;font-size:14.5px;font-weight:500;letter-spacing:0;text-transform:none;color:var(--fg);background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:8px 10px;min-width:0;width:100%}
+.flt .chk{display:flex;align-items:center;gap:8px;font-size:14.5px;font-weight:500;letter-spacing:0;text-transform:none;color:var(--fg);padding:9px 2px;cursor:pointer}
+.flt .chk input{width:18px;height:18px;accent-color:var(--accent);flex:none}
+.flt .rst{font:inherit;font-weight:600;font-size:14px;padding:8px 12px;border-radius:8px;border:1px solid var(--line);background:var(--chip);color:var(--fg);cursor:pointer}
+.flt .rst[hidden]{display:none}
+@media (max-width:460px){.flt{grid-template-columns:1fr 1fr}}
+#since{margin-top:18px}
 .cnt{color:var(--muted);font-size:14.5px;margin:6px 0 16px}
 .pc{display:grid;gap:14px;grid-template-columns:repeat(auto-fill,minmax(min(100%,420px),1fr))}
 .pcard{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px;min-width:0;display:flex;flex-direction:column;gap:10px}
@@ -150,13 +159,37 @@ footer{border-top:1px solid var(--line);padding-block:24px 40px;color:var(--mute
       <button type="button" data-d="7" aria-pressed="true">7 dager</button>
       <button type="button" data-d="30" aria-pressed="false">30 dager</button>
     </div>
+    <div class="flt" id="flt">
+      <label>Sorter<select id="fSort">
+        <option value="new">Nyeste endring</option>
+        <option value="dropPct">Størst prisfall (%)</option>
+        <option value="dropKr">Størst prisfall (kr)</option>
+        <option value="upPct">Størst prisøkning (%)</option>
+        <option value="low">Laveste pris nå</option>
+      </select></label>
+      <label>Retning<select id="fDir">
+        <option value="all">Alle endringer</option>
+        <option value="down">Bare prisfall</option>
+        <option value="up">Bare prisøkning</option>
+      </select></label>
+      <label>Butikk<select id="fStore"><option value="">Alle butikker</option></select></label>
+      <label>Materiale<select id="fMat"><option value="">Alle materialer</option></select></label>
+      <label>Størrelse på endring<select id="fMin">
+        <option value="0">Alle</option>
+        <option value="5">Minst 5 %</option>
+        <option value="10">Minst 10 %</option>
+        <option value="20">Minst 20 %</option>
+      </select></label>
+      <label class="chk"><input type="checkbox" id="fStock"><span>Bare på lager</span></label>
+      <button type="button" class="rst" id="fReset" hidden>Nullstill filtre</button>
+    </div>
     <div class="cnt" id="cnt" aria-live="polite"></div>
     <div class="pc" id="list"></div>
     <p class="note" id="since"></p>
   </main>
 
   <footer>
-    <span>© 2026 Filamentsøk.no<!--__ANALYTICS_NOTE__--></span>
+    <span>© 2026 Filamentsøk.no<!--__ANALYTICS_NOTE__--><!--__VERSION__--></span>
     <span><a href="../index.html">Hjem</a> · <a href="../guide/">Guide</a> · <a href="./">Prisendringer</a> · <a href="../funksjoner/">Funksjoner</a> · <a href="../3d-print/">3D-printtjeneste</a> · <a href="../partner/">Partner</a> · <a href="mailto:marcussandersen@gmail.com">Kontakt</a></span>
   </footer>
 </div>
@@ -178,15 +211,39 @@ function unav(a){return a==="out"||a==="order"||(a||"").indexOf("soon")===0}
 function ago(min){var m=Math.max(0,Math.round(Date.now()/60000-min));
  if(m<2)return"akkurat nå";if(m<60)return m+" minutter siden";var h=Math.round(m/60);if(h<48)return h+(h===1?" time":" timer")+" siden";return Math.round(m/1440)+" dager siden"}
 function when(min){return new Date(min*60000).toLocaleString("nb-NO",{day:"numeric",month:"short",hour:"2-digit",minute:"2-digit"})}
+var F={sort:"new",dir:"all",store:"",mat:"",min:0,stock:false};
+var el={sort:document.getElementById("fSort"),dir:document.getElementById("fDir"),store:document.getElementById("fStore"),mat:document.getElementById("fMat"),min:document.getElementById("fMin"),stock:document.getElementById("fStock"),reset:document.getElementById("fReset")};
+function pct(c){return(c.t-c.f)/c.f*100}
+function offerOf(it,s){return it.o.filter(function(o){return o.s===s})[0]}
+function passes(c,it){
+ if(F.dir==="down"&&!(c.t<c.f))return false;if(F.dir==="up"&&!(c.t>c.f))return false;
+ if(F.store&&c.s!==F.store)return false;if(F.min&&Math.abs(pct(c))<F.min)return false;
+ if(F.stock){var o=offerOf(it,c.s);if(!o||unav(o.a))return false}
+ return true}
+function sortKey(c,it){return F.sort==="dropPct"?pct(c):F.sort==="dropKr"?c.t-c.f:F.sort==="upPct"?-pct(c):F.sort==="low"?c.t:-c.at}
+function lowest(it){var m=null;it.o.forEach(function(o){if(o.p!=null&&(m===null||o.p<m))m=o.p});return m===null?Infinity:m}
+function setOptions(sel,html,val){if(sel.dataset.sig!==html){sel.innerHTML=html;sel.dataset.sig=html}sel.value=val}
 function render(){
  [].forEach.call(seg.querySelectorAll("button"),function(b){b.setAttribute("aria-pressed",+b.dataset.d===days)});
  if(!D){return}
- var cut=Date.now()/60000-days*1440,st=D.stores||{},rows=[];
- D.items.forEach(function(it){var ch=it.ch.filter(function(c){return c.at>=cut});if(ch.length)rows.push({it:it,ch:ch})});
- rows.sort(function(a,b){return b.ch[0].at-a.ch[0].at});
+ var cut=Date.now()/60000-days*1440,st=D.stores||{},inPeriod=[];
+ D.items.forEach(function(it){var ch=it.ch.filter(function(c){return c.at>=cut});if(ch.length)inPeriod.push({it:it,ch:ch})});
+ /* valg i butikk- og materialelistene kommer fra det som finnes i valgt periode */
+ var sc={},mc={};inPeriod.forEach(function(r){r.ch.forEach(function(c){sc[c.s]=(sc[c.s]||0)+1});if(r.it.m)mc[r.it.m]=(mc[r.it.m]||0)+1});
+ if(F.store&&!sc[F.store])F.store="";if(F.mat&&!mc[F.mat])F.mat="";
+ setOptions(el.store,'<option value="">Alle butikker</option>'+Object.keys(sc).sort(function(a,b){return(st[a]||a).localeCompare(st[b]||b,"nb")}).map(function(k){return'<option value="'+esc(k)+'">'+esc(st[k]||k)+" ("+sc[k]+")</option>"}).join(""),F.store);
+ setOptions(el.mat,'<option value="">Alle materialer</option>'+Object.keys(mc).sort(function(a,b){return mc[b]-mc[a]||a.localeCompare(b,"nb")}).map(function(k){return'<option value="'+esc(k)+'">'+esc(k)+" ("+mc[k]+")</option>"}).join(""),F.mat);
+ el.sort.value=F.sort;el.dir.value=F.dir;el.min.value=String(F.min);el.stock.checked=F.stock;
+ var active=F.dir!=="all"||F.store||F.mat||F.min||F.stock;el.reset.hidden=!active;
+ var rows=[];
+ inPeriod.forEach(function(r){if(F.mat&&r.it.m!==F.mat)return;
+  var ch=r.ch.filter(function(c){return passes(c,r.it)});if(!ch.length)return;
+  ch.sort(function(a,b){return sortKey(a,r.it)-sortKey(b,r.it)||b.at-a.at});rows.push({it:r.it,ch:ch})});
+ rows.sort(function(a,b){if(F.sort==="low")return lowest(a.it)-lowest(b.it)||b.ch[0].at-a.ch[0].at;return sortKey(a.ch[0],a.it)-sortKey(b.ch[0],b.it)||b.ch[0].at-a.ch[0].at});
  var lbl={1:"siste 24 timer",3:"siste 3 dager",7:"siste 7 dager",30:"siste 30 dager"}[days];
- if(!rows.length){cnt.textContent="";list.innerHTML='<div class="empty">Ingen prisendringer registrert '+lbl+'. Prøv en lengre periode, eller kom tilbake senere. Prisene sjekkes jevnlig.</div>'}
- else{cnt.textContent=rows.length+(rows.length===1?" produkt":" produkter")+" med prisendring "+lbl;
+ if(!inPeriod.length){cnt.textContent="";list.innerHTML='<div class="empty">Ingen prisendringer registrert '+lbl+'. Prøv en lengre periode, eller kom tilbake senere. Prisene sjekkes jevnlig.</div>'}
+ else if(!rows.length){cnt.textContent="";list.innerHTML='<div class="empty">Ingen produkter passer filtrene. Prøv å nullstille dem, eller velg en lengre periode.</div>'}
+ else{cnt.textContent=(active?rows.length+" av "+inPeriod.length:rows.length)+(inPeriod.length===1?" produkt":" produkter")+" med prisendring "+lbl;
   list.innerHTML=rows.map(function(r){var it=r.it,top=r.ch,seen={};
    var chg=top.map(function(c){seen[c.s]=c;var d=(c.t-c.f)/c.f*100,dn=d<0;
      return'<div class="chg"><span class="sn">'+esc(st[c.s]||c.s)+'</span><span class="pr"><s>'+kr(c.f)+'</s> → <b>'+kr(c.t)+'</b></span><span class="dl '+(dn?"dn":"up")+'">'+(dn?"−":"+")+Math.abs(Math.round(d))+' %</span><span class="when" title="'+esc(when(c.at))+'">Endret '+ago(c.at)+'</span></div>'}).join("");
@@ -197,6 +254,9 @@ function render(){
    var link=headOffer?'<ul class="os"><li><span class="sn">Kjøp hos '+esc(st[head]||head)+'</span><a class="go" data-s="'+esc(head)+'" data-n="'+esc(st[head]||head)+'" href="'+esc(headOffer.u)+'" target="_blank" rel="noopener noreferrer">Til butikken</a></li></ul>':"";
    return'<article class="pcard"><div class="ph">'+(it.i?'<img src="'+esc(it.i)+'" alt="" loading="lazy" decoding="async" referrerpolicy="no-referrer">':"")+'<div><div class="nm">'+esc(it.n)+'</div><div class="mt">'+esc([it.b,it.m,it.c].filter(Boolean).join(" · "))+"</div></div></div>"+chg+link+more+"</article>"}).join("")}
  if(D.since)sinceEl.textContent="Prishistorikken startet "+new Date(D.since*60000).toLocaleDateString("nb-NO",{day:"numeric",month:"long",year:"numeric"})+". Endringer før dette er ikke registrert."}
+function readF(){F.sort=el.sort.value;F.dir=el.dir.value;F.store=el.store.value;F.mat=el.mat.value;F.min=+el.min.value;F.stock=el.stock.checked;render()}
+document.getElementById("flt").addEventListener("change",readF);
+el.reset.addEventListener("click",function(){F.dir="all";F.store="";F.mat="";F.min=0;F.stock=false;render()});
 seg.addEventListener("click",function(e){var b=e.target.closest("button");if(!b)return;days=+b.dataset.d;try{localStorage.setItem("pdays",days)}catch(x){}render()});
 fetch("../prisendringer.json",{cache:"no-cache"}).then(function(r){if(!r.ok)throw 0;return r.json()}).then(function(j){D=j;render()}).catch(function(){D={items:[],stores:{}};render()});
 render();
