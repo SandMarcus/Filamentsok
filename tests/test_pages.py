@@ -53,3 +53,14 @@ def test_prisendringer_har_sortering_og_filtre():
     for i in ("fSort", "fDir", "fStore", "fMat", "fMin", "fStock", "fReset"):
         assert f'id="{i}"' in html, i
     assert "farge" not in html.lower().split("<main>")[1].split("</main>")[0]  # ingen fargefilter, som på forsiden
+
+
+def test_workflow_lar_deg_velge_butikker_ved_manuell_start():
+    import re
+    wf = (Path(__file__).resolve().parent.parent / ".github" / "workflows" / "pages.yml").read_text(encoding="utf-8")
+    steps = re.findall(r"- name: (Hent [^\n]+)\n(.*?)(?=\n      - |\Z)", wf, re.S)
+    assert len(steps) >= 10
+    for name, body in steps:
+        m = re.search(r"inputs\.(hent_\w+)", body)
+        assert m, f"{name}: mangler valg for manuell start"
+        assert re.search(rf"^      {m.group(1)}:", wf, re.M), f"{name}: inputen {m.group(1)} finnes ikke"
