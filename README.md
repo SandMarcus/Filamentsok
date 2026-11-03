@@ -153,7 +153,7 @@ Stratum3D bruker også WooCommerce, så `tools/stratum_feed.py` bruker samme Sto
 
 ### Polyalkemi (automatisk henting)
 
-**Kjøre uten Polyalkemi:** ved manuell start (Actions → Bygg og publiser → Run workflow) er «Hopp over Polyalkemi» avhuket som standard. Da tar bygget noen få minutter, og Polyalkemi-prisene fra `data/polyalkemi.csv` i repoet brukes uendret. Fjern haken for å hente nye Polyalkemi-priser (ca. 17 minutter). Pushes hopper alltid over Polyalkemi, mens den nattlige kjøringen tar den med.
+**Velge butikker ved manuell start:** under Actions → Bygg og publiser → Run workflow er det ett avkrysningsfelt per butikk («Hent … på nytt»). Alle er avhuket unntatt Polyalkemi, som tar ca. 17 minutter og derfor er avhuket av. Butikker du ikke henter, bruker filen som ligger i repoet (`data/*.csv`), ikke forrige publiserte priser, så de kan være eldre. Ved push og nattlig kjøring hentes alle (Polyalkemi bare nattlig). Valgene vises først når endringen ligger i `main`.
 
 Polyalkemi har ingen åpen feed, så `tools/polyalkemi_feed.py` leser de vanlige sidene som robots.txt tillater. Hovedsiden `/filament?pageID=110` (ca. 38 MB) gir alle varer med lager, bilde og lenke i ett kall. Mislykkes det, brukes kategorisidene `/filament/<materiale>?pageID=100`. Prisen fylles inn av JavaScript der, så den leses fra hver produktside (`data-priceincvat`), med ca. 0,6 sekunds pause. Rekker ikke skriptet alt innen tidsrammen (`--budget`, standard 40 minutter), eller feiler en side, brukes forrige pris fra `data/polyalkemi.csv`. Varer uten kjent pris tas ikke med.
 
