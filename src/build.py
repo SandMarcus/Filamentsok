@@ -56,6 +56,16 @@ class ConfigError(Exception):
     pass
 
 
+def site_version(root):
+    """Versjonsnummeret som vises nederst på sidene (config/version.json). Økes for hånd når siden endres, ikke for prisoppdateringer."""
+    p = Path(root) / "config" / "version.json"
+    if not p.exists():
+        return ""
+    v = json.loads(p.read_text(encoding="utf-8"))
+    d = dt.date.fromisoformat(v["date"])
+    return f' · <span class="ver">Versjon {v["version"]} ({d.day}.{d.month}.{d.year})</span>'
+
+
 def norwegian_date(iso):
     d = dt.date.fromisoformat(iso)
     return f"{d.day}. {MONTHS[d.month - 1]} {d.year}"
@@ -276,10 +286,11 @@ def main(argv=None):
         (out / "prisendringer.json").write_text(json.dumps(pj, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
         report["prisendringer"] = len(pj["items"])
     gc = analytics_config(ROOT)
+    version_html = site_version(ROOT)
     for page in ("index.html", "guide/index.html", "partner/index.html", "funksjoner/index.html", "3d-print/index.html", "prisendringer/index.html"):
         f = out / page
         if f.exists():
-            text = inject_analytics(f.read_text(encoding="utf-8").replace("__BUILD__", build_id), gc)
+            text = inject_analytics(f.read_text(encoding="utf-8").replace("__BUILD__", build_id), gc).replace("<!--__VERSION__-->", version_html)
             f.write_text(inject_seo(text, SEO_PAGES.get(page, "/"), site), encoding="utf-8")
     write_seo_files(out, site, dt.date.today().isoformat(), lambda pg: (out / pg).exists())
     guide = ROOT / "data" / "guide.json"
