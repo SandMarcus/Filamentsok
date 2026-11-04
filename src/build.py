@@ -276,12 +276,6 @@ def main(argv=None):
         shutil.rmtree(out)
     shutil.copytree(ROOT / "web", out)
     (out / "products.json").write_text(payload, encoding="utf-8")
-    # Butikkfilene publiseres også, så neste bygg kan bruke dem for butikker som ikke hentes på nytt (tools/restore_feeds.py).
-    (out / "feeds").mkdir()
-    for s_ in cfg["stores"]:
-        src = ROOT / s_["file"]
-        if src.exists():
-            shutil.copy(src, out / "feeds" / src.name)
     if args.keep_history:
         if not site["url"]:
             raise ConfigError("--keep-history krever «url» i config/site.json")
