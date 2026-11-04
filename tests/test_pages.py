@@ -55,6 +55,19 @@ def test_prisendringer_har_sortering_og_filtre():
     assert "farge" not in html.lower().split("<main>")[1].split("</main>")[0]  # ingen fargefilter, som på forsiden
 
 
+def test_sok_forstar_norsk_engelsk_og_nyanser():
+    html = (WEB / "index.html").read_text(encoding="utf-8")
+    assert "var NY={Rosegull:" in html and "var ALIAS=" in html and 'id="qp"' in html
+    assert "ph.replace(/-/g,' ')" in html  # «rose-gull» tolkes som «rose gull»
+    js = (WEB / "i18n-en.js").read_text(encoding="utf-8")
+    for k in ("Nyanse", "Nyanser:", "Populære nyanser", "Rosegull", "Kobber", "Bronse", "Regnbue", "Neon",
+              "Pastell", "Mint", "Lavendel", "Himmelblå", "Marine", "Perle"):
+        assert f"'{k}': '" in js, f"mangler engelsk ordliste for {k}"
+    fn = (WEB / "funksjoner" / "index.html").read_text(encoding="utf-8")
+    assert "Norsk og engelsk i søket, og nyanser" in fn
+    assert "'Norsk og engelsk i søket, og nyanser': " in js
+
+
 def test_workflow_lar_deg_velge_butikker_ved_manuell_start():
     import re
     wf = (Path(__file__).resolve().parent.parent / ".github" / "workflows" / "pages.yml").read_text(encoding="utf-8")

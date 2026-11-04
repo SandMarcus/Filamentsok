@@ -799,7 +799,7 @@ dialog#hc .sc{flex:1;overflow:auto}
     if(prev.length&&t.length&&!t.some(function(w){return prev.indexOf(w)>=0})){var iv=$('#q').value;reset();$('#q').value=iv}   /* helt nytt søk: nullstill alle filtre */
     undoSF();var rest=[],i=0;
     while(i<t.length){var hit=null;
-      for(var n=Math.min(4,t.length-i);n>=1&&!hit;n--){var ph=t.slice(i,i+n).join(' ');if(PH[ph]){hit=PH[ph];i+=n}}
+      for(var n=Math.min(4,t.length-i);n>=1&&!hit;n--){var ph=t.slice(i,i+n).join(' '),h=PH[ph]||PH[ph.replace(/-/g,' ')];if(h){hit=h.w===ph?h:{k:h.k,v:h.v,w:ph};i+=n}}
       if(hit){S[hit.k][hit.v]=true;SF.push(hit)}else rest.push(t[i++])}
     S.q=rest.join(' ');CM=t.join(' ')}
   function cq(q){var sv=SF.slice();undoSF();var n=R.filter(function(p){return pass(p,null,q)}).length;sv.forEach(function(f){S[f.k][f.v]=true});SF=sv;return n}
