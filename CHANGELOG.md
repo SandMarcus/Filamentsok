@@ -2,6 +2,11 @@
 
 Versjonsnummeret (`config/version.json`) vises nederst på alle sider. Det økes når siden endres, men ikke for vanlige prisoppdateringer.
 
+## 1.2 (4.11.2026)
+- Søket forstår norsk og engelsk: «gull» og «gold» gir samme treff, og «rose gull», «rose-gull» og «rosegold» gir nyansen Rosegull.
+- Nyanser (Rosegull, Kobber, Bronse, Regnbue, Neon, Pastell, Mint, Lavendel m.fl.) gjenkjennes på produktnavnet, kan velges som hurtigvalg under søkefeltet og vises som piller over resultatene.
+- Nytt kort på Funksjoner-siden og engelsk ordliste for de nye tekstene.
+
 ## 1.1 (3.11.2026)
 - Versjonsnummer nederst på alle sider.
 - Prisendringer: sortering (nyeste, størst prisfall i % og kr, størst prisøkning, laveste pris) og filtre (retning, butikk, materiale, størrelse på endring, på lager).

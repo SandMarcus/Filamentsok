@@ -42,6 +42,13 @@ nav a:hover,nav a.on{background:var(--chip);color:var(--fg)}
 .hero h1{font-family:var(--font-d);font-weight:800;font-size:clamp(34px,6vw,58px);line-height:1;letter-spacing:-.035em;margin:0 0 10px;text-wrap:balance}
 .hero p{color:var(--muted);margin:0 0 20px;max-width:48ch}
 .search{display:flex;gap:8px;max-width:560px}
+.qp{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-top:10px;max-width:560px;font-size:13px;color:var(--muted)}
+.qp[hidden]{display:none}
+.qp button{font:inherit;font-size:13px;font-weight:500;padding:4px 11px;border-radius:99px;border:1px solid var(--line);background:var(--surface);color:var(--fg);cursor:pointer}
+.qp button:hover{background:var(--chip)}
+.hero>div:first-child{min-width:0}
+.qp{max-width:min(560px,100%)}
+@media (max-width:700px){.qp{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none}.qp::-webkit-scrollbar{display:none}.qp span,.qp button{flex:none}}
 .search input{flex:1;min-width:0;padding:13px 14px;border:1px solid var(--line);border-radius:8px;background:var(--surface)}
 .btn{background:var(--accent);color:var(--accent-fg);border:0;border-radius:8px;padding:11px 16px;font-weight:600;cursor:pointer}
 .btn.ghost{background:var(--chip);color:var(--fg)}
@@ -352,6 +359,7 @@ dialog#hc .sc{flex:1;overflow:auto}
         <button class="btn" type="submit">Søk</button>
         <div class="sug" id="sug" role="listbox" hidden></div>
       </form>
+      <div class="qp" id="qp" role="group" aria-label="Populære nyanser" hidden><span>Nyanser:</span></div>
     </div>
     <div class="heroart" id="heroart">
       <img src="hero.webp" width="840" height="573" alt="Mann som klør seg i hodet foran hyller fylt med filamentspoler" fetchpriority="high" decoding="async">
@@ -561,7 +569,7 @@ dialog#hc .sc{flex:1;overflow:auto}
   var EXP={},LIM=6;
   var BRANDS=Object.keys(bc).sort(function(a,b){return (bc[b]-bc[a])||a.localeCompare(b,'nb')});
   var SF=[],CM='';
-  var S={q:'',mat:{},add:{},fin:{},col:{},store:{},brand:{},ref:{'Spole':true},stock:{'in':true},max:1500,sale:false};
+  var S={q:'',mat:{},add:{},fin:{},col:{},ny:{},store:{},brand:{},ref:{'Spole':true},stock:{'in':true},max:1500,sale:false};
   var kr=function(n){return Math.round(n).toLocaleString('nb-NO')+' kr'};
   var esc=function(s){return String(s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})};
 
@@ -606,7 +614,7 @@ dialog#hc .sc{flex:1;overflow:auto}
     return '<a href="'+s.home+'" target="_blank" rel="noopener noreferrer"><strong>'+s.n+'</strong><span>'+n+' produkter her · Gå til butikken</span></a>'}).join('');
 
   function go(s){try{document.querySelector(s).scrollIntoView({behavior:'smooth'})}catch(e){}}
-  function reset(){SF=[];CM='';S.q='';S.mat={};S.add={};S.ref={};S.fin={};S.col={};S.store={};S.brand={};S.stock={};S.max=1500;S.sale=false;$('#q').value=''}
+  function reset(){SF=[];CM='';S.q='';S.mat={};S.add={};S.ref={};S.fin={};S.col={};S.ny={};S.store={};S.brand={};S.stock={};S.max=1500;S.sale=false;$('#q').value=''}
   function has(o){return Object.keys(o).length>0}
   function cnt(f){return R.filter(f).length}
   function inKey(p,key,v){return key==='store'?!!p.stores[v]:p[key]===v}
@@ -660,6 +668,7 @@ dialog#hc .sc{flex:1;overflow:auto}
       if(skip!=='fin'&&has(S.fin)&&!S.fin[p.fin])return false;
       if(skip!=='brand'&&has(S.brand)&&!S.brand[p.brand])return false;
       if(skip!=='col'&&has(S.col)&&!S.col[p.col])return false;
+      if(has(S.ny)&&!Object.keys(S.ny).some(function(k){return NY[k].test(p.name)}))return false;
       if(skip!=='store'&&has(S.store)&&!Object.keys(S.store).some(function(k){return p.stores[k]}))return false;
       if(p.price!==null&&S.max<1500&&p.price>S.max)return false;
       if(skip!=='stock'&&has(S.stock)&&!S.stock[p.stk])return false;
@@ -683,8 +692,8 @@ dialog#hc .sc{flex:1;overflow:auto}
       var c=b.dataset.c,n=FC.col[c]||0;
       b.title=c+' ('+n+')';b.setAttribute('aria-label',c+', '+n+' produkter');b.disabled=!n&&!S.col[c]})}
   function activeBar(){
-    var c=[],G={stock:'Lager',ref:'Utførelse',mat:'Materiale',add:'Tilsetning',fin:'Type',brand:'Merke',col:'Farge',store:'Butikk'};
-    var L={stock:function(k){return k==='in'?'På lager':'Ikke på lager'},ref:function(k){return k==='Refill'?'Refill (uten spole)':'Med spole'},mat:function(k){return(MATS[k]||{n:k}).n},add:function(k){return ADD[k]||k},fin:function(k){return FINL[k]||k},brand:function(k){return k},col:function(k){return k},store:function(k){return STORES[k]?STORES[k].n:k}};
+    var c=[],G={stock:'Lager',ref:'Utførelse',mat:'Materiale',add:'Tilsetning',fin:'Type',brand:'Merke',col:'Farge',ny:'Nyanse',store:'Butikk'};
+    var L={stock:function(k){return k==='in'?'På lager':'Ikke på lager'},ref:function(k){return k==='Refill'?'Refill (uten spole)':'Med spole'},mat:function(k){return(MATS[k]||{n:k}).n},add:function(k){return ADD[k]||k},fin:function(k){return FINL[k]||k},brand:function(k){return k},col:function(k){return k},ny:function(k){return k},store:function(k){return STORES[k]?STORES[k].n:k}};
     function chip(key,v,txt){c.push('<button type="button" data-rm="'+key+'" data-v="'+esc(v)+'" aria-label="Fjern filter: '+esc(txt)+'">'+esc(txt)+' <i aria-hidden="true">×</i></button>')}
     if(S.q)chip('q','','Søk: '+S.q);
     Object.keys(G).forEach(function(k){Object.keys(S[k]).forEach(function(v){chip(k,v,G[k]+': '+L[k](v))})});
@@ -753,6 +762,18 @@ dialog#hc .sc{flex:1;overflow:auto}
   $('#grid').addEventListener('click',function(e){if(e.target.id==='more'){limit+=PAGE;render(true)}});
   /* ---------- Søkeforslag ---------- */
   function hayOf(p){return p.hay||(p.hay=(p.all+' '+p.name+' '+p.brand+' '+p.col+' '+p.fin+' '+(FINL[p.fin]||'')+' '+p.mat+' '+(p.add||'')).toLowerCase())}
+  /* Nyanser: navn som ikke er egne farger i filteret (rose gold, kobber ...). Gjenkjennes på navnet, også de engelske skrivemåtene. */
+  var NY={Rosegull:/rose[\s\-]?(gold|gull)|rosé[\s\-]?(gold|gull)|rosegold|roségull|pink[\s\-]?gold|gilded rose/i,Kobber:/copper|kobber|koppar/i,Bronse:/bronze|bronse/i,Regnbue:/rainbow|regnbue/i,
+    Neon:/\bneon\b/i,Pastell:/pastel/i,Mint:/\bmint\b/i,Lavendel:/lavend/i,Himmelblå:/sky[\s\-]?blue|himmelblå|baby blue/i,Marine:/\bnavy\b|marine/i,Perle:/pearl|perle/i};
+  var NYK=Object.keys(NY).filter(function(k){return R.some(function(p){return NY[k].test(p.name)})});
+  /* Norske og engelske ord for det samme: «gold» og «gull» gir samme filter, «rose gull» og «rosegold» gir Rosegull. */
+  var ALIAS=(function(){var a={};
+    function c(v,l){l.forEach(function(w){a[w]={k:'col',v:v}})}function f(v,l){l.forEach(function(w){a[w]={k:'fin',v:v}})}function n(v,l){l.forEach(function(w){a[w]={k:'ny',v:v}})}
+    c('Gull',['gold']);c('Sølv',['silver']);c('Rosa',['pink']);c('Svart',['black']);c('Hvit',['white']);c('Blå',['blue']);c('Grønn',['green']);c('Rød',['red']);c('Gul',['yellow']);c('Lilla',['purple','violet']);
+    c('Grå',['grey','gray']);c('Brun',['brown']);c('Turkis',['turquoise','teal']);c('Gjennomsiktig',['transparent']);c('Naturell',['natural']);c('Flerfarget',['multicolor','multicolour']);
+    f('Matt',['matte']);f('Tre',['wood','wooden']);f('Marmor',['marble']);f('Selvlysende',['glow']);f('Metall',['metallic']);
+    n('Rosegull',['rose gull','rose gold','rosegull','rosegold','rosé gull','rosé gold','roségull','rosé','pink gold','rosa gull']);n('Kobber',['copper']);n('Bronse',['bronze']);n('Regnbue',['rainbow']);n('Pastell',['pastel']);n('Lavendel',['lavender']);n('Marine',['navy']);n('Perle',['pearl']);
+    return a})();
   var VOC=(function(){
     var m={},list=[];
     function add(t,lab){var k=t.toLowerCase();if(m[k])return;m[k]=1;list.push({t:t,k:k,w:k.split(/\s+/),lab:lab})}
@@ -760,14 +781,16 @@ dialog#hc .sc{flex:1;overflow:auto}
     FIN.forEach(function(f){if(f!=='Standard')add(f,'Type')});
     MKEYS.forEach(function(k){add(k,'Materiale')});
     AKEYS.forEach(function(k){add(k,'Tilsetning')});
+    NYK.forEach(function(k){add(k,'Nyanse')});
     BRANDS.forEach(function(b){add(b,'Merke')});
     Object.keys(STORES).forEach(function(k){add(STORES[k].n,'Butikk')});
     var wc={};R.forEach(function(p){var seen={};(p.name.toLowerCase().match(/[a-zæøå][a-zæøå0-9+\-]{2,}/g)||[]).forEach(function(w){if(!seen[w]){seen[w]=1;wc[w]=(wc[w]||0)+1}})});
     Object.keys(wc).filter(function(w){return wc[w]>=4&&!m[w]}).sort(function(a,b){return wc[b]-wc[a]}).slice(0,500).forEach(function(w){add(w,'')});
     return list})();
   /* Søket tolkes til filtre: «pla matt» gir filteret Materiale: PLA og Type: Matt. Ukjente ord blir stående som fritekstsøk. */
-  var PH=(function(){var m={};VOC.forEach(function(v){var t={Farge:'col',Type:'fin',Materiale:'mat',Tilsetning:'add',Merke:'brand',Butikk:'store'}[v.lab];if(!t)return;
-    var key=v.t;if(t==='store')Object.keys(STORES).forEach(function(k){if(STORES[k].n===v.t)key=k});m[v.k]={k:t,v:key,w:v.k}});return m})();
+  var PH=(function(){var m={};VOC.forEach(function(v){var t={Farge:'col',Type:'fin',Materiale:'mat',Tilsetning:'add',Nyanse:'ny',Merke:'brand',Butikk:'store'}[v.lab];if(!t)return;
+    var key=v.t;if(t==='store')Object.keys(STORES).forEach(function(k){if(STORES[k].n===v.t)key=k});m[v.k]={k:t,v:key,w:v.k}});
+    Object.keys(ALIAS).forEach(function(w){if(!m[w])m[w]={k:ALIAS[w].k,v:ALIAS[w].v,w:w}});return m})();
   function undoSF(){SF.forEach(function(f){delete S[f.k][f.v]});SF=[]}
   function words(t){return t.toLowerCase().split(/\s+/).filter(Boolean)}
   function dropWord(w){if(!w)return;var q=$('#q'),re=new RegExp('(^|\\s)'+w.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+'(?=\\s|$)','i');q.value=q.value.replace(re,'$1').replace(/\s+/g,' ').replace(/^\s+/,'')}
@@ -776,7 +799,7 @@ dialog#hc .sc{flex:1;overflow:auto}
     if(prev.length&&t.length&&!t.some(function(w){return prev.indexOf(w)>=0})){var iv=$('#q').value;reset();$('#q').value=iv}   /* helt nytt søk: nullstill alle filtre */
     undoSF();var rest=[],i=0;
     while(i<t.length){var hit=null;
-      for(var n=Math.min(4,t.length-i);n>=1&&!hit;n--){var ph=t.slice(i,i+n).join(' ');if(PH[ph]){hit=PH[ph];i+=n}}
+      for(var n=Math.min(4,t.length-i);n>=1&&!hit;n--){var ph=t.slice(i,i+n).join(' '),h=PH[ph]||PH[ph.replace(/-/g,' ')];if(h){hit=h.w===ph?h:{k:h.k,v:h.v,w:ph};i+=n}}
       if(hit){S[hit.k][hit.v]=true;SF.push(hit)}else rest.push(t[i++])}
     S.q=rest.join(' ');CM=t.join(' ')}
   function cq(q){var sv=SF.slice();undoSF();var n=R.filter(function(p){return pass(p,null,q)}).length;sv.forEach(function(f){S[f.k][f.v]=true});SF=sv;return n}
@@ -801,6 +824,12 @@ dialog#hc .sc{flex:1;overflow:auto}
   function pick(i){var o=SR[i];if(!o)return;qi.value=o.q+' ';commit(o.q);hideSug();render();
     /* på telefon blir man stående i søkefeltet (for å utvide søket); siden ruller først ved «Søk» */
     if(window.matchMedia&&matchMedia('(max-width:800px)').matches){qi.focus();suggest(true)}else go('#butikk')}
+  /* Hurtigvalg under søkefeltet: samme som å skrive ordet og trykke Søk */
+  (function(){var qp=$('#qp'),w=['Rosegull','Kobber','Bronse','Regnbue','Sølv','Marmor'].concat(NYK.filter(function(k){return ['Neon','Pastell','Mint','Lavendel'].indexOf(k)>=0}));
+    w=w.filter(function(k){return PH[k.toLowerCase()]&&(NY[k]?NYK.indexOf(k)>=0:true)});
+    if(!w.length)return;
+    qp.insertAdjacentHTML('beforeend',w.map(function(k){return '<button type="button" data-w="'+esc(k)+'">'+esc(k)+'</button>'}).join(''));qp.hidden=false;
+    qp.addEventListener('click',function(e){var b=e.target.closest('button');if(!b)return;var t=b.dataset.w.toLowerCase();qi.value=t+' ';commit(t);hideSug();render();go('#butikk')})})();
   qi.addEventListener('input',function(){suggest(false)});
   qi.addEventListener('focus',function(){suggest(!!CM&&CM===words(qi.value).join(' '))});
   qi.addEventListener('click',function(){if(sug.hidden)suggest(!!CM&&CM===words(qi.value).join(' '))});
