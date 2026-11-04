@@ -70,11 +70,32 @@ def test_sok_forstar_norsk_engelsk_og_nyanser():
 
 
 def test_workflow_lar_deg_velge_butikker_ved_manuell_start():
+    """Hvert hentesteg styres av tools/select_stores.py, og hvert valg ved manuell start hører til en butikk."""
     import re
-    wf = (Path(__file__).resolve().parent.parent / ".github" / "workflows" / "pages.yml").read_text(encoding="utf-8")
+    import sys
+    root = Path(__file__).resolve().parent.parent
+    sys.path.insert(0, str(root))
+    from tools import select_stores
+    wf = (root / ".github" / "workflows" / "pages.yml").read_text(encoding="utf-8")
     steps = re.findall(r"- name: (Hent [^\n]+)\n(.*?)(?=\n      - |\Z)", wf, re.S)
-    assert len(steps) >= 10
-    for name, body in steps:
-        m = re.search(r"inputs\.(hent_\w+)", body)
-        assert m, f"{name}: mangler valg for manuell start"
-        assert re.search(rf"^      {m.group(1)}:", wf, re.M), f"{name}: inputen {m.group(1)} finnes ikke"
+    fetch = [(n, b) for n, b in steps if not n.startswith("Hent forrige publiserte priser")]
+    assert len(fetch) == len(select_stores.STORES)
+    funnet = set()
+    for name, body in fetch:
+        m = re.search(r"steps\.sel\.outputs\.fetch\), ' (\w+) '", body)
+        assert m, f"{name}: styres ikke av butikkvelgeren"
+        assert m.group(1) in select_stores.STORES, f"{name}: ukjent butikk {m.group(1)}"
+        funnet.add(m.group(1))
+    assert funnet == set(select_stores.STORES), "alle butikker må ha et hentesteg"
+    for sid, c in select_stores.STORES.items():
+        assert re.search(rf"^      {c['input']}:", wf, re.M), f"valget {c['input']} ({sid}) finnes ikke ved manuell start"
+    assert "id: sel" in wf and "python tools/select_stores.py" in wf
+    # velgeren og gjenopprettingen kommer før første hentesteg
+    assert wf.index("id: sel") < wf.index("run: python tools/restore_feeds.py") < wf.index("- name: Hent Elefun-feed")
+    assert "steps.sel.outputs.restore" in wf
+
+
+def test_bygget_publiserer_butikkfiler_for_neste_bygg_men_ikke_for_sokemotorer():
+    root = Path(__file__).resolve().parent.parent
+    assert '"feeds"' in (root / "src" / "build.py").read_text(encoding="utf-8")
+    assert "Disallow: /feeds/" in (root / "src" / "seo.py").read_text(encoding="utf-8")
