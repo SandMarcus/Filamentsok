@@ -68,12 +68,6 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-      - name: Hent forrige publiserte priser (for butikker som ikke hentes på nytt)
-        # Hvert bygg publiserer filene det brukte under /feeds/. Butikker som hoppes over eller feiler beholder dermed
-        # prisene fra siste publiserte versjon (f.eks. fra natten), ikke den eldre filen i repoet. Alle butikkene
-        # som har automatisk henting. Første gang (ingen /feeds/ ennå) brukes filene i repoet.
-        continue-on-error: true
-        run: python tools/restore_feeds.py elefun nm3d stratum materiex multicom tonerweb filamentfabrikken dkongen fjord3d poly
       - name: Hent Elefun-feed
         if: github.event_name != 'workflow_dispatch' || inputs.hent_elefun
         # Feiler henting eller konvertering, beholdes data/elefun.csv fra repoet.
