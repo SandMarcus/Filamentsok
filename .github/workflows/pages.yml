@@ -1,7 +1,11 @@
 name: Bygg og publiser
 
 # Kjører når CSV-filer, malen, koden eller nettsiden endres, hver natt, og kan startes for hånd.
-# Ved manuell start kan du velge hvilke butikker som hentes på nytt (resten bruker filene i repoet).
+# Hvilke butikker som hentes på nytt avgjøres av tools/select_stores.py:
+#   - hver natt: alle butikkene
+#   - manuell start: de du har krysset av under «Run workflow»
+#   - push til main: bare butikkene der endringen påvirker hentingen (tools/<butikk>_feed.py er endret)
+# Butikker som ikke hentes (eller som feiler) beholder prisene fra siste publiserte versjon (tools/restore_feeds.py).
 on:
   push:
     branches: [main]
@@ -9,43 +13,43 @@ on:
   workflow_dispatch:
     inputs:
       hent_elefun:
-        description: "Hent Elefun på nytt (ellers brukes filen som ligger i repoet)"
+        description: "Hent Elefun på nytt (ellers beholdes siste publiserte priser)"
         type: boolean
         default: true
       hent_normax3d:
-        description: "Hent NorMax3D på nytt (ellers brukes filen som ligger i repoet)"
+        description: "Hent NorMax3D på nytt (ellers beholdes siste publiserte priser)"
         type: boolean
         default: true
       hent_stratum3d:
-        description: "Hent Stratum3D på nytt (ellers brukes filen som ligger i repoet)"
+        description: "Hent Stratum3D på nytt (ellers beholdes siste publiserte priser)"
         type: boolean
         default: true
       hent_materiex:
-        description: "Hent Materie X på nytt (ellers brukes filen som ligger i repoet)"
+        description: "Hent Materie X på nytt (ellers beholdes siste publiserte priser)"
         type: boolean
         default: true
       hent_multicom:
-        description: "Hent Multicom på nytt (ellers brukes filen som ligger i repoet)"
+        description: "Hent Multicom på nytt (ellers beholdes siste publiserte priser)"
         type: boolean
         default: true
       hent_tonerweb:
-        description: "Hent Tonerweb på nytt (ellers brukes filen som ligger i repoet)"
+        description: "Hent Tonerweb på nytt (ellers beholdes siste publiserte priser)"
         type: boolean
         default: true
       hent_filamentfabrikken:
-        description: "Hent Filamentfabrikken på nytt (ellers brukes filen som ligger i repoet)"
+        description: "Hent Filamentfabrikken på nytt (ellers beholdes siste publiserte priser)"
         type: boolean
         default: true
       hent_dkongen:
-        description: "Hent 3D Kongen på nytt (ellers brukes filen som ligger i repoet)"
+        description: "Hent 3D Kongen på nytt (ellers beholdes siste publiserte priser)"
         type: boolean
         default: true
       hent_fjord3d:
-        description: "Hent Fjord3D på nytt (ellers brukes filen som ligger i repoet)"
+        description: "Hent Fjord3D på nytt (ellers beholdes siste publiserte priser)"
         type: boolean
         default: true
       hent_polyalkemi:
-        description: "Hent Polyalkemi på nytt (tar ca. 17 minutter, ellers brukes filen som ligger i repoet)"
+        description: "Hent Polyalkemi på nytt (tar ca. 17 minutter, ellers beholdes siste publiserte priser)"
         type: boolean
         default: false
   schedule:
@@ -68,51 +72,71 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
+      - name: Velg butikker som skal hentes
+        id: sel
+        # Se tools/select_stores.py. Ved push leses endrede filer fra GitHub; lykkes ikke det, hentes alle (unntatt Polyalkemi).
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          INPUTS_JSON: ${{ toJSON(inputs) }}
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          args=""
+          if [ "$EVENT_NAME" = "push" ]; then
+            if gh api "repos/${{ github.repository }}/compare/${{ github.event.before }}...${{ github.sha }}" --paginate --jq '.files[].filename' > "$RUNNER_TEMP/changed.txt"; then
+              args="--changed $RUNNER_TEMP/changed.txt"
+            fi
+          fi
+          python tools/select_stores.py $args
+      - name: Hent forrige publiserte priser (for butikker som ikke hentes på nytt)
+        # Hvert bygg publiserer filene det brukte under /feeds/. Butikker som hoppes over eller feiler beholder dermed
+        # prisene fra siste publiserte versjon (f.eks. fra natten), ikke den eldre filen i repoet. Første gang
+        # (ingen /feeds/ ennå), eller hvis en fil mangler eller er ugyldig, brukes filen i repoet.
+        continue-on-error: true
+        run: python tools/restore_feeds.py ${{ steps.sel.outputs.restore }}
       - name: Hent Elefun-feed
-        if: github.event_name != 'workflow_dispatch' || inputs.hent_elefun
-        # Feiler henting eller konvertering, beholdes data/elefun.csv fra repoet.
+        if: contains(format(' {0} ', steps.sel.outputs.fetch), ' elefun ')
+        # Feiler henting eller konvertering, beholdes siste publiserte fil.
         continue-on-error: true
         run: |
           curl -fsSL --retry 3 -o "$RUNNER_TEMP/elefun.csv" "https://www.elefun.no/dokumenter/pricefeed/Feed_Pricespy_NO.CSV"
           python tools/elefun_feed.py "$RUNNER_TEMP/elefun.csv" data/elefun.csv
       - name: Hent NorMax3D (WooCommerce Store API)
-        if: github.event_name != 'workflow_dispatch' || inputs.hent_normax3d
-        # Feiler henting, beholdes data/normax3d.csv fra repoet.
+        if: contains(format(' {0} ', steps.sel.outputs.fetch), ' nm3d ')
+        # Feiler henting, beholdes siste publiserte fil.
         continue-on-error: true
         run: python tools/nm3d_feed.py data/normax3d.csv
       - name: Hent Stratum3D (WooCommerce Store API)
-        if: github.event_name != 'workflow_dispatch' || inputs.hent_stratum3d
+        if: contains(format(' {0} ', steps.sel.outputs.fetch), ' stratum ')
         continue-on-error: true
         run: python tools/stratum_feed.py data/stratum3d.csv
       - name: Hent Materie X (Google Shopping-feed)
-        if: github.event_name != 'workflow_dispatch' || inputs.hent_materiex
+        if: contains(format(' {0} ', steps.sel.outputs.fetch), ' materiex ')
         continue-on-error: true
         run: python tools/materiex_feed.py data/materiex.csv
       - name: Hent Multicom (kategorisiden)
-        if: github.event_name != 'workflow_dispatch' || inputs.hent_multicom
+        if: contains(format(' {0} ', steps.sel.outputs.fetch), ' multicom ')
         continue-on-error: true
         run: python tools/multicom_feed.py data/multicom.csv
       - name: Hent Tonerweb (kategorisiden)
-        if: github.event_name != 'workflow_dispatch' || inputs.hent_tonerweb
+        if: contains(format(' {0} ', steps.sel.outputs.fetch), ' tonerweb ')
         continue-on-error: true
         run: python tools/tonerweb_feed.py data/tonerweb.csv
       - name: Hent Filamentfabrikken (Shopify)
-        if: github.event_name != 'workflow_dispatch' || inputs.hent_filamentfabrikken
+        if: contains(format(' {0} ', steps.sel.outputs.fetch), ' filamentfabrikken ')
         continue-on-error: true
         run: python tools/filamentfabrikken_feed.py data/filamentfabrikken.csv
       - name: Hent 3D Kongen (WooCommerce Store API)
-        if: github.event_name != 'workflow_dispatch' || inputs.hent_dkongen
+        if: contains(format(' {0} ', steps.sel.outputs.fetch), ' dkongen ')
         continue-on-error: true
         run: python tools/dkongen_feed.py data/3dkongen.csv
       - name: Hent Fjord3D (produkt-API)
-        if: github.event_name != 'workflow_dispatch' || inputs.hent_fjord3d
+        if: contains(format(' {0} ', steps.sel.outputs.fetch), ' fjord3d ')
         continue-on-error: true
         run: python tools/fjord3d_feed.py data/fjord3d.csv
       - name: Hent Polyalkemi (kategorisider og produktsider)
-        # Tar opptil ca. 40 minutter og kjøres derfor bare nattlig eller for hånd, ikke ved hver push.
-        # Ved manuell start hakes «Hent Polyalkemi på nytt» av når den skal være med. Ellers brukes filen i repoet.
-        # Feiler henting, eller går tiden ut, beholdes forrige pris fra data/polyalkemi.csv i repoet.
-        if: github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && inputs.hent_polyalkemi)
+        # Tar opptil ca. 40 minutter. Hentes hver natt, når den er avkrysset ved manuell start, og ved push bare hvis
+        # tools/polyalkemi_feed.py er endret. Feiler henting, eller går tiden ut, beholdes siste publiserte pris.
+        if: contains(format(' {0} ', steps.sel.outputs.fetch), ' poly ')
         continue-on-error: true
         timeout-minutes: 50
         run: python tools/polyalkemi_feed.py data/polyalkemi.csv --budget 40

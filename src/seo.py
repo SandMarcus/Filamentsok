@@ -77,4 +77,4 @@ def write_files(out, cfg, lastmod, exists):
     urls = "".join(f"  <url><loc>{html.escape(base + p)}</loc><lastmod>{lastmod}</lastmod><priority>{PRIORITY[p]}</priority></url>\n"
                    for page, p in PAGES.items() if exists(page))
     (Path(out) / "sitemap.xml").write_text('<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' + urls + "</urlset>\n", encoding="utf-8")
-    (Path(out) / "robots.txt").write_text(f"User-agent: *\nAllow: /\n\nSitemap: {base}/sitemap.xml\n", encoding="utf-8")
+    (Path(out) / "robots.txt").write_text(f"User-agent: *\nAllow: /\nDisallow: /feeds/\n\nSitemap: {base}/sitemap.xml\n", encoding="utf-8")
