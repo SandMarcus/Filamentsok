@@ -2,6 +2,9 @@
 
 Versjonsnummeret (`config/version.json`) vises nederst på alle sider. Det økes når siden endres, men ikke for vanlige prisoppdateringer.
 
+## 1.3 (4.11.2026)
+- Nyanser (Rosegull, Kobber, Bronse, Regnbue m.fl.) har nå eget filter rett under Farge, med antall treff. Hurtigvalg-raden under søkefeltet er fjernet, så forsiden blir ryddigere. Søk som «rose gull» setter fortsatt filteret.
+
 ## 1.2 (4.11.2026)
 - Søket forstår norsk og engelsk: «gull» og «gold» gir samme treff, og «rose gull», «rose-gull» og «rosegold» gir nyansen Rosegull.
 - Nyanser (Rosegull, Kobber, Bronse, Regnbue, Neon, Pastell, Mint, Lavendel m.fl.) gjenkjennes på produktnavnet, kan velges som hurtigvalg under søkefeltet og vises som piller over resultatene.

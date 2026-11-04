@@ -3,10 +3,10 @@
 window.I18N_EN = {
 map: {
 /* Nyanser og søk på norsk og engelsk (versjon 1.2) */
-'Nyanse': 'Shade', 'Nyanser:': 'Shades:', 'Populære nyanser': 'Popular shades',
+'Nyanse': 'Shade',
 'Rosegull': 'Rose gold', 'Rosegull ×': 'Rose gold ×', 'Kobber': 'Copper', 'Bronse': 'Bronze', 'Regnbue': 'Rainbow', 'Neon': 'Neon', 'Pastell': 'Pastel', 'Mint': 'Mint', 'Lavendel': 'Lavender', 'Himmelblå': 'Sky blue', 'Marine': 'Navy', 'Perle': 'Pearl',
 'Norsk og engelsk i søket, og nyanser': 'Norwegian and English in search, plus shades',
-'Søk på norsk eller engelsk og få det samme: «gull» og «gold» gir samme filter, og «rose gull», «rose-gull» og «rosegold» gir nyansen Rosegull. Nyanser som Rosegull, Kobber, Bronse og Regnbue kjennes igjen på produktnavnet, og du kan velge dem som hurtigvalg under søkefeltet.': 'Search in Norwegian or English and get the same results: "gull" and "gold" give the same filter, and "rose gull", "rose-gull" and "rosegold" all give the Rose gold shade. Shades such as Rose gold, Copper, Bronze and Rainbow are recognised from the product name, and you can pick them as quick picks under the search field.',
+'Søk på norsk eller engelsk og få det samme: «gull» og «gold» gir samme filter, og «rose gull», «rose-gull» og «rosegold» gir nyansen Rosegull. Nyanser som Rosegull, Kobber, Bronse og Regnbue kjennes igjen på produktnavnet og finnes som eget filter under Farge.': 'Search in Norwegian or English and get the same results: "gull" and "gold" give the same filter, and "rose gull", "rose-gull" and "rosegold" all give the Rose gold shade. Shades such as Rose gold, Copper, Bronze and Rainbow are recognised from the product name and have their own filter under Colour.',
 /* Meny, topp og bunn */
 'Sorter': 'Sort', 'Nyeste endring': 'Latest change', 'Størst prisfall (%)': 'Biggest price drop (%)', 'Størst prisfall (kr)': 'Biggest price drop (kr)', 'Størst prisøkning (%)': 'Biggest price increase (%)', 'Laveste pris nå': 'Lowest price now',
 'Retning': 'Direction', 'Alle endringer': 'All changes', 'Bare prisfall': 'Price drops only', 'Bare prisøkning': 'Price increases only',
