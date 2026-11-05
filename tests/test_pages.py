@@ -55,6 +55,19 @@ def test_prisendringer_har_sortering_og_filtre():
     assert "farge" not in html.lower().split("<main>")[1].split("</main>")[0]  # ingen fargefilter, som på forsiden
 
 
+def test_prisendringer_har_egne_datoer_og_se_historikk_men_ikke_tidspunkt():
+    html = (WEB / "prisendringer" / "index.html").read_text(encoding="utf-8")
+    for i in ('id="dFrom"', 'id="dTo"', 'data-d="custom"', "Se historikk", "Skjul historikk", "function changeIn(", "function histHTML("):
+        assert i in html, i
+    assert "Endret '+ago" not in html and "function ago(" not in html and 'class="when"' not in html  # upresist tidspunkt vises ikke
+    assert "min-width:0;border-collapse" in html  # historikktabellen skal ikke arve min-width:520px på mobil
+    js = (WEB / "i18n-en.js").read_text(encoding="utf-8")
+    for k in ("Velg datoer", "Se historikk", "Skjul historikk", "Første pris"):
+        assert f"'{k}': '" in js, k
+    fn = (WEB / "funksjoner" / "index.html").read_text(encoding="utf-8")
+    assert "Se historikk" in fn and "eller velg egne datoer" in fn and "når det skjedde" not in fn
+
+
 def test_sok_forstar_norsk_engelsk_og_nyanser():
     html = (WEB / "index.html").read_text(encoding="utf-8")
     assert "var NY={Rosegull:" in html and "var ALIAS=" in html

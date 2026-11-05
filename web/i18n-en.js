@@ -1,7 +1,10 @@
 /* Engelsk ordliste for Filamentsøk. Nøkkelen er norsk tekst slik den står på siden (mellomrom slått sammen).
    Mønstre (rx) tar tekst med tall. Hva som ikke står her, vises på norsk. Lastes av i18n.js når engelsk er valgt. */
+var I18N_PER = function (l) { return l.indexOf('fra ') === 0 ? 'from ' + l.slice(4).replace(' til ', ' to ') : 'in the last ' + ({'24 timer':'24 hours','3 dager':'3 days','7 dager':'7 days','30 dager':'30 days'})[l.replace('siste ', '')]; };
 window.I18N_EN = {
 map: {
+/* Prisendringer: egne datoer og Se historikk (versjon 1.4) */
+'Velg datoer': 'Pick dates', 'Fra': 'From', 'Til': 'To', 'Se historikk': 'See history', 'Skjul historikk': 'Hide history', 'Dato': 'Date', 'Pris': 'Price', 'Endring': 'Change', 'Første pris': 'First price', 'Datoen er da prisen først ble registrert.': 'The date is when the price was first recorded.',
 /* Nyanser og søk på norsk og engelsk (versjon 1.2) */
 'Nyanse': 'Shade',
 'Rosegull': 'Rose gold', 'Rosegull ×': 'Rose gold ×', 'Kobber': 'Copper', 'Bronse': 'Bronze', 'Regnbue': 'Rainbow', 'Neon': 'Neon', 'Pastell': 'Pastel', 'Mint': 'Mint', 'Lavendel': 'Lavender', 'Himmelblå': 'Sky blue', 'Marine': 'Navy', 'Perle': 'Pearl',
@@ -13,10 +16,10 @@ map: {
 'Butikk': 'Store', 'Alle butikker': 'All stores', 'Materiale': 'Material', 'Alle materialer': 'All materials', 'Størrelse på endring': 'Size of change',
 'Alle': 'All', 'Minst 5 %': 'At least 5 %', 'Minst 10 %': 'At least 10 %', 'Minst 20 %': 'At least 20 %', 'Bare på lager': 'In stock only', 'Nullstill filtre': 'Reset filters',
 'Ingen produkter passer filtrene. Prøv å nullstille dem, eller velg en lengre periode.': 'No products match the filters. Try resetting them, or choose a longer period.',
-'Filamenter som nylig har endret pris: hva de kostet før, hva de koster nå, og når det skjedde.': 'Filaments that recently changed price: what they cost before, what they cost now, and when it happened.',
+'Filamenter som har endret pris: hva de kostet før og hva de koster nå. Velg en periode, eller egne datoer, og åpne historikken for å se prisen over tid.': 'Filaments that have changed price: what they cost before and what they cost now. Choose a period, or your own dates, and open the history to see the price over time.',
 '24 timer': '24 hours', '3 dager': '3 days', '7 dager': '7 days', '30 dager': '30 days', 'Til butikken': 'To the store',
 'Prisendringer': 'Price changes',
-'Egen side som viser filamenter som nylig har endret pris: prisen før, prisen nå, hvor mange prosent det er og når det skjedde. Velg mellom siste 24 timer, 3, 7 og 30 dager. På hvert kort kan du åpne lenkene til de andre butikkene. Historikken bygges opp av seg selv for hver oppdatering, så siden fylles gradvis.': 'A page showing filaments that recently changed price: the old price, the new price, the percentage and when it happened. Choose between the last 24 hours, 3, 7 and 30 days. Each card links to the other stores. The history builds itself with every update, so the page fills up gradually.',
+'Egen side som viser filamenter som har endret pris: prisen før, prisen nå og hvor mange prosent det er. Velg mellom siste 24 timer, 3, 7 og 30 dager, eller velg egne datoer med Fra og Til. På hver butikk med endret pris kan du trykke «Se historikk» for å se prisen over tid som graf og tabell. Du kan sortere (nyeste endring, størst prisfall i prosent eller kroner, størst prisøkning, laveste pris) og filtrere på prisfall eller prisøkning, butikk, materiale, hvor stor endringen er og om varen er på lager. På hvert kort kan du åpne lenkene til de andre butikkene. Historikken bygges opp av seg selv for hver oppdatering, så siden fylles gradvis.': "A page showing filaments that have changed price: the old price, the new price and the percentage. Choose between the last 24 hours, 3, 7 and 30 days, or pick your own dates with From and To. For each store with a changed price you can press \"See history\" to see the price over time as a graph and a table. You can sort (newest change, biggest price drop in percent or kroner, biggest price increase, lowest price) and filter by price drop or increase, store, material, how big the change is and whether the item is in stock. Each card links to the other stores. The history builds itself with every update, so the page fills up gradually.",
 'Åpne Prisendringer': 'Open Price changes', 'Ikke på lager': 'Out of stock', 'Se pris': 'See price',
 'Filamentsøk': 'Filamentsøk',
 'Filamentsøk.no': 'Filamentsøk.no',
@@ -411,12 +414,11 @@ map: {
 },
 rx: [
   [/^Versjon (\d[\d.]*) \((.+)\)$/, 'Version $1 ($2)'],
-  [/^(\d+) av (\d+) produkter? med prisendring siste (24 timer|3 dager|7 dager|30 dager)$/, function (m) { return m[1] + ' of ' + m[2] + ' products with a price change in the last ' + ({'24 timer':'24 hours','3 dager':'3 days','7 dager':'7 days','30 dager':'30 days'})[m[3]]; }],
-  [/^Endret (\d+) minutter siden$/, 'Changed $1 minutes ago'], [/^Endret akkurat nå$/, 'Changed just now'], [/^Endret (\d+) timer? siden$/, function (m) { return 'Changed ' + m[1] + (m[1] === '1' ? ' hour ago' : ' hours ago'); }],
-  [/^Endret (\d+) dager siden$/, 'Changed $1 days ago'], [/^(\d+) produkter? med prisendring siste (24 timer|3 dager|7 dager|30 dager)$/, function (m) { return m[1] + (m[1] === '1' ? ' product' : ' products') + ' with a price change in the last ' + ({'24 timer':'24 hours','3 dager':'3 days','7 dager':'7 days','30 dager':'30 days'})[m[2]]; }],
+  [/^(\d+) av (\d+) produkter? med prisendring (siste (?:24 timer|3 dager|7 dager|30 dager)|fra \d\d\.\d\d\.\d{4} til \d\d\.\d\d\.\d{4})$/, function (m) { return m[1] + ' of ' + m[2] + ' products with a price change ' + I18N_PER(m[3]); }],
+  [/^(\d+) produkter? med prisendring (siste (?:24 timer|3 dager|7 dager|30 dager)|fra \d\d\.\d\d\.\d{4} til \d\d\.\d\d\.\d{4})$/, function (m) { return m[1] + (m[1] === '1' ? ' product' : ' products') + ' with a price change ' + I18N_PER(m[2]); }],
   [/^Se i (\d+) (annen butikk|andre butikker)$/, function (m) { return 'See ' + m[1] + (m[1] === '1' ? ' other store' : ' other stores'); }],
   [/^Kjøp hos (.+)$/, 'Buy at $1'], [/^Prishistorikken startet (.+)\. Endringer før dette er ikke registrert\.$/, 'Price history started $1. Earlier changes are not recorded.'],
-  [/^Ingen prisendringer registrert siste (24 timer|3 dager|7 dager|30 dager)\. Prøv en lengre periode, eller kom tilbake senere\. Prisene sjekkes jevnlig\.$/, 'No price changes recorded in this period. Try a longer period, or come back later. Prices are checked regularly.'],
+  [/^Ingen prisendringer registrert (siste (?:24 timer|3 dager|7 dager|30 dager)|fra \d\d\.\d\d\.\d{4} til \d\d\.\d\d\.\d{4})\. Prøv en lengre periode, eller kom tilbake senere\. Prisene sjekkes jevnlig\.$/, 'No price changes recorded in this period. Try a longer period, or come back later. Prices are checked regularly.'],
   [/^(.+) tilbud fra (\d+) butikker$/, '$1 offers from $2 stores'],
   [/^(\d[\d\s]*) filamenter$/, '$1 filaments'], [/^1 filament$/, '1 filament'],
   [/^(\d+) butikker$/, '$1 stores'], [/^(\d+) produkter?( her)?( · Gå til butikken)?$/, function (m) { return m[1] + (m[1] === '1' ? ' product' : ' products') + (m[2] ? ' here' : '') + (m[3] ? ' · Go to the store' : ''); }],
