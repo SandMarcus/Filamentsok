@@ -259,7 +259,7 @@ Bildet på forsiden ligger som `web/hero.webp` (840 px bred, vises 420 px bredt 
 
 ## Prisendringer (prishistorikk)
 
-Siden `/prisendringer/` viser filamenter som har endret pris i et valgt tidsrom (siste 24 timer, 3, 7 eller 30 dager, eller egne datoer): pris ved starten av tidsrommet, pris nå, prosent og lenker til de andre butikkene. «Se historikk» på hver endrede butikk viser prisen over tid som graf og tabell. Tidspunktet for endringen vises ikke, siden det bare er tidspunktet for bygget som oppdaget den.
+Siden `/prisendringer/` viser filamenter som har endret pris i et valgt tidsrom (siste 24 timer, 3, 7 eller 30 dager, eller egne datoer): pris ved starten av tidsrommet, pris nå, prosent og lenker til de andre butikkene. Et tilbud telles hvis prisen har endret seg minst én gang i tidsrommet (også om den er tilbake til samme pris), så lengre perioder alltid inneholder alt fra de kortere. Sortering og «Vis» er synlige, de andre filtrene ligger under «Flere filtre», og valgte filtre vises som piller. «Se historikk» på hver endrede butikk viser prisen over tid som graf og tabell. Tidspunktet for endringen vises ikke, siden det bare er tidspunktet for bygget som oppdaget den.
 
 - Historikken ligger i `history.json` på den publiserte siden. Hvert bygg med `python -m src.build --keep-history` henter forrige fil derfra (`config/site.json` → `url`), legger til dagens priser og skriver ny `history.json` og `prisendringer.json`. GitHub-workflowen bruker flagget.
 - Bare prisendringer lagres (maks 30 punkter per tilbud, og siden tar med tilbud med en endring siste 90 dager). Tilbud som ikke er sett på 45 dager glemmes.

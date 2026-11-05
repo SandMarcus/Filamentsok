@@ -97,13 +97,25 @@ footer{border-top:1px solid var(--line);padding-block:24px 40px;color:var(--mute
 .seg button{font:inherit;font-weight:600;font-size:14.5px;padding:8px 14px;border-radius:99px;border:1px solid var(--line);background:var(--surface);color:var(--fg);cursor:pointer}
 .seg button[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--accent-fg)}
 @media (max-width:460px){.seg{display:grid;grid-template-columns:repeat(3,auto);gap:4px}.seg button{padding:8px 6px;font-size:13px}}
-.flt{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px 10px;margin:10px 0 4px;align-items:end}
+.hint{color:var(--muted);font-size:14px;margin:6px 0 0;max-width:70ch}
+.flt{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px 10px;margin:12px 0 4px;align-items:end}
 .flt label{display:grid;gap:3px;font-size:12px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:var(--muted);min-width:0}
 .flt select{font:inherit;font-size:14.5px;font-weight:500;letter-spacing:0;text-transform:none;color:var(--fg);background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:8px 10px;min-width:0;width:100%}
 .flt .chk{display:flex;align-items:center;gap:8px;font-size:14.5px;font-weight:500;letter-spacing:0;text-transform:none;color:var(--fg);padding:9px 2px;cursor:pointer}
 .flt .chk input{width:18px;height:18px;accent-color:var(--accent);flex:none}
 .flt .rst{font:inherit;font-weight:600;font-size:14px;padding:8px 12px;border-radius:8px;border:1px solid var(--line);background:var(--chip);color:var(--fg);cursor:pointer}
 .flt .rst[hidden]{display:none}
+.flt .mb{font:inherit;font-weight:600;font-size:14.5px;min-height:40px;padding:8px 12px;border-radius:8px;border:1px solid var(--line);background:var(--surface);color:var(--fg);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px}
+.flt .mb[aria-expanded="true"]{background:var(--chip)}
+.flt .bd{background:var(--accent);color:var(--accent-fg);border-radius:99px;font-size:12px;min-width:20px;padding:0 6px;line-height:20px;text-align:center}
+.flt .bd[hidden]{display:none}
+.more{grid-column:1/-1;display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px 10px;align-items:end;padding:12px;border:1px solid var(--line);border-radius:10px;background:var(--surface)}
+.more[hidden]{display:none}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0 0}
+.chips:empty{display:none}
+.chip{font:inherit;font-size:13.5px;font-weight:600;display:inline-flex;align-items:center;gap:6px;min-height:32px;padding:4px 10px 4px 12px;border-radius:99px;border:1px solid var(--line);background:var(--chip);color:var(--fg);cursor:pointer}
+.chip:hover{border-color:var(--accent)}
+.dl.eq{background:var(--chip);color:var(--muted);font-family:var(--font-b);font-weight:500}
 @media (max-width:460px){.flt{grid-template-columns:1fr 1fr}}
 #since{margin-top:18px}
 .cnt{color:var(--muted);font-size:14.5px;margin:6px 0 16px}
@@ -183,6 +195,7 @@ footer{border-top:1px solid var(--line);padding-block:24px 40px;color:var(--mute
       <label>Fra<input type="date" id="dFrom"></label>
       <label>Til<input type="date" id="dTo"></label>
     </div>
+    <p class="hint">Viser filamenter som har endret pris minst én gang i perioden: prisen ved starten av perioden mot prisen nå.</p>
     <div class="flt" id="flt">
       <label>Sorter<select id="fSort">
         <option value="new">Nyeste endring</option>
@@ -191,22 +204,26 @@ footer{border-top:1px solid var(--line);padding-block:24px 40px;color:var(--mute
         <option value="upPct">Størst prisøkning (%)</option>
         <option value="low">Laveste pris nå</option>
       </select></label>
-      <label>Retning<select id="fDir">
+      <label>Vis<select id="fDir">
         <option value="all">Alle endringer</option>
         <option value="down">Bare prisfall</option>
         <option value="up">Bare prisøkning</option>
       </select></label>
-      <label>Butikk<select id="fStore"><option value="">Alle butikker</option></select></label>
-      <label>Materiale<select id="fMat"><option value="">Alle materialer</option></select></label>
-      <label>Størrelse på endring<select id="fMin">
-        <option value="0">Alle</option>
-        <option value="5">Minst 5 %</option>
-        <option value="10">Minst 10 %</option>
-        <option value="20">Minst 20 %</option>
-      </select></label>
-      <label class="chk"><input type="checkbox" id="fStock"><span>Bare på lager</span></label>
+      <button type="button" class="mb" id="fMoreBtn" aria-expanded="false" aria-controls="fMore"><span id="fMoreTxt">Flere filtre</span><span class="bd" id="fBd" hidden></span></button>
+      <div class="more" id="fMore" hidden>
+        <label>Butikk<select id="fStore"><option value="">Alle butikker</option></select></label>
+        <label>Materiale<select id="fMat"><option value="">Alle materialer</option></select></label>
+        <label>Størrelse på endring<select id="fMin">
+          <option value="0">Alle</option>
+          <option value="5">Minst 5 %</option>
+          <option value="10">Minst 10 %</option>
+          <option value="20">Minst 20 %</option>
+        </select></label>
+        <label class="chk"><input type="checkbox" id="fStock"><span>Bare på lager</span></label>
+      </div>
       <button type="button" class="rst" id="fReset" hidden>Nullstill filtre</button>
     </div>
+    <div class="chips" id="chips"></div>
     <div class="cnt" id="cnt" aria-live="polite"></div>
     <div class="pc" id="list"></div>
     <p class="note" id="since"></p>
@@ -237,11 +254,11 @@ function ymd(min){var d=new Date(min*60000);return d.getFullYear()+"-"+("0"+(d.g
 function dayStart(v){var p=v.split("-");return new Date(+p[0],+p[1]-1,+p[2],0,0,0).getTime()/60000}
 function dayEnd(v){var p=v.split("-");return new Date(+p[0],+p[1]-1,+p[2]+1,0,0,0).getTime()/60000-1}
 function win(){var n=Date.now()/60000;return mode==="custom"&&cf&&ct?[cf,ct]:[n-days*1440,n]}
-/* Nettoendring i vinduet: prisen ved starten (siste punkt til og med fra-tidspunktet, ellers første registrerte pris) mot siste pris i vinduet. */
-function changeIn(h,from,to){var base=null,last=null,at=0;
+/* Tilbud med minst én prisendring i vinduet: prisen ved starten (siste punkt til og med fra-tidspunktet, ellers første registrerte pris) mot siste pris i vinduet. Lengre perioder inneholder dermed alltid alt fra kortere. */
+function changeIn(h,from,to){var base=null,last=null,at=0,n=0;
  for(var i=0;i<h.length;i++){var t=h[i][0],p=h[i][1];
-  if(t<=from)base=p;else if(t<=to){if(base===null&&i===0)base=p;else{last=p;at=t}}}
- return base!==null&&last!==null&&last!==base?{f:base,t:last,at:at}:null}
+  if(t<=from)base=p;else if(t<=to){if(base===null&&i===0)base=p;else{last=p;at=t;n++}}}
+ return base!==null&&n?{f:base,t:last,at:at,n:n}:null}
 function chart(h,w){var W=620,H=190,L=56,R=12,T=12,B=26,t0=h[0][0],t1=Math.max(D&&D.now||0,h[h.length-1][0],t0+1440);
  var ps=h.map(function(x){return x[1]}),mn=Math.min.apply(null,ps),mx=Math.max.apply(null,ps),pad=Math.max((mx-mn)*.15,mx*.03),lo=Math.max(0,mn-pad),hi=mx+pad;
  function X(t){return L+(t-t0)/(t1-t0)*(W-L-R)}function Y(p){return T+(hi-p)/(hi-lo)*(H-T-B)}
@@ -256,6 +273,7 @@ function histHTML(c,w){var h=c.h,rows=[];
  for(var i=h.length-1;i>=0;i--){var pt=h[i],prev=h[i-1],d=prev?(pt[1]-prev[1])/prev[1]*100:null;
   rows.push("<tr><td>"+dstr(pt[0])+"</td><td>"+kr(pt[1])+"</td><td>"+(d===null?"Første pris":'<span class="dl '+(d<0?"dn":"up")+'">'+(d<0?"−":"+")+Math.abs(Math.round(d))+" %</span>")+"</td></tr>")}
  return chart(h,w)+'<table class="ht"><thead><tr><th>Dato</th><th>Pris</th><th>Endring</th></tr></thead><tbody>'+rows.join("")+'</tbody></table><p class="hn">Datoen er da prisen først ble registrert.</p>'}
+var chips=document.getElementById("chips"),bd=document.getElementById("fBd"),moreBtn=document.getElementById("fMoreBtn"),more=document.getElementById("fMore"),moreTxt=document.getElementById("fMoreTxt");
 var F={sort:"new",dir:"all",store:"",mat:"",min:0,stock:false};
 var el={sort:document.getElementById("fSort"),dir:document.getElementById("fDir"),store:document.getElementById("fStore"),mat:document.getElementById("fMat"),min:document.getElementById("fMin"),stock:document.getElementById("fStock"),reset:document.getElementById("fReset")};
 function pct(c){return(c.t-c.f)/c.f*100}
@@ -281,6 +299,9 @@ function render(){
  setOptions(el.mat,'<option value="">Alle materialer</option>'+Object.keys(mc).sort(function(a,b){return mc[b]-mc[a]||a.localeCompare(b,"nb")}).map(function(k){return'<option value="'+esc(k)+'">'+esc(k)+" ("+mc[k]+")</option>"}).join(""),F.mat);
  el.sort.value=F.sort;el.dir.value=F.dir;el.min.value=String(F.min);el.stock.checked=F.stock;
  var active=F.dir!=="all"||F.store||F.mat||F.min||F.stock;el.reset.hidden=!active;
+ var nm=(F.store?1:0)+(F.mat?1:0)+(F.min?1:0)+(F.stock?1:0);bd.hidden=!nm;bd.textContent=nm;
+ var cp=[];if(F.dir!=="all")cp.push(["dir",F.dir==="down"?"Bare prisfall":"Bare prisøkning"]);if(F.store)cp.push(["store",st[F.store]||F.store]);if(F.mat)cp.push(["mat",F.mat]);if(F.min)cp.push(["min","Minst "+F.min+" %"]);if(F.stock)cp.push(["stock","Bare på lager"]);
+ chips.innerHTML=cp.map(function(x){return'<button type="button" class="chip" data-f="'+x[0]+'"><span>'+esc(x[1])+'</span><span aria-hidden="true">×</span></button>'}).join("");
  var rows=[];
  inPeriod.forEach(function(r){if(F.mat&&r.it.m!==F.mat)return;
   var ch=r.ch.filter(function(c){return passes(c,r.it)});if(!ch.length)return;
@@ -291,8 +312,8 @@ function render(){
  else if(!rows.length){cnt.textContent="";list.innerHTML='<div class="empty">Ingen produkter passer filtrene. Prøv å nullstille dem, eller velg en lengre periode.</div>'}
  else{cnt.textContent=(active?rows.length+" av "+inPeriod.length:rows.length)+(inPeriod.length===1?" produkt":" produkter")+" med prisendring "+lbl;
   list.innerHTML=rows.map(function(r){var it=r.it,top=r.ch,seen={};
-   var chg=top.map(function(c){seen[c.s]=c;var d=(c.t-c.f)/c.f*100,dn=d<0,key=it.n+"|"+c.s,open=!!OPEN[key];CHG[key]=c;
-     return'<div class="crow" data-k="'+esc(key)+'"><div class="chg"><span class="sn">'+esc(st[c.s]||c.s)+'</span><span class="pr"><s>'+kr(c.f)+'</s> → <b>'+kr(c.t)+'</b></span><span class="dl '+(dn?"dn":"up")+'">'+(dn?"−":"+")+Math.abs(Math.round(d))+' %</span><button type="button" class="hb" aria-expanded="'+open+'">'+(open?"Skjul historikk":"Se historikk")+'</button></div><div class="hist"'+(open?"":" hidden")+">"+(open?histHTML(c,w):"")+"</div></div>"}).join("");
+   var chg=top.map(function(c){seen[c.s]=c;var d=(c.t-c.f)/c.f*100,dn=d<0,eq=c.t===c.f,key=it.n+"|"+c.s,open=!!OPEN[key];CHG[key]=c;
+     return'<div class="crow" data-k="'+esc(key)+'"><div class="chg"><span class="sn">'+esc(st[c.s]||c.s)+'</span><span class="pr">'+(eq?"":'<s>'+kr(c.f)+'</s> → ')+'<b>'+kr(c.t)+'</b></span>'+(eq?'<span class="dl eq">Tilbake til samme pris</span>':'<span class="dl '+(dn?"dn":"up")+'">'+(dn?"−":"+")+Math.abs(Math.round(d))+' %</span>')+'<button type="button" class="hb" aria-expanded="'+open+'">'+(open?"Skjul historikk":"Se historikk")+'</button></div><div class="hist"'+(open?"":" hidden")+">"+(open?histHTML(c,w):"")+"</div></div>"}).join("");
    var head=top[0].s,others=it.o.filter(function(o){return o.s!==head&&o.u}).sort(function(a,b){return(a.p==null)-(b.p==null)||a.p-b.p});
    var more=others.length?'<details><summary>Se i '+others.length+(others.length===1?" annen butikk":" andre butikker")+'</summary><ul class="os">'+others.map(function(o){var c=seen[o.s],n=st[o.s]||o.s;
      return'<li class="'+(unav(o.a)?"na":"")+'"><span class="sn">'+esc(n)+'</span><span class="pr">'+(c?'<s>'+kr(c.f)+'</s> → ':"")+(o.p==null?"Se pris":kr(o.p))+"</span>"+(unav(o.a)?'<span class="off">Ikke på lager</span>':"")+'<a class="go" data-s="'+esc(o.s)+'" data-n="'+esc(n)+'" href="'+esc(o.u)+'" target="_blank" rel="noopener noreferrer" aria-label="Til '+esc(n)+'">Til butikken</a></li>'}).join("")+"</ul></details>":"";
@@ -303,6 +324,9 @@ function render(){
 function readF(){F.sort=el.sort.value;F.dir=el.dir.value;F.store=el.store.value;F.mat=el.mat.value;F.min=+el.min.value;F.stock=el.stock.checked;render()}
 document.getElementById("flt").addEventListener("change",readF);
 el.reset.addEventListener("click",function(){F.dir="all";F.store="";F.mat="";F.min=0;F.stock=false;render()});
+moreBtn.addEventListener("click",function(){var o=more.hidden;more.hidden=!o;moreBtn.setAttribute("aria-expanded",o);moreTxt.textContent=o?"Færre filtre":"Flere filtre"});
+chips.addEventListener("click",function(e){var b=e.target.closest(".chip");if(!b)return;var f=b.dataset.f;
+ if(f==="dir")F.dir="all";else if(f==="store")F.store="";else if(f==="mat")F.mat="";else if(f==="min")F.min=0;else if(f==="stock")F.stock=false;render()});
 seg.addEventListener("click",function(e){var b=e.target.closest("button");if(!b)return;
  if(b.dataset.d==="custom"){mode="custom";if(!cf){var n=Date.now()/60000;dF.value=ymd(n-7*1440);dT.value=ymd(n);cf=dayStart(dF.value);ct=dayEnd(dT.value)}render();return}
  mode="days";days=+b.dataset.d;try{localStorage.setItem("pdays",days)}catch(x){}render()});

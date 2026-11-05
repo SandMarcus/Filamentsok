@@ -112,3 +112,19 @@ def test_bygget_publiserer_butikkfiler_for_neste_bygg_men_ikke_for_sokemotorer()
     root = Path(__file__).resolve().parent.parent
     assert '"feeds"' in (root / "src" / "build.py").read_text(encoding="utf-8")
     assert "Disallow: /feeds/" in (root / "src" / "seo.py").read_text(encoding="utf-8")
+
+
+def test_prisendringer_teller_alle_endringer_og_har_ryddige_filtre():
+    html = (WEB / "prisendringer" / "index.html").read_text(encoding="utf-8")
+    assert "n++" in html and "Tilbake til samme pris" in html  # lengre perioder inneholder alltid kortere
+    for i in ('id="fMoreBtn"', 'id="fMore" hidden', 'id="chips"', 'class="hint"'):
+        assert i in html, i
+    more = html.split('id="fMore"')[1].split('id="fReset"')[0]
+    for i in ("fStore", "fMat", "fMin", "fStock"):
+        assert i in more, i  # skjult under «Flere filtre»
+    assert "fSort" not in more and "fDir" not in more
+    js = (WEB / "i18n-en.js").read_text(encoding="utf-8")
+    for k in ("Vis", "Flere filtre", "Færre filtre", "Tilbake til samme pris"):
+        assert f"'{k}': '" in js, k
+    fn = (WEB / "funksjoner" / "index.html").read_text(encoding="utf-8")
+    assert "Flere filtre" in fn and "minst én gang i perioden" in fn
