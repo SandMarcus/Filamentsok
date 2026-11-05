@@ -26,9 +26,10 @@ def test_prisendring_registreres_og_vises():
     other = {"s": "nm3d", "p": 210, "u": "https://b/y", "a": "out"}
     hist = h.update(hist, [prod(149, extra=[other])], NOW + 1440)
     ch = h.changes(hist, [prod(149, extra=[other])], NOW + 1500)
-    assert len(ch) == 1 and ch[0]["ch"] == [{"s": "poly", "f": 199, "t": 149, "at": NOW + 1440}]
+    assert len(ch) == 1 and ch[0]["ch"] == [{"s": "poly", "h": [[NOW, 199], [NOW + 1440, 149]]}]  # hele historikken følger med
     assert [o["s"] for o in ch[0]["o"]] == ["poly", "nm3d"]  # alle butikker følger med for lenker
-    assert h.changes(hist, [prod(149)], NOW + 1440 + 31 * 1440) == []  # eldre enn 30 dager
+    assert h.changes(hist, [prod(149)], NOW + 1440 + 91 * 1440) == []  # eldre enn 90 dager
+    assert len(h.changes(hist, [prod(149)], NOW + 1440 + 60 * 1440)) == 1  # 60 dager gammel endring vises fortsatt
 
 
 def test_rydder_gamle_tilbud_og_ugyldige_priser():
@@ -90,3 +91,29 @@ def test_varianter_med_samme_lenke_blandes_ikke():
     hist = h.update(None, [a, b], NOW)
     hist = h.update(hist, [a, b], NOW + 1440)
     assert len(hist["o"]) == 2 and h.changes(hist, [a, b], NOW + 1440) == []
+
+
+def test_historikk_har_alle_punkter_og_baseline_selv_om_første_er_eldre_enn_vinduet():
+    hist = h.update(None, [prod(300)], NOW)
+    hist = h.update(hist, [prod(250)], NOW + 10 * 1440)
+    hist = h.update(hist, [prod(199)], NOW + 80 * 1440)
+    ch = h.changes(hist, [prod(199)], NOW + 85 * 1440)
+    assert ch[0]["ch"][0]["h"] == [[NOW, 300], [NOW + 10 * 1440, 250], [NOW + 80 * 1440, 199]]
+
+
+def test_flere_punkter_huskes_og_eldste_forsvinner_forst():
+    hist = None
+    for i in range(h.MAX_POINTS + 5):
+        hist = h.update(hist, [prod(100 + i)], NOW + i * 60)
+    pts = next(iter(hist["o"].values()))["h"]
+    assert len(pts) == h.MAX_POINTS and pts[-1][1] == 100 + h.MAX_POINTS + 4 and pts[0][1] == 105
+
+
+def test_siste_endring_styrer_rekkefølgen():
+    a = prod(200); b = prod(300, url="https://a/y"); b["name"] = "PETG Hvit"
+    hist = h.update(None, [a, b], NOW)
+    a2 = prod(150); b2 = prod(250, url="https://a/y"); b2["name"] = "PETG Hvit"
+    hist = h.update(hist, [a2, b], NOW + 100)       # PLA Svart faller først
+    hist = h.update(hist, [a2, b2], NOW + 200)      # PETG Hvit faller sist
+    names = [it["n"] for it in h.changes(hist, [a2, b2], NOW + 300)]
+    assert names == ["PETG Hvit", "PLA Svart"]

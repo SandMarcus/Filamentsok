@@ -96,7 +96,7 @@ footer{border-top:1px solid var(--line);padding-block:24px 40px;color:var(--mute
 .seg{display:inline-flex;flex-wrap:wrap;gap:6px;margin:18px 0 6px}
 .seg button{font:inherit;font-weight:600;font-size:14.5px;padding:8px 14px;border-radius:99px;border:1px solid var(--line);background:var(--surface);color:var(--fg);cursor:pointer}
 .seg button[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--accent-fg)}
-@media (max-width:460px){.seg{display:grid;grid-template-columns:repeat(4,auto);gap:4px}.seg button{padding:8px 6px;font-size:13px}}
+@media (max-width:460px){.seg{display:grid;grid-template-columns:repeat(3,auto);gap:4px}.seg button{padding:8px 6px;font-size:13px}}
 .flt{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px 10px;margin:10px 0 4px;align-items:end}
 .flt label{display:grid;gap:3px;font-size:12px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:var(--muted);min-width:0}
 .flt select{font:inherit;font-size:14.5px;font-weight:500;letter-spacing:0;text-transform:none;color:var(--fg);background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:8px 10px;min-width:0;width:100%}
@@ -120,7 +120,26 @@ footer{border-top:1px solid var(--line);padding-block:24px 40px;color:var(--mute
 .dl{font-family:var(--font-m);font-size:12.5px;font-weight:600;border-radius:99px;padding:1px 8px}
 .dl.dn{background:color-mix(in srgb,var(--ok) 18%,transparent);color:var(--ok)}
 .dl.up{background:color-mix(in srgb,#d33 16%,transparent);color:#d33}
-.when{flex-basis:100%;color:var(--muted);font-size:12.5px}
+.rng{display:flex;flex-wrap:wrap;gap:10px 14px;align-items:flex-end;margin:8px 0 4px}
+.rng[hidden]{display:none}
+.rng label{display:grid;gap:4px;font-size:13px;color:var(--muted);font-weight:600}
+.rng input{font:inherit;color:var(--fg);background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:7px 10px}
+.crow{display:grid;grid-template-columns:minmax(0,1fr);gap:6px;min-width:0}
+.hb{font:inherit;font-weight:600;font-size:13px;padding:4px 10px;border-radius:6px;border:1px solid var(--line);background:var(--surface);color:var(--fg);cursor:pointer}
+.hb[aria-expanded="true"]{border-color:var(--accent);color:var(--accent)}
+.hist{padding:10px 12px;border:1px solid var(--line);border-radius:8px;display:grid;grid-template-columns:minmax(0,1fr);gap:8px;min-width:0}
+.hist[hidden]{display:none}
+.hc{width:100%;height:auto;display:block}
+.hc .ln{fill:none;stroke:var(--accent);stroke-width:2.5;stroke-linejoin:round}
+.hc circle{fill:var(--accent);stroke:var(--surface);stroke-width:2}
+.hc .gl{stroke:var(--line);stroke-dasharray:3 4}
+.hc .tx{fill:var(--muted);font:11px var(--font-m)}
+.hc .hw{fill:var(--accent);opacity:.09}
+.ht{width:100%;min-width:0;border-collapse:collapse;font-size:13.5px}
+.ht th{text-align:left;color:var(--muted);font-weight:600;padding:4px 6px;border-bottom:1px solid var(--line)}
+.ht td{padding:5px 6px;border-bottom:1px solid var(--line)}
+.ht th:nth-child(n+2),.ht td:nth-child(n+2){text-align:right}
+.hn{margin:0;color:var(--muted);font-size:12.5px}
 .pcard details{padding:8px 12px;margin:0}
 .pcard summary{font-size:14.5px}
 .os{list-style:none;margin:8px 0 0;padding:0;display:grid;gap:6px}
@@ -152,12 +171,17 @@ footer{border-top:1px solid var(--line);padding-block:24px 40px;color:var(--mute
 
   <main>
     <h1>Prisendringer</h1>
-    <p class="lead">Filamenter som nylig har endret pris: hva de kostet før, hva de koster nå, og når det skjedde.</p>
+    <p class="lead">Filamenter som har endret pris: hva de kostet før og hva de koster nå. Velg en periode, eller egne datoer, og åpne historikken for å se prisen over tid.</p>
     <div class="seg" id="seg" role="group" aria-label="Periode">
       <button type="button" data-d="1" aria-pressed="false">24 timer</button>
       <button type="button" data-d="3" aria-pressed="false">3 dager</button>
       <button type="button" data-d="7" aria-pressed="true">7 dager</button>
       <button type="button" data-d="30" aria-pressed="false">30 dager</button>
+      <button type="button" data-d="custom" aria-pressed="false">Velg datoer</button>
+    </div>
+    <div class="rng" id="rng" hidden>
+      <label>Fra<input type="date" id="dFrom"></label>
+      <label>Til<input type="date" id="dTo"></label>
     </div>
     <div class="flt" id="flt">
       <label>Sorter<select id="fSort">
@@ -203,14 +227,35 @@ document.addEventListener("keydown",function(e){if(e.key==="Escape")set(false)})
 <script src="../themes.js"></script>
 <script src="../i18n.js"></script>
 <script>(function(){
-var D=null,days=7;try{var sd=+localStorage.getItem("pdays");if([1,3,7,30].indexOf(sd)>=0)days=sd}catch(e){}
-var list=document.getElementById("list"),cnt=document.getElementById("cnt"),sinceEl=document.getElementById("since"),seg=document.getElementById("seg");
+var D=null,days=7,mode="days",cf=0,ct=0,CHG={},OPEN={},CW=null;try{var sd=+localStorage.getItem("pdays");if([1,3,7,30].indexOf(sd)>=0)days=sd}catch(e){}
+var list=document.getElementById("list"),cnt=document.getElementById("cnt"),sinceEl=document.getElementById("since"),seg=document.getElementById("seg"),rng=document.getElementById("rng"),dF=document.getElementById("dFrom"),dT=document.getElementById("dTo");
 function esc(s){return String(s==null?"":s).replace(/[&<>"']/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]})}
 function kr(n){return Math.round(n).toLocaleString("nb-NO")+" kr"}
 function unav(a){return a==="out"||a==="order"||(a||"").indexOf("soon")===0}
-function ago(min){var m=Math.max(0,Math.round(Date.now()/60000-min));
- if(m<2)return"akkurat nå";if(m<60)return m+" minutter siden";var h=Math.round(m/60);if(h<48)return h+(h===1?" time":" timer")+" siden";return Math.round(m/1440)+" dager siden"}
-function when(min){return new Date(min*60000).toLocaleString("nb-NO",{day:"numeric",month:"short",hour:"2-digit",minute:"2-digit"})}
+function dstr(min){var d=new Date(min*60000);return("0"+d.getDate()).slice(-2)+"."+("0"+(d.getMonth()+1)).slice(-2)+"."+d.getFullYear()}
+function ymd(min){var d=new Date(min*60000);return d.getFullYear()+"-"+("0"+(d.getMonth()+1)).slice(-2)+"-"+("0"+d.getDate()).slice(-2)}
+function dayStart(v){var p=v.split("-");return new Date(+p[0],+p[1]-1,+p[2],0,0,0).getTime()/60000}
+function dayEnd(v){var p=v.split("-");return new Date(+p[0],+p[1]-1,+p[2]+1,0,0,0).getTime()/60000-1}
+function win(){var n=Date.now()/60000;return mode==="custom"&&cf&&ct?[cf,ct]:[n-days*1440,n]}
+/* Nettoendring i vinduet: prisen ved starten (siste punkt til og med fra-tidspunktet, ellers første registrerte pris) mot siste pris i vinduet. */
+function changeIn(h,from,to){var base=null,last=null,at=0;
+ for(var i=0;i<h.length;i++){var t=h[i][0],p=h[i][1];
+  if(t<=from)base=p;else if(t<=to){if(base===null&&i===0)base=p;else{last=p;at=t}}}
+ return base!==null&&last!==null&&last!==base?{f:base,t:last,at:at}:null}
+function chart(h,w){var W=620,H=190,L=56,R=12,T=12,B=26,t0=h[0][0],t1=Math.max(D&&D.now||0,h[h.length-1][0],t0+1440);
+ var ps=h.map(function(x){return x[1]}),mn=Math.min.apply(null,ps),mx=Math.max.apply(null,ps),pad=Math.max((mx-mn)*.15,mx*.03),lo=Math.max(0,mn-pad),hi=mx+pad;
+ function X(t){return L+(t-t0)/(t1-t0)*(W-L-R)}function Y(p){return T+(hi-p)/(hi-lo)*(H-T-B)}
+ var d="M"+X(h[0][0]).toFixed(1)+" "+Y(h[0][1]).toFixed(1);
+ for(var i=1;i<h.length;i++)d+="L"+X(h[i][0]).toFixed(1)+" "+Y(h[i-1][1]).toFixed(1)+"L"+X(h[i][0]).toFixed(1)+" "+Y(h[i][1]).toFixed(1);
+ d+="L"+X(t1).toFixed(1)+" "+Y(h[h.length-1][1]).toFixed(1);
+ var dots=h.map(function(x){return'<circle cx="'+X(x[0]).toFixed(1)+'" cy="'+Y(x[1]).toFixed(1)+'" r="4"/>'}).join(""),shade="";
+ if(w){var a=Math.max(w[0],t0),b=Math.min(w[1],t1);if(b>a)shade='<rect class="hw" x="'+X(a).toFixed(1)+'" y="'+T+'" width="'+(X(b)-X(a)).toFixed(1)+'" height="'+(H-T-B)+'"/>'}
+ var yl=[mn,mx].filter(function(v,i,a){return a.indexOf(v)===i}).map(function(v){var y=Y(v).toFixed(1);return'<line class="gl" x1="'+L+'" x2="'+(W-R)+'" y1="'+y+'" y2="'+y+'"/><text class="tx" x="'+(L-6)+'" y="'+(+y+4)+'" text-anchor="end">'+Math.round(v)+' kr</text>'}).join("");
+ return'<svg class="hc" viewBox="0 0 '+W+' '+H+'" role="img" aria-label="Pris over tid">'+shade+yl+'<path class="ln" d="'+d+'"/>'+dots+'<text class="tx" x="'+L+'" y="'+(H-6)+'">'+dstr(t0)+'</text><text class="tx" x="'+(W-R)+'" y="'+(H-6)+'" text-anchor="end">'+dstr(t1)+'</text></svg>'}
+function histHTML(c,w){var h=c.h,rows=[];
+ for(var i=h.length-1;i>=0;i--){var pt=h[i],prev=h[i-1],d=prev?(pt[1]-prev[1])/prev[1]*100:null;
+  rows.push("<tr><td>"+dstr(pt[0])+"</td><td>"+kr(pt[1])+"</td><td>"+(d===null?"Første pris":'<span class="dl '+(d<0?"dn":"up")+'">'+(d<0?"−":"+")+Math.abs(Math.round(d))+" %</span>")+"</td></tr>")}
+ return chart(h,w)+'<table class="ht"><thead><tr><th>Dato</th><th>Pris</th><th>Endring</th></tr></thead><tbody>'+rows.join("")+'</tbody></table><p class="hn">Datoen er da prisen først ble registrert.</p>'}
 var F={sort:"new",dir:"all",store:"",mat:"",min:0,stock:false};
 var el={sort:document.getElementById("fSort"),dir:document.getElementById("fDir"),store:document.getElementById("fStore"),mat:document.getElementById("fMat"),min:document.getElementById("fMin"),stock:document.getElementById("fStock"),reset:document.getElementById("fReset")};
 function pct(c){return(c.t-c.f)/c.f*100}
@@ -224,10 +269,11 @@ function sortKey(c,it){return F.sort==="dropPct"?pct(c):F.sort==="dropKr"?c.t-c.
 function lowest(it){var m=null;it.o.forEach(function(o){if(o.p!=null&&(m===null||o.p<m))m=o.p});return m===null?Infinity:m}
 function setOptions(sel,html,val){if(sel.dataset.sig!==html){sel.innerHTML=html;sel.dataset.sig=html}sel.value=val}
 function render(){
- [].forEach.call(seg.querySelectorAll("button"),function(b){b.setAttribute("aria-pressed",+b.dataset.d===days)});
+ [].forEach.call(seg.querySelectorAll("button"),function(b){b.setAttribute("aria-pressed",b.dataset.d==="custom"?mode==="custom":(mode==="days"&&+b.dataset.d===days))});
+ rng.hidden=mode!=="custom";dF.max=dT.max=ymd(Date.now()/60000);if(D&&D.since)dF.min=dT.min=ymd(D.since);
  if(!D){return}
- var cut=Date.now()/60000-days*1440,st=D.stores||{},inPeriod=[];
- D.items.forEach(function(it){var ch=it.ch.filter(function(c){return c.at>=cut});if(ch.length)inPeriod.push({it:it,ch:ch})});
+ var w=win(),st=D.stores||{},inPeriod=[];CW=w;CHG={};
+ D.items.forEach(function(it){var ch=[];it.ch.forEach(function(x){var c=changeIn(x.h,w[0],w[1]);if(c){c.s=x.s;c.h=x.h;ch.push(c)}});if(ch.length)inPeriod.push({it:it,ch:ch})});
  /* valg i butikk- og materialelistene kommer fra det som finnes i valgt periode */
  var sc={},mc={};inPeriod.forEach(function(r){r.ch.forEach(function(c){sc[c.s]=(sc[c.s]||0)+1});if(r.it.m)mc[r.it.m]=(mc[r.it.m]||0)+1});
  if(F.store&&!sc[F.store])F.store="";if(F.mat&&!mc[F.mat])F.mat="";
@@ -240,13 +286,13 @@ function render(){
   var ch=r.ch.filter(function(c){return passes(c,r.it)});if(!ch.length)return;
   ch.sort(function(a,b){return sortKey(a,r.it)-sortKey(b,r.it)||b.at-a.at});rows.push({it:r.it,ch:ch})});
  rows.sort(function(a,b){if(F.sort==="low")return lowest(a.it)-lowest(b.it)||b.ch[0].at-a.ch[0].at;return sortKey(a.ch[0],a.it)-sortKey(b.ch[0],b.it)||b.ch[0].at-a.ch[0].at});
- var lbl={1:"siste 24 timer",3:"siste 3 dager",7:"siste 7 dager",30:"siste 30 dager"}[days];
+ var lbl=mode==="custom"?"fra "+dstr(w[0])+" til "+dstr(w[1]):{1:"siste 24 timer",3:"siste 3 dager",7:"siste 7 dager",30:"siste 30 dager"}[days];
  if(!inPeriod.length){cnt.textContent="";list.innerHTML='<div class="empty">Ingen prisendringer registrert '+lbl+'. Prøv en lengre periode, eller kom tilbake senere. Prisene sjekkes jevnlig.</div>'}
  else if(!rows.length){cnt.textContent="";list.innerHTML='<div class="empty">Ingen produkter passer filtrene. Prøv å nullstille dem, eller velg en lengre periode.</div>'}
  else{cnt.textContent=(active?rows.length+" av "+inPeriod.length:rows.length)+(inPeriod.length===1?" produkt":" produkter")+" med prisendring "+lbl;
   list.innerHTML=rows.map(function(r){var it=r.it,top=r.ch,seen={};
-   var chg=top.map(function(c){seen[c.s]=c;var d=(c.t-c.f)/c.f*100,dn=d<0;
-     return'<div class="chg"><span class="sn">'+esc(st[c.s]||c.s)+'</span><span class="pr"><s>'+kr(c.f)+'</s> → <b>'+kr(c.t)+'</b></span><span class="dl '+(dn?"dn":"up")+'">'+(dn?"−":"+")+Math.abs(Math.round(d))+' %</span><span class="when" title="'+esc(when(c.at))+'">Endret '+ago(c.at)+'</span></div>'}).join("");
+   var chg=top.map(function(c){seen[c.s]=c;var d=(c.t-c.f)/c.f*100,dn=d<0,key=it.n+"|"+c.s,open=!!OPEN[key];CHG[key]=c;
+     return'<div class="crow" data-k="'+esc(key)+'"><div class="chg"><span class="sn">'+esc(st[c.s]||c.s)+'</span><span class="pr"><s>'+kr(c.f)+'</s> → <b>'+kr(c.t)+'</b></span><span class="dl '+(dn?"dn":"up")+'">'+(dn?"−":"+")+Math.abs(Math.round(d))+' %</span><button type="button" class="hb" aria-expanded="'+open+'">'+(open?"Skjul historikk":"Se historikk")+'</button></div><div class="hist"'+(open?"":" hidden")+">"+(open?histHTML(c,w):"")+"</div></div>"}).join("");
    var head=top[0].s,others=it.o.filter(function(o){return o.s!==head&&o.u}).sort(function(a,b){return(a.p==null)-(b.p==null)||a.p-b.p});
    var more=others.length?'<details><summary>Se i '+others.length+(others.length===1?" annen butikk":" andre butikker")+'</summary><ul class="os">'+others.map(function(o){var c=seen[o.s],n=st[o.s]||o.s;
      return'<li class="'+(unav(o.a)?"na":"")+'"><span class="sn">'+esc(n)+'</span><span class="pr">'+(c?'<s>'+kr(c.f)+'</s> → ':"")+(o.p==null?"Se pris":kr(o.p))+"</span>"+(unav(o.a)?'<span class="off">Ikke på lager</span>':"")+'<a class="go" data-s="'+esc(o.s)+'" data-n="'+esc(n)+'" href="'+esc(o.u)+'" target="_blank" rel="noopener noreferrer" aria-label="Til '+esc(n)+'">Til butikken</a></li>'}).join("")+"</ul></details>":"";
@@ -257,7 +303,15 @@ function render(){
 function readF(){F.sort=el.sort.value;F.dir=el.dir.value;F.store=el.store.value;F.mat=el.mat.value;F.min=+el.min.value;F.stock=el.stock.checked;render()}
 document.getElementById("flt").addEventListener("change",readF);
 el.reset.addEventListener("click",function(){F.dir="all";F.store="";F.mat="";F.min=0;F.stock=false;render()});
-seg.addEventListener("click",function(e){var b=e.target.closest("button");if(!b)return;days=+b.dataset.d;try{localStorage.setItem("pdays",days)}catch(x){}render()});
+seg.addEventListener("click",function(e){var b=e.target.closest("button");if(!b)return;
+ if(b.dataset.d==="custom"){mode="custom";if(!cf){var n=Date.now()/60000;dF.value=ymd(n-7*1440);dT.value=ymd(n);cf=dayStart(dF.value);ct=dayEnd(dT.value)}render();return}
+ mode="days";days=+b.dataset.d;try{localStorage.setItem("pdays",days)}catch(x){}render()});
+rng.addEventListener("change",function(){if(!dF.value||!dT.value)return;var a=dayStart(dF.value),b=dayEnd(dT.value);
+ if(a>b){var x=dF.value;dF.value=dT.value;dT.value=x;a=dayStart(dF.value);b=dayEnd(dT.value)}cf=a;ct=b;mode="custom";render()});
+list.addEventListener("click",function(e){var b=e.target.closest(".hb");if(!b)return;var row=b.closest(".crow"),k=row.dataset.k,c=CHG[k];if(!c)return;
+ var panel=row.querySelector(".hist"),open=!OPEN[k];OPEN[k]=open;
+ if(open){panel.innerHTML=histHTML(c,CW);panel.hidden=false}else{panel.hidden=true;panel.innerHTML=""}
+ b.setAttribute("aria-expanded",open);b.textContent=open?"Skjul historikk":"Se historikk"});
 fetch("../prisendringer.json",{cache:"no-cache"}).then(function(r){if(!r.ok)throw 0;return r.json()}).then(function(j){D=j;render()}).catch(function(){D={items:[],stores:{}};render()});
 render();
 function trackOut(e){if(e.type==="auxclick"&&e.button!==1)return;var a=e.target.closest&&e.target.closest("a[data-s]");if(!a)return;

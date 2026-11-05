@@ -9,8 +9,8 @@ import urllib.error
 import urllib.request
 
 KEEP_DAYS = 45      # tilbud som ikke er sett på så lenge, glemmes
-MAX_POINTS = 12     # antall prispunkter vi husker per tilbud
-SHOW_DAYS = 30      # lengste periode siden viser
+MAX_POINTS = 30     # antall prispunkter vi husker per tilbud (eldre punkter forsvinner først)
+SHOW_DAYS = 90      # lengste periode siden viser (valgfritt fra–til-intervall kan gå så langt tilbake som historikken finnes)
 
 
 def offer_key(store, url):
@@ -77,7 +77,9 @@ def update(hist, products, now):
 
 
 def changes(hist, products, now, days=SHOW_DAYS):
-    """Produkter med minst én prisendring siste `days` dager, nyeste endring først. Hver rad har alle butikkene (for lenker)."""
+    """Produkter med minst én prisendring siste `days` dager, nyeste endring først. Hvert tilbud som har endret pris får hele
+    historikken sin (`h`: [[tidspunkt, pris], ...], eldst først), så siden selv kan velge intervall og vise «Se historikk».
+    Hver rad har også alle butikkene (for lenker)."""
     since = now - days * 1440
     keys = {id(off): k for _p, off, k in keyed(products)}
     out = []
@@ -87,12 +89,12 @@ def changes(hist, products, now, days=SHOW_DAYS):
             offers.append({"s": off["s"], "p": off.get("p"), "u": off.get("u"), "a": off.get("a")})
             rec = hist["o"].get(keys.get(id(off)))
             if rec and len(rec["h"]) >= 2 and rec["h"][-1][0] >= since:
-                ch.append({"s": off["s"], "f": rec["h"][-2][1], "t": rec["h"][-1][1], "at": rec["h"][-1][0]})
+                ch.append({"s": off["s"], "h": [list(pt) for pt in rec["h"]]})
         if ch:
             img = next((x.get("i") for x in p["offers"] if x.get("i")), "")
             out.append({"n": p["name"], "b": p.get("brand", ""), "c": p.get("col", ""), "m": p.get("mat", ""), "kg": p.get("kg"),
-                        "i": img, "o": offers, "ch": sorted(ch, key=lambda c: -c["at"])})
-    out.sort(key=lambda it: -it["ch"][0]["at"])
+                        "i": img, "o": offers, "ch": sorted(ch, key=lambda c: -c["h"][-1][0])})
+    out.sort(key=lambda it: -it["ch"][0]["h"][-1][0])
     return out
 
 
