@@ -48,6 +48,10 @@ on:
         description: "Hent Fjord3D på nytt (ellers beholdes siste publiserte priser)"
         type: boolean
         default: true
+      hent_3dfixit:
+        description: "Hent 3DFixit på nytt (ellers beholdes siste publiserte priser)"
+        type: boolean
+        default: true
       hent_polyalkemi:
         description: "Hent Polyalkemi på nytt (tar ca. 17 minutter, ellers beholdes siste publiserte priser)"
         type: boolean
@@ -133,6 +137,10 @@ jobs:
         if: contains(format(' {0} ', steps.sel.outputs.fetch), ' fjord3d ')
         continue-on-error: true
         run: python tools/fjord3d_feed.py data/fjord3d.csv
+      - name: Hent 3DFixit (WooCommerce Store API)
+        if: contains(format(' {0} ', steps.sel.outputs.fetch), ' fixit ')
+        continue-on-error: true
+        run: python tools/fixit_feed.py data/3dfixit.csv
       - name: Hent Polyalkemi (kategorisider og produktsider)
         # Tar opptil ca. 40 minutter. Hentes hver natt, når den er avkrysset ved manuell start, og ved push bare hvis
         # tools/polyalkemi_feed.py er endret. Feiler henting, eller går tiden ut, beholdes siste publiserte pris.

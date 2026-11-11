@@ -1,0 +1,207 @@
+[
+ {
+  "id": 1582,
+  "name": "PETG HS MATE &#8211; Nyhet !!! 1.75mm 1kg &#8211; Sea Soul Blue",
+  "slug": "petg-hs-mate-nyhet-1-75mm-1kg-sea-soul-blue",
+  "parent": 0,
+  "type": "simple",
+  "permalink": "https://3dfixit.no/produkt/petg-hs-mate-nyhet-1-75mm-1kg-sea-soul-blue/",
+  "sku": "",
+  "on_sale": true,
+  "prices": {
+   "price": "20900",
+   "regular_price": "22900",
+   "sale_price": "20900",
+   "currency_code": "NOK",
+   "currency_minor_unit": 2
+  },
+  "images": [
+   {
+    "id": 791,
+    "src": "https://i0.wp.com/3dfixit.no/wp-content/uploads/2025/05/Marine-Blue-min.png?fit=1024%2C1024&quality=70&ssl=1"
+   }
+  ],
+  "categories": [
+   {
+    "id": 37,
+    "name": "Filamenter 1,75",
+    "slug": "filamenter1_75"
+   },
+   {
+    "id": 90,
+    "name": "PETG HS MATTE Nyhet!!!",
+    "slug": "petg-hs-matte-nyhet"
+   }
+  ],
+  "tags": [],
+  "attributes": [],
+  "variations": [],
+  "is_in_stock": true,
+  "is_on_backorder": false,
+  "stock_availability": {
+   "text": "23 på lager",
+   "class": "in-stock"
+  }
+ },
+ {
+  "id": 1581,
+  "name": "PETG HS MATE &#8211; Nyhet !!! 1.75mm 1kg &#8211; Khaki",
+  "slug": "petg-hs-mate-nyhet-1-75mm-1kg-khaki",
+  "parent": 0,
+  "type": "simple",
+  "permalink": "https://3dfixit.no/produkt/petg-hs-mate-nyhet-1-75mm-1kg-khaki/",
+  "sku": "",
+  "on_sale": true,
+  "prices": {
+   "price": "20900",
+   "regular_price": "22900",
+   "sale_price": "20900",
+   "currency_code": "NOK",
+   "currency_minor_unit": 2
+  },
+  "images": [
+   {
+    "id": 791,
+    "src": "https://i0.wp.com/3dfixit.no/wp-content/uploads/2025/05/skinn_optimized.png?fit=1024%2C1024&quality=70&ssl=1"
+   }
+  ],
+  "categories": [
+   {
+    "id": 37,
+    "name": "Filamenter 1,75",
+    "slug": "filamenter1_75"
+   },
+   {
+    "id": 90,
+    "name": "PETG HS MATTE Nyhet!!!",
+    "slug": "petg-hs-matte-nyhet"
+   }
+  ],
+  "tags": [],
+  "attributes": [],
+  "variations": [],
+  "is_in_stock": true,
+  "is_on_backorder": false,
+  "stock_availability": {
+   "text": "25 på lager",
+   "class": "in-stock"
+  }
+ },
+ {
+  "id": 100,
+  "name": "ASA 1.75mm 1kg Black",
+  "slug": "asa-1-75mm-1kg-black",
+  "parent": 0,
+  "type": "simple",
+  "permalink": "https://3dfixit.no/produkt/asa-1-75mm-1kg-black/",
+  "sku": "",
+  "on_sale": false,
+  "prices": {
+   "price": "26900",
+   "regular_price": "26900",
+   "sale_price": "26900",
+   "currency_code": "NOK",
+   "currency_minor_unit": 2
+  },
+  "images": [
+   {
+    "id": 791,
+    "src": "https://i0.wp.com/3dfixit.no/wp-content/uploads/2025/05/Marine-Blue-min.png?fit=1024%2C1024&quality=70&ssl=1"
+   }
+  ],
+  "categories": [
+   {
+    "id": 37,
+    "name": "Filamenter 1,75",
+    "slug": "filamenter1_75"
+   }
+  ],
+  "tags": [],
+  "attributes": [],
+  "variations": [],
+  "is_in_stock": false,
+  "is_on_backorder": false,
+  "stock_availability": {
+   "text": "Ikke på lager",
+   "class": "out-of-stock"
+  }
+ },
+ {
+  "id": 101,
+  "name": "Tørkeboks for filament",
+  "slug": "torkeboks",
+  "parent": 0,
+  "type": "simple",
+  "permalink": "https://3dfixit.no/produkt/torkeboks/",
+  "sku": "",
+  "on_sale": false,
+  "prices": {
+   "price": "59900",
+   "regular_price": "59900",
+   "sale_price": "59900",
+   "currency_code": "NOK",
+   "currency_minor_unit": 2
+  },
+  "images": [
+   {
+    "id": 791,
+    "src": "https://i0.wp.com/3dfixit.no/wp-content/uploads/2025/05/Marine-Blue-min.png?fit=1024%2C1024&quality=70&ssl=1"
+   }
+  ],
+  "categories": [
+   {
+    "id": 37,
+    "name": "Filamenter 1,75",
+    "slug": "filamenter1_75"
+   }
+  ],
+  "tags": [],
+  "attributes": [],
+  "variations": [],
+  "is_in_stock": true,
+  "is_on_backorder": false,
+  "stock_availability": {
+   "text": "5 på lager",
+   "class": "in-stock"
+  }
+ },
+ {
+  "id": 102,
+  "name": "Dyse 0.4 mm",
+  "slug": "dyse",
+  "parent": 0,
+  "type": "simple",
+  "permalink": "https://3dfixit.no/produkt/dyse/",
+  "sku": "",
+  "on_sale": false,
+  "prices": {
+   "price": "9900",
+   "regular_price": "9900",
+   "sale_price": "9900",
+   "currency_code": "NOK",
+   "currency_minor_unit": 2
+  },
+  "images": [
+   {
+    "id": 791,
+    "src": "https://i0.wp.com/3dfixit.no/wp-content/uploads/2025/05/Marine-Blue-min.png?fit=1024%2C1024&quality=70&ssl=1"
+   }
+  ],
+  "categories": [
+   {
+    "id": 5,
+    "name": "Deler",
+    "slug": "deler"
+   }
+  ],
+  "tags": [],
+  "attributes": [],
+  "variations": [],
+  "is_in_stock": true,
+  "is_on_backorder": false,
+  "stock_availability": {
+   "text": "50 på lager",
+   "class": "in-stock"
+  }
+ }
+]

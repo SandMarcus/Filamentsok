@@ -222,6 +222,24 @@
         "stock": "Lager"
       },
       "default_kg": 1
+    },
+    {
+      "id": "fixit",
+      "name": "3DFixit",
+      "home": "https://3dfixit.no/",
+      "file": "data/3dfixit.csv",
+      "optional_file": true,
+      "columns": {
+        "url": "Lenke",
+        "image": "Bilde",
+        "name": [
+          "Navn"
+        ],
+        "color": "Farge",
+        "price": "Pris",
+        "was": "Førpris",
+        "stock": "Lager"
+      }
     }
   ]
 }

@@ -42,7 +42,7 @@ def test_push_uten_butikkendring_henter_ingenting():
 
 def test_endret_felles_verktoy_tar_med_alle_som_bruker_det():
     fetch, _ = s.select("push", changed=["tools/nm3d_feed.py"], feeds_published=True)
-    assert fetch == ["nm3d", "stratum", "dkongen"]
+    assert fetch == ["nm3d", "stratum", "dkongen", "fixit"]
 
 
 def test_polyalkemi_hentes_ved_push_bare_nar_verktoyet_er_endret():
