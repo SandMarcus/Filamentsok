@@ -2,6 +2,9 @@
 
 Versjonsnummeret (`config/version.json`) vises nederst på alle sider. Det økes når siden endres, men ikke for vanlige prisoppdateringer.
 
+## 1.6 (11.11.2026)
+- Ny butikk: 3DFixit (3dfixit.no), filament 1,75 mm. Prisene hentes automatisk hver natt fra butikkens åpne Store API, på samme måte som NorMax3D og Stratum3D.
+
 ## 1.5 (5.11.2026)
 - Prisendringer: siden viser nå alle tilbud som har endret pris minst én gang i perioden. Før telte bare tilbud der prisen var ulik ved start og nå, så 24 timer kunne gi flere treff enn 3 dager. Lengre perioder inneholder nå alltid alt fra de kortere. Tilbud som gikk ned og tilbake til samme pris får merket «Tilbake til samme pris».
 - Prisendringer: ryddigere filtre. Sortering og «Vis» (alle, prisfall, prisøkning) er synlige, og butikk, materiale, størrelse på endring og på lager ligger under «Flere filtre» med antall valgte. Valgte filtre vises som piller som fjernes med ett trykk. Kort forklaring av perioden står over filtrene.

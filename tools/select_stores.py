@@ -4,7 +4,7 @@ Regler:
   - Nattlig kjøring (schedule): alle butikkene hentes, også Polyalkemi.
   - Manuell start (workflow_dispatch): bare butikkene du har krysset av («Hent … på nytt»).
   - Push til main: bare butikkene som er påvirket av endringen, altså de der `tools/<butikk>_feed.py` er endret. Endres
-    `tools/nm3d_feed.py`, tas også Stratum3D og 3D Kongen med, siden de bruker den. Polyalkemi (opptil 40 minutter) tas med
+    `tools/nm3d_feed.py`, tas også Stratum3D, 3D Kongen og 3DFixit med, siden de bruker den. Polyalkemi (opptil 40 minutter) tas med
     bare når selve verktøyet er endret. Kan ikke endringen leses, eller er det første bygget uten publiserte butikkfiler
     (`/feeds/`), hentes alle unntatt Polyalkemi, så ingen sitter igjen med gamle priser.
   - Butikker som ikke hentes (eller der hentingen feiler) får siste publiserte butikkfil tilbake (tools/restore_feeds.py).
@@ -33,6 +33,7 @@ STORES = {
     "filamentfabrikken": {"input": "hent_filamentfabrikken", "tools": ["tools/filamentfabrikken_feed.py"]},
     "dkongen": {"input": "hent_dkongen", "tools": ["tools/dkongen_feed.py", "tools/nm3d_feed.py"]},
     "fjord3d": {"input": "hent_fjord3d", "tools": ["tools/fjord3d_feed.py"]},
+    "fixit": {"input": "hent_3dfixit", "tools": ["tools/fixit_feed.py", "tools/nm3d_feed.py"]},
     "poly": {"input": "hent_polyalkemi", "tools": ["tools/polyalkemi_feed.py"]},
 }
 SLOW = {"poly"}  # tar opptil 40 minutter, hentes ikke «for sikkerhets skyld»
